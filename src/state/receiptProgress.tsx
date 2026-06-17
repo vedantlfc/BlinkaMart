@@ -117,15 +117,16 @@ function getSafeDate(timestamp: string) {
   return Number.isNaN(date.getTime()) ? new Date() : date;
 }
 
+function getValidDate(timestamp: string) {
+  const date = new Date(timestamp);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
 function getLocalDateKey(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-}
-
-function isLocalDateKey(value: unknown): value is string {
-  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
 
 function dateKeyToUtcMs(dateKey: string) {
@@ -135,10 +136,6 @@ function dateKeyToUtcMs(dateKey: string) {
 
 function getCalendarDayGap(previousDateKey: string, nextDateKey: string) {
   return Math.round((dateKeyToUtcMs(nextDateKey) - dateKeyToUtcMs(previousDateKey)) / DAY_IN_MS);
-}
-
-function getCompletedLocalDate(order: FakeOrderSnapshot) {
-  return getLocalDateKey(getSafeDate(order.timestamp));
 }
 
 function isCategoryId(value: unknown): value is CategoryId {
@@ -200,6 +197,7 @@ function normalizeCompletedOrderRecord(value: unknown): CompletedFakeOrderRecord
     typeof record.id !== "string" ||
     record.id.length === 0 ||
     typeof record.timestamp !== "string" ||
+    !getValidDate(record.timestamp) ||
     !Array.isArray(record.items) ||
     typeof record.totalPrice !== "number" ||
     !Number.isFinite(record.totalPrice) ||
@@ -223,6 +221,11 @@ function normalizeCompletedOrderRecord(value: unknown): CompletedFakeOrderRecord
     .map(normalizeItemSummary)
     .filter((item): item is CompletedOrderItemSummary => Boolean(item));
   if (items.length === 0) {
+    return null;
+  }
+
+  const totalQuantity = items.reduce((total, item) => total + item.quantity, 0);
+  if (totalQuantity !== record.totalQuantity) {
     return null;
   }
 
@@ -250,6 +253,126 @@ function getUniqueOrderRecords(records: CompletedFakeOrderRecord[]) {
   });
 }
 
+function getSortedOrderRecords(records: CompletedFakeOrderRecord[]) {
+  return [...records].sort((firstOrder, secondOrder) => {
+    const timestampDifference =
+      getSafeDate(firstOrder.timestamp).getTime() - getSafeDate(secondOrder.timestamp).getTime();
+
+    return timestampDifference || firstOrder.id.localeCompare(secondOrder.id);
+  });
+}
+
+function deriveStreakMetadata(completedOrders: CompletedFakeOrderRecord[]) {
+  if (completedOrders.length === 0) {
+    return {
+      lastCompletedLocalDate: null,
+      currentStreak: 0,
+      longestStreak: 0,
+      totalCompletedFakeOrders: 0,
+    };
+  }
+
+  const completedDateKeys = Array.from(
+    new Set(
+      getSortedOrderRecords(completedOrders).map((order) =>
+        getLocalDateKey(getSafeDate(order.timestamp)),
+      ),
+    ),
+  );
+  let currentRun = 0;
+  let longestStreak = 0;
+  let previousDateKey: string | null = null;
+
+  completedDateKeys.forEach((dateKey) => {
+    const gap = previousDateKey ? getCalendarDayGap(previousDateKey, dateKey) : null;
+    currentRun = gap === 1 ? currentRun + 1 : 1;
+    longestStreak = Math.max(longestStreak, currentRun);
+    previousDateKey = dateKey;
+  });
+
+  return {
+    lastCompletedLocalDate: completedDateKeys[completedDateKeys.length - 1],
+    currentStreak: currentRun,
+    longestStreak: Math.max(longestStreak, currentRun),
+    totalCompletedFakeOrders: completedOrders.length,
+  };
+}
+
+function getBadgeIdsForCompletedOrder(
+  order: Pick<CompletedFakeOrderRecord, "items" | "timestamp">,
+  nextCompletedOrders: CompletedFakeOrderRecord[],
+): ProgressBadgeId[] {
+  const totalMoneySaved = getTotalMoneySaved(nextCompletedOrders);
+  const badgeIds: ProgressBadgeId[] = [];
+
+  if (order.items.some((item) => item.categoryId === "chips-namkeen")) {
+    badgeIds.push("chips-dodger");
+  }
+
+  if (order.items.some((item) => item.categoryId === "lazy-meals")) {
+    badgeIds.push("maggi-monk");
+  }
+
+  if (nextCompletedOrders.length >= 3) {
+    badgeIds.push("cart-without-consequence");
+  }
+
+  if (getSafeDate(order.timestamp).getHours() === 2) {
+    badgeIds.push("two-am-legend");
+  }
+
+  if (totalMoneySaved >= 1000) {
+    badgeIds.push("salary-saved");
+  }
+
+  return badgeIds;
+}
+
+function deriveBadgeIds(completedOrders: CompletedFakeOrderRecord[]) {
+  const badgeIdsByOrderId = new Map<string, ProgressBadgeId[]>();
+  const runningOrders: CompletedFakeOrderRecord[] = [];
+
+  getSortedOrderRecords(completedOrders).forEach((order) => {
+    const nextOrder = {
+      ...order,
+      badgeIds: [],
+    };
+    const nextCompletedOrders = [...runningOrders, nextOrder];
+    const badgeIds = getBadgeIdsForCompletedOrder(nextOrder, nextCompletedOrders);
+
+    badgeIdsByOrderId.set(order.id, badgeIds);
+    runningOrders.push({
+      ...order,
+      badgeIds,
+    });
+  });
+
+  return completedOrders.map((order) => ({
+    ...order,
+    badgeIds: badgeIdsByOrderId.get(order.id) ?? [],
+  }));
+}
+
+function buildProgressState(
+  countedOrderIds: string[],
+  completedOrders: CompletedFakeOrderRecord[],
+): ReceiptProgressState {
+  const uniqueCompletedOrders = deriveBadgeIds(getUniqueOrderRecords(completedOrders));
+  const uniqueCountedOrderIds = Array.from(
+    new Set([
+      ...countedOrderIds.filter((orderId) => orderId.length > 0),
+      ...uniqueCompletedOrders.map((order) => order.id),
+    ]),
+  );
+  const metadata = deriveStreakMetadata(uniqueCompletedOrders);
+
+  return {
+    countedOrderIds: uniqueCountedOrderIds,
+    ...metadata,
+    completedOrders: uniqueCompletedOrders,
+  };
+}
+
 function normalizeProgress(value: unknown): ReceiptProgressState {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return defaultProgress;
@@ -273,45 +396,8 @@ function normalizeProgress(value: unknown): ReceiptProgressState {
       ...completedOrders.map((order) => order.id),
     ]),
   );
-  const storedCurrentStreak =
-    typeof progress.currentStreak === "number" &&
-    Number.isFinite(progress.currentStreak) &&
-    Number.isInteger(progress.currentStreak) &&
-    progress.currentStreak >= 0
-      ? progress.currentStreak
-      : 0;
-  const currentStreak =
-    countedOrderIds.length > 0 && storedCurrentStreak === 0 ? 1 : storedCurrentStreak;
-  const storedLongestStreak =
-    typeof progress.longestStreak === "number" &&
-    Number.isFinite(progress.longestStreak) &&
-    Number.isInteger(progress.longestStreak) &&
-    progress.longestStreak >= 0
-      ? progress.longestStreak
-      : currentStreak;
-  const storedTotalCompletedFakeOrders =
-    typeof progress.totalCompletedFakeOrders === "number" &&
-    Number.isFinite(progress.totalCompletedFakeOrders) &&
-    Number.isInteger(progress.totalCompletedFakeOrders) &&
-    progress.totalCompletedFakeOrders >= 0
-      ? progress.totalCompletedFakeOrders
-      : countedOrderIds.length;
-  const totalCompletedFakeOrders = Math.max(
-    storedTotalCompletedFakeOrders,
-    countedOrderIds.length,
-    completedOrders.length,
-  );
 
-  return {
-    countedOrderIds,
-    lastCompletedLocalDate: isLocalDateKey(progress.lastCompletedLocalDate)
-      ? progress.lastCompletedLocalDate
-      : null,
-    currentStreak,
-    longestStreak: Math.max(storedLongestStreak, currentStreak),
-    totalCompletedFakeOrders,
-    completedOrders,
-  };
+  return buildProgressState(countedOrderIds, completedOrders);
 }
 
 function readStoredProgress(): ReceiptProgressState {
@@ -348,38 +434,11 @@ function getTotalCaloriesAvoided(records: CompletedFakeOrderRecord[]) {
   return records.reduce((total, order) => total + order.totalCalories, 0);
 }
 
-function hasOrderInHour(order: FakeOrderSnapshot, hour: number) {
-  return getSafeDate(order.timestamp).getHours() === hour;
-}
-
 function getBadgeIdsForOrder(
   order: FakeOrderSnapshot,
   nextCompletedOrders: CompletedFakeOrderRecord[],
 ): ProgressBadgeId[] {
-  const totalMoneySaved = getTotalMoneySaved(nextCompletedOrders);
-  const badgeIds: ProgressBadgeId[] = [];
-
-  if (order.items.some((item) => item.categoryId === "chips-namkeen")) {
-    badgeIds.push("chips-dodger");
-  }
-
-  if (order.items.some((item) => item.categoryId === "lazy-meals")) {
-    badgeIds.push("maggi-monk");
-  }
-
-  if (nextCompletedOrders.length >= 3) {
-    badgeIds.push("cart-without-consequence");
-  }
-
-  if (hasOrderInHour(order, 2)) {
-    badgeIds.push("two-am-legend");
-  }
-
-  if (totalMoneySaved >= 1000) {
-    badgeIds.push("salary-saved");
-  }
-
-  return badgeIds;
+  return getBadgeIdsForCompletedOrder(order, nextCompletedOrders);
 }
 
 function buildCompletedOrderRecord(
@@ -417,7 +476,6 @@ function addOrderRecord(
 function getNextProgress(
   currentProgress: ReceiptProgressState,
   order: FakeOrderSnapshot,
-  completedLocalDate: string,
 ): ReceiptProgressState {
   const hasCountedOrder = currentProgress.countedOrderIds.includes(order.id);
   const hasHistoryRecord = currentProgress.completedOrders.some(
@@ -433,39 +491,17 @@ function getNextProgress(
     : addOrderRecord(currentProgress.completedOrders, order);
 
   if (hasCountedOrder) {
-    return {
-      ...currentProgress,
-      completedOrders,
-    };
+    return buildProgressState(currentProgress.countedOrderIds, completedOrders);
   }
 
-  const gap = currentProgress.lastCompletedLocalDate
-    ? getCalendarDayGap(currentProgress.lastCompletedLocalDate, completedLocalDate)
-    : null;
-  const nextStreak =
-    gap === null
-      ? 1
-      : gap === 0
-        ? Math.max(currentProgress.currentStreak, 1)
-        : gap === 1
-          ? currentProgress.currentStreak + 1
-          : 1;
-
-  return {
-    countedOrderIds: [...currentProgress.countedOrderIds, order.id],
-    lastCompletedLocalDate: completedLocalDate,
-    currentStreak: nextStreak,
-    longestStreak: Math.max(currentProgress.longestStreak, nextStreak),
-    totalCompletedFakeOrders: currentProgress.totalCompletedFakeOrders + 1,
-    completedOrders,
-  };
+  return buildProgressState([...currentProgress.countedOrderIds, order.id], completedOrders);
 }
 
 export function getProjectedReceiptProgress(
   currentProgress: ReceiptProgressState,
   order: FakeOrderSnapshot,
 ) {
-  return getNextProgress(currentProgress, order, getCompletedLocalDate(order));
+  return getNextProgress(currentProgress, order);
 }
 
 export function getReceiptProgressSummary(
@@ -476,7 +512,7 @@ export function getReceiptProgressSummary(
   );
 
   return {
-    totalFakeOrders: progress.totalCompletedFakeOrders,
+    totalFakeOrders: progress.completedOrders.length,
     totalMoneySaved: getTotalMoneySaved(progress.completedOrders),
     totalCaloriesAvoided: getTotalCaloriesAvoided(progress.completedOrders),
     currentStreak: progress.currentStreak,
