@@ -38,7 +38,7 @@ export function ProductPreviewCard({
       </dl>
 
       <Button type="button" variant="secondary" size="compact" disabled>
-        Add in Phase 3
+        Add on Products page
       </Button>
     </article>
   );

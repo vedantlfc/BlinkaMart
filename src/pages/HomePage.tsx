@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BottomCartBar } from "../components/BottomCartBar";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { CategoryTile } from "../components/CategoryTile";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
-import { ProductPreviewCard } from "../components/ProductPreviewCard";
+import { ProductCartCard } from "../components/ProductCartCard";
 import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
 import { categories, products, type CategoryId } from "../data/catalog";
+import { useCart } from "../state/cart";
 
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
 
@@ -36,7 +38,8 @@ export function HomePage() {
   const [toastMessage, setToastMessage] = useState(
     "Fake shelf stocked. Real orders still very cancelled.",
   );
-  const shelfRef = useRef<HTMLElement | null>(null);
+  const navigate = useNavigate();
+  const cart = useCart();
 
   const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
   const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -87,9 +90,7 @@ export function HomePage() {
   }
 
   function handleBuildFakeCart() {
-    shelfRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    shelfRef.current?.focus({ preventScroll: true });
-    setToastMessage("Product browsing is ready. Cart wiring arrives in Phase 3.");
+    navigate("/products");
   }
 
   function handleEmergencyMode() {
@@ -121,7 +122,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <div className="cta-row" aria-label="Phase 2 actions">
+      <div className="cta-row" aria-label="Fake cart actions">
         <Button
           type="button"
           onClick={handleBuildFakeCart}
@@ -164,10 +165,8 @@ export function HomePage() {
       </section>
 
       <section
-        ref={shelfRef}
         className="product-shelf"
         aria-labelledby="shelf-title"
-        tabIndex={-1}
       >
         <div className="section-heading">
           <span className="section-kicker">
@@ -186,10 +185,32 @@ export function HomePage() {
         {visibleProducts.length > 0 ? (
           <div className="product-list">
             {visibleProducts.map((product) => (
-              <ProductPreviewCard
+              <ProductCartCard
                 key={product.id}
                 product={product}
                 categoryName={categoryNames.get(product.categoryId) ?? "Fake shelf"}
+                quantity={cart.getQuantity(product.id)}
+                onAdd={() => {
+                  cart.addItem(product.id);
+                  setToastMessage(`${product.name} joined the fake cart.`);
+                }}
+                onIncrement={() => {
+                  cart.incrementItem(product.id);
+                  setToastMessage(`${product.name} quantity increased.`);
+                }}
+                onDecrement={() => {
+                  const quantity = cart.getQuantity(product.id);
+                  cart.decrementItem(product.id);
+                  setToastMessage(
+                    quantity === 1
+                      ? `${product.name} removed from the fake cart.`
+                      : `${product.name} quantity decreased.`,
+                  );
+                }}
+                onRemove={() => {
+                  cart.removeItem(product.id);
+                  setToastMessage(`${product.name} removed from the fake cart.`);
+                }}
               />
             ))}
           </div>
@@ -215,7 +236,14 @@ export function HomePage() {
       </section>
 
       <Toast message={toastMessage} visible={Boolean(toastMessage)} />
-      <BottomCartBar message={`${visibleProducts.length} fake items in view`} />
+      <BottomCartBar
+        totalQuantity={cart.totals.totalQuantity}
+        totalPrice={cart.totals.totalPrice}
+        totalCalories={cart.totals.totalCalories}
+        averageRegretScore={cart.totals.averageRegretScore}
+        actionLabel="Browse Products"
+        onAction={() => navigate("/products")}
+      />
     </div>
   );
 }
