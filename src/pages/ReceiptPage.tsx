@@ -6,6 +6,7 @@ import { PageHeader } from "../components/PageHeader";
 import { Toast } from "../components/Toast";
 import { useFakeOrder, type FakeOrderSnapshot } from "../state/fakeOrder";
 import {
+  getPrimaryBadgeNameForOrder,
   getProjectedReceiptProgress,
   useReceiptProgress,
   type ReceiptProgressState,
@@ -22,29 +23,6 @@ function formatOrderTime(timestamp: string) {
     dateStyle: "medium",
     timeStyle: "short",
   });
-}
-
-function getReceiptBadge(order: FakeOrderSnapshot) {
-  const date = new Date(order.timestamp);
-  const hour = Number.isNaN(date.getTime()) ? null : date.getHours();
-
-  if (hour !== null && (hour >= 23 || hour < 5)) {
-    return "Midnight Cart Dodger";
-  }
-
-  if (order.averageRegretScore >= 70) {
-    return "Impulse Interceptor";
-  }
-
-  if (order.totalQuantity >= 5) {
-    return "Cart Avalanche Survivor";
-  }
-
-  if (order.averageRegretScore <= 35 && order.totalQuantity <= 2) {
-    return "Tiny Temptation Tamed";
-  }
-
-  return "Successfully Not Ordered";
 }
 
 function getItemCountLabel(totalQuantity: number) {
@@ -110,7 +88,10 @@ export function ReceiptPage() {
         : receiptProgress.progress,
     [order, receiptProgress.progress],
   );
-  const badge = useMemo(() => (order ? getReceiptBadge(order) : ""), [order]);
+  const badge = useMemo(
+    () => (order ? getPrimaryBadgeNameForOrder(displayedProgress, order.id) : ""),
+    [displayedProgress, order],
+  );
   const shareText = useMemo(
     () => (order ? buildShareText(order, badge, displayedProgress) : ""),
     [badge, displayedProgress, order],
@@ -343,7 +324,10 @@ export function ReceiptPage() {
             <Button type="button" onClick={() => navigate("/products")}>
               Browse Fake Shelf
             </Button>
-            <Button type="button" variant="secondary" onClick={() => navigate("/cart")}>
+            <Button type="button" variant="secondary" onClick={() => navigate("/progress")}>
+              View Progress
+            </Button>
+            <Button type="button" variant="ghost" onClick={() => navigate("/cart")}>
               Back to Cart
             </Button>
           </div>

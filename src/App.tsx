@@ -4,6 +4,7 @@ import { CartPage } from "./pages/CartPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { HomePage } from "./pages/HomePage";
 import { ProductsPage } from "./pages/ProductsPage";
+import { ProgressPage } from "./pages/ProgressPage";
 import { ReceiptPage } from "./pages/ReceiptPage";
 import { TrackingPage } from "./pages/TrackingPage";
 
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/tracking" element={<TrackingPage />} />
         <Route path="/receipt" element={<ReceiptPage />} />
+        <Route path="/progress" element={<ProgressPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </AppShell>

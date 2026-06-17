@@ -11,6 +11,7 @@ import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
 import { categories, products, type CategoryId } from "../data/catalog";
 import { useCart } from "../state/cart";
+import { getReceiptProgressSummary, useReceiptProgress } from "../state/receiptProgress";
 import { useSettings } from "../state/settings";
 
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
@@ -33,6 +34,10 @@ function getTimeGreeting(date: Date) {
   return "Prime cart-building danger zone.";
 }
 
+function getFakeOrderLabel(totalFakeOrders: number) {
+  return totalFakeOrders === 1 ? "1 fake order avoided" : `${totalFakeOrders} fake orders avoided`;
+}
+
 export function HomePage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<CategoryId>(categories[0].id);
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,10 +47,16 @@ export function HomePage() {
   const navigate = useNavigate();
   const cart = useCart();
   const settings = useSettings();
+  const receiptProgress = useReceiptProgress();
 
   const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const greeting = getTimeGreeting(new Date());
+  const progressSummary = useMemo(
+    () => getReceiptProgressSummary(receiptProgress.progress),
+    [receiptProgress.progress],
+  );
+  const hasProgress = progressSummary.totalFakeOrders > 0 || progressSummary.recentOrders.length > 0;
 
   const visibleProducts = useMemo(() => {
     if (normalizedQuery) {
@@ -139,6 +150,31 @@ export function HomePage() {
           Emergency Craving Mode
         </Button>
       </div>
+
+      {hasProgress ? (
+        <section className="home-progress-panel" aria-labelledby="home-progress-title">
+          <div>
+            <span className="section-kicker">Local progress</span>
+            <h2 id="home-progress-title">{getFakeOrderLabel(progressSummary.totalFakeOrders)}</h2>
+            <p>
+              Rs {progressSummary.totalMoneySaved} stayed with you. Current streak:
+              {" "}
+              {progressSummary.currentStreak}.
+              {settings.showCalories
+                ? ` Calories avoided: ${progressSummary.totalCaloriesAvoided}.`
+                : ""}
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            size="compact"
+            onClick={() => navigate("/progress")}
+          >
+            View
+          </Button>
+        </section>
+      ) : null}
 
       <SearchInput
         label="Search the fake shelf"
