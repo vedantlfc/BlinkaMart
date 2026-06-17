@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { CartProvider } from "./state/cart";
 import { FakeOrderProvider } from "./state/fakeOrder";
+import { ReceiptProgressProvider } from "./state/receiptProgress";
 import { SettingsProvider } from "./state/settings";
 import "./styles/tokens.css";
 import "./styles/global.css";
@@ -20,7 +21,9 @@ createRoot(rootElement).render(
       <SettingsProvider>
         <CartProvider>
           <FakeOrderProvider>
-            <App />
+            <ReceiptProgressProvider>
+              <App />
+            </ReceiptProgressProvider>
           </FakeOrderProvider>
         </CartProvider>
       </SettingsProvider>

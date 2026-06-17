@@ -103,12 +103,17 @@ export function CheckoutPage() {
     () => getCartSummary(cart.items, settings.showCalories),
     [cart.items, settings.showCalories],
   );
-  const summary = cartSummary ?? (fakeOrder.currentOrder ? getOrderSummary(fakeOrder.currentOrder) : null);
+  const savedDraftOrder =
+    fakeOrder.currentOrder?.status === "draft" ? fakeOrder.currentOrder : null;
+  const hasTrackingOrder = fakeOrder.currentOrder?.status === "tracking";
+  const summary = cartSummary ?? (savedDraftOrder ? getOrderSummary(savedDraftOrder) : null);
 
   function handleConfirmFakeCheckout() {
     const nextOrder = cartSummary
       ? fakeOrder.createOrderFromCart(cart.items, settings.showCalories, "tracking")
-      : fakeOrder.updateOrderStatus("tracking");
+      : savedDraftOrder
+        ? fakeOrder.updateOrderStatus("tracking")
+        : null;
 
     if (nextOrder) {
       navigate("/tracking");
@@ -123,7 +128,17 @@ export function CheckoutPage() {
         trailing={<span className="status-dot">No real payment</span>}
       />
 
-      {!summary ? (
+      {!summary && hasTrackingOrder ? (
+        <section className="checkout-empty-section" aria-label="Fake order already tracking">
+          <EmptyState
+            title="This fake order is already being tracked."
+            message="It is past checkout and currently being successfully not delivered."
+          />
+          <Button type="button" onClick={() => navigate("/tracking")}>
+            Resume Fake Tracking
+          </Button>
+        </section>
+      ) : !summary ? (
         <section className="checkout-empty-section" aria-label="No fake order checkout">
           <EmptyState
             title="No fake order to cancel."
