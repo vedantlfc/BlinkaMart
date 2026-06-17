@@ -1,17 +1,105 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BottomCartBar } from "../components/BottomCartBar";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
-import { CategoryChip } from "../components/CategoryChip";
+import { CategoryTile } from "../components/CategoryTile";
+import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
+import { ProductPreviewCard } from "../components/ProductPreviewCard";
+import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
+import { categories, products, type CategoryId } from "../data/catalog";
 
-const categories = ["Chips", "Cold Drinks", "Ice Cream", "Maggi", "Random Stuff"];
+const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
+
+function getTimeGreeting(date: Date) {
+  const hour = date.getHours();
+
+  if (hour >= 23 || hour < 5) {
+    return "Dangerous time to be opening food apps.";
+  }
+
+  if (hour < 12) {
+    return "Last night's version of you would like a word.";
+  }
+
+  if (hour < 18) {
+    return "Snack thoughts detected.";
+  }
+
+  return "Prime cart-building danger zone.";
+}
 
 export function HomePage() {
+  const [selectedCategoryId, setSelectedCategoryId] = useState<CategoryId>(categories[0].id);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [toastMessage, setToastMessage] = useState(
+    "Fake shelf stocked. Real orders still very cancelled.",
+  );
+  const shelfRef = useRef<HTMLElement | null>(null);
+
+  const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const greeting = getTimeGreeting(new Date());
+
+  const visibleProducts = useMemo(() => {
+    if (normalizedQuery) {
+      return products.filter((product) => {
+        const categoryName = categoryNames.get(product.categoryId) ?? "";
+        const searchable = [
+          product.name,
+          product.subtitle,
+          product.tag ?? "",
+          categoryName,
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        return searchable.includes(normalizedQuery);
+      });
+    }
+
+    return products.filter((product) => product.categoryId === selectedCategoryId);
+  }, [normalizedQuery, selectedCategoryId]);
+
+  useEffect(() => {
+    if (!toastMessage) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => setToastMessage(""), 3600);
+    return () => window.clearTimeout(timeoutId);
+  }, [toastMessage]);
+
+  const productCountByCategory = useMemo(() => {
+    return categories.reduce<Record<CategoryId, number>>((counts, category) => {
+      counts[category.id] = products.filter(
+        (product) => product.categoryId === category.id,
+      ).length;
+      return counts;
+    }, {} as Record<CategoryId, number>);
+  }, []);
+
+  function handleCategorySelect(categoryId: CategoryId) {
+    setSelectedCategoryId(categoryId);
+    setSearchQuery("");
+    setToastMessage("Shelf switched. Still fake, still safer than checkout.");
+  }
+
+  function handleBuildFakeCart() {
+    shelfRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    shelfRef.current?.focus({ preventScroll: true });
+    setToastMessage("Product browsing is ready. Cart wiring arrives in Phase 3.");
+  }
+
+  function handleEmergencyMode() {
+    setToastMessage("Emergency Craving Mode is warming up for a later phase.");
+  }
+
   return (
     <div className="home-page">
       <PageHeader
-        title="It is snack o'clock somewhere."
+        title={greeting}
         subtitle="Fake ordering for real cravings."
         trailing={<span className="status-dot">Open for fake business</span>}
       />
@@ -21,53 +109,96 @@ export function HomePage() {
           <span className="hero-tag">No delivery. Full drama.</span>
           <h2 id="home-hero-title">Add to cart. Not to stomach.</h2>
           <p>
-            Build the midnight cart your brain wants, then let better judgement
-            fake-deliver the dopamine.
+            Build a cart. Save the money. Skip the regret. No delivery, no
+            payment, no actual snacks.
           </p>
         </div>
 
         <div className="hero-ticket" aria-label="Fake order preview">
-          <span className="ticket-label">Tonight's rider</span>
+          <span className="ticket-label">Delivery partner</span>
           <strong>Self Control</strong>
           <span>ETA: never</span>
         </div>
       </section>
 
-      <div className="cta-row" aria-label="Phase 1 actions">
+      <div className="cta-row" aria-label="Phase 2 actions">
         <Button
           type="button"
-          onClick={() => {
-            window.alert("Phase 2 will wire the fake cart. For now, crisis noted.");
-          }}
+          onClick={handleBuildFakeCart}
         >
           Build Fake Cart
         </Button>
         <Button
           type="button"
           variant="secondary"
-          onClick={() => {
-            window.alert("Emergency Craving Mode lands in a later phase.");
-          }}
+          onClick={handleEmergencyMode}
         >
           Emergency Craving Mode
         </Button>
       </div>
 
+      <SearchInput
+        label="Search the fake shelf"
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search chips, cola, emotional support Maggi..."
+        aria-label="Search fake products"
+      />
+
       <section className="category-section" aria-labelledby="category-title">
         <div className="section-heading">
           <h2 id="category-title">Pick your almost-mistake</h2>
-          <p>Visual placeholders today, fake filters tomorrow.</p>
+          <p>Tap a shelf. Browse the craving. No real order can escape.</p>
         </div>
-        <div className="chip-list" aria-label="Fake product categories">
-          {categories.map((category, index) => (
-            <CategoryChip
-              key={category}
-              label={category}
-              active={index === 0}
-              onClick={() => undefined}
+        <div className="category-grid" aria-label="Fake product categories">
+          {categories.map((category) => (
+            <CategoryTile
+              key={category.id}
+              category={category}
+              productCount={productCountByCategory[category.id]}
+              active={!normalizedQuery && selectedCategoryId === category.id}
+              onClick={() => handleCategorySelect(category.id)}
             />
           ))}
         </div>
+      </section>
+
+      <section
+        ref={shelfRef}
+        className="product-shelf"
+        aria-labelledby="shelf-title"
+        tabIndex={-1}
+      >
+        <div className="section-heading">
+          <span className="section-kicker">
+            {normalizedQuery ? "Search mode" : selectedCategory?.vibe}
+          </span>
+          <h2 id="shelf-title">
+            {normalizedQuery ? "Search results" : "Tonight's fake shelf"}
+          </h2>
+          <p>
+            {normalizedQuery
+              ? `Showing fake items that match "${searchQuery.trim()}".`
+              : `${selectedCategory?.name} products are ready to be admired, not delivered.`}
+          </p>
+        </div>
+
+        {visibleProducts.length > 0 ? (
+          <div className="product-list">
+            {visibleProducts.map((product) => (
+              <ProductPreviewCard
+                key={product.id}
+                product={product}
+                categoryName={categoryNames.get(product.categoryId) ?? "Fake shelf"}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="No regret found."
+            message="Try another craving. This one seems emotionally out of stock."
+          />
+        )}
       </section>
 
       <section className="proof-grid" aria-label="BlinkaMart reminders">
@@ -83,8 +214,8 @@ export function HomePage() {
         </Card>
       </section>
 
-      <Toast message="Fake cart standing by. Real order avoided for now." />
-      <BottomCartBar />
+      <Toast message={toastMessage} visible={Boolean(toastMessage)} />
+      <BottomCartBar message={`${visibleProducts.length} fake items in view`} />
     </div>
   );
 }

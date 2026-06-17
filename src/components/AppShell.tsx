@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 export interface AppShellProps {
   children: ReactNode;
@@ -9,7 +10,7 @@ export function AppShell({ children }: AppShellProps) {
     <div className="app-shell">
       <div className="app-frame">
         <header className="app-topbar" aria-label="BlinkaMart app header">
-          <a className="brand-lockup" href="/" aria-label="BlinkaMart home">
+          <Link className="brand-lockup" to="/" aria-label="BlinkaMart home">
             <span className="brand-mark" aria-hidden="true">
               B
             </span>
@@ -17,7 +18,7 @@ export function AppShell({ children }: AppShellProps) {
               <span className="brand-name">BlinkaMart</span>
               <span className="brand-kicker">Nothing delivered. Crisis managed.</span>
             </span>
-          </a>
+          </Link>
           <span className="fake-pill">Parody app</span>
         </header>
 

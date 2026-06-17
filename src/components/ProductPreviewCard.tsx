@@ -1,0 +1,45 @@
+import { Button } from "./Button";
+import type { Product } from "../data/catalog";
+
+export interface ProductPreviewCardProps {
+  product: Product;
+  categoryName: string;
+}
+
+export function ProductPreviewCard({
+  product,
+  categoryName,
+}: ProductPreviewCardProps) {
+  return (
+    <article className="product-card">
+      <div className="product-card__header">
+        <div>
+          <span className="product-card__category">{categoryName}</span>
+          <h3>{product.name}</h3>
+        </div>
+        {product.tag ? <span className="product-card__tag">{product.tag}</span> : null}
+      </div>
+
+      <p>{product.subtitle}</p>
+
+      <dl className="product-card__stats" aria-label={`${product.name} fake stats`}>
+        <div>
+          <dt>Fake price</dt>
+          <dd>₹{product.price}</dd>
+        </div>
+        <div>
+          <dt>Calories</dt>
+          <dd>{product.calories}</dd>
+        </div>
+        <div>
+          <dt>Regret</dt>
+          <dd>{product.regretScore}/100</dd>
+        </div>
+      </dl>
+
+      <Button type="button" variant="secondary" size="compact" disabled>
+        Add in Phase 3
+      </Button>
+    </article>
+  );
+}
