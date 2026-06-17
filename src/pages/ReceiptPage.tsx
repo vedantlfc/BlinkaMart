@@ -20,7 +20,8 @@ function formatOrderTime(timestamp: string) {
 export function ReceiptPage() {
   const fakeOrder = useFakeOrder();
   const navigate = useNavigate();
-  const order = fakeOrder.currentOrder;
+  const order =
+    fakeOrder.currentOrder?.status === "completed" ? fakeOrder.currentOrder : null;
 
   return (
     <div className="receipt-page">

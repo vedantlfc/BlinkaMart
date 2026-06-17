@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
@@ -44,29 +44,43 @@ export function TrackingPage() {
   const fakeOrder = useFakeOrder();
   const navigate = useNavigate();
   const [activeStageIndex, setActiveStageIndex] = useState(0);
-  const hasOrder = Boolean(fakeOrder.currentOrder);
+  const hasNavigatedRef = useRef(false);
+  const hasTrackableOrder = fakeOrder.currentOrder?.status === "tracking";
 
   const prefersReducedMotion = useMemo(() => getPrefersReducedMotion(), []);
-  const stepDuration = prefersReducedMotion ? 260 : 1050;
+  const finalStageIndex = trackingStages.length - 1;
+  const stepDuration = prefersReducedMotion ? 450 : 1050;
+  const finalStageDelay = prefersReducedMotion ? 700 : 1300;
 
   useEffect(() => {
-    if (!hasOrder) {
+    if (!hasTrackableOrder || activeStageIndex >= finalStageIndex) {
       return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setActiveStageIndex((currentIndex) => {
-        if (currentIndex >= trackingStages.length - 1) {
-          navigate("/receipt");
-          return currentIndex;
-        }
-
-        return currentIndex + 1;
-      });
+      setActiveStageIndex((currentIndex) => Math.min(currentIndex + 1, finalStageIndex));
     }, stepDuration);
 
     return () => window.clearTimeout(timeoutId);
-  }, [activeStageIndex, hasOrder, navigate, stepDuration]);
+  }, [activeStageIndex, finalStageIndex, hasTrackableOrder, stepDuration]);
+
+  useEffect(() => {
+    if (
+      !hasTrackableOrder ||
+      activeStageIndex < finalStageIndex ||
+      hasNavigatedRef.current
+    ) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      hasNavigatedRef.current = true;
+      fakeOrder.updateOrderStatus("completed");
+      navigate("/receipt", { replace: true });
+    }, finalStageDelay);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [activeStageIndex, fakeOrder, finalStageDelay, finalStageIndex, hasTrackableOrder, navigate]);
 
   return (
     <div className="tracking-page">
@@ -76,7 +90,7 @@ export function TrackingPage() {
         trailing={<span className="status-dot">ETA: never</span>}
       />
 
-      {!fakeOrder.currentOrder ? (
+      {!hasTrackableOrder || !fakeOrder.currentOrder ? (
         <section className="tracking-empty-section" aria-label="No fake order tracking">
           <EmptyState
             title="No fake order is currently being tracked."

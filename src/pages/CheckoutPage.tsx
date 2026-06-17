@@ -107,8 +107,8 @@ export function CheckoutPage() {
 
   function handleConfirmFakeCheckout() {
     const nextOrder = cartSummary
-      ? fakeOrder.createOrderFromCart(cart.items, settings.showCalories)
-      : fakeOrder.currentOrder;
+      ? fakeOrder.createOrderFromCart(cart.items, settings.showCalories, "tracking")
+      : fakeOrder.updateOrderStatus("tracking");
 
     if (nextOrder) {
       navigate("/tracking");

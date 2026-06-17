@@ -11,8 +11,12 @@ import { categories, products, type CategoryId } from "../data/catalog";
 import type { CartItems } from "./cart";
 
 const FAKE_ORDER_STORAGE_KEY = "blinkamart.currentFakeOrder.v1";
+const MAX_ORDER_ITEM_QUANTITY = 99;
 const productById = new Map(products.map((product) => [product.id, product]));
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
+const validCategoryIds = new Set(categories.map((category) => category.id));
+
+export type FakeOrderStatus = "draft" | "tracking" | "completed";
 
 export interface FakeOrderItem {
   productId: string;
@@ -35,11 +39,17 @@ export interface FakeOrderSnapshot {
   averageRegretScore: number;
   totalQuantity: number;
   showCalories: boolean;
+  status: FakeOrderStatus;
 }
 
 export interface FakeOrderContextValue {
   currentOrder: FakeOrderSnapshot | null;
-  createOrderFromCart: (items: CartItems, showCalories: boolean) => FakeOrderSnapshot | null;
+  createOrderFromCart: (
+    items: CartItems,
+    showCalories: boolean,
+    status?: FakeOrderStatus,
+  ) => FakeOrderSnapshot | null;
+  updateOrderStatus: (status: FakeOrderStatus) => FakeOrderSnapshot | null;
   clearOrder: () => void;
 }
 
@@ -51,7 +61,11 @@ function createOrderId() {
   return `BM-${timePart}-${randomPart}`;
 }
 
-function buildOrderSnapshot(items: CartItems, showCalories: boolean): FakeOrderSnapshot | null {
+function buildOrderSnapshot(
+  items: CartItems,
+  showCalories: boolean,
+  status: FakeOrderStatus = "draft",
+): FakeOrderSnapshot | null {
   const orderItems = Object.entries(items).reduce<FakeOrderItem[]>(
     (runningItems, [productId, quantity]) => {
       const product = productById.get(productId);
@@ -106,31 +120,63 @@ function buildOrderSnapshot(items: CartItems, showCalories: boolean): FakeOrderS
     averageRegretScore: Math.round(totals.regretScoreTotal / totals.totalQuantity),
     totalQuantity: totals.totalQuantity,
     showCalories,
+    status,
   };
 }
 
-function isValidOrderItem(value: unknown): value is FakeOrderItem {
+function normalizeOrderItem(value: unknown): FakeOrderItem | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return false;
+    return null;
   }
 
   const item = value as Partial<FakeOrderItem>;
-  return (
-    typeof item.productId === "string" &&
-    typeof item.name === "string" &&
-    typeof item.categoryId === "string" &&
-    typeof item.categoryName === "string" &&
-    typeof item.quantity === "number" &&
-    Number.isFinite(item.quantity) &&
-    item.quantity > 0 &&
-    typeof item.price === "number" &&
-    Number.isFinite(item.price) &&
-    typeof item.calories === "number" &&
-    Number.isFinite(item.calories) &&
-    typeof item.regretScore === "number" &&
-    Number.isFinite(item.regretScore) &&
-    typeof item.subtitle === "string"
-  );
+  if (
+    typeof item.productId !== "string" ||
+    typeof item.name !== "string" ||
+    typeof item.categoryId !== "string" ||
+    !validCategoryIds.has(item.categoryId as CategoryId) ||
+    typeof item.categoryName !== "string" ||
+    typeof item.quantity !== "number" ||
+    !Number.isFinite(item.quantity) ||
+    !Number.isInteger(item.quantity) ||
+    item.quantity <= 0 ||
+    item.quantity > MAX_ORDER_ITEM_QUANTITY ||
+    typeof item.price !== "number" ||
+    !Number.isFinite(item.price) ||
+    item.price < 0 ||
+    typeof item.calories !== "number" ||
+    !Number.isFinite(item.calories) ||
+    item.calories < 0 ||
+    typeof item.regretScore !== "number" ||
+    !Number.isFinite(item.regretScore) ||
+    item.regretScore < 0 ||
+    item.regretScore > 100 ||
+    typeof item.subtitle !== "string"
+  ) {
+    return null;
+  }
+
+  return {
+    productId: item.productId,
+    name: item.name,
+    categoryId: item.categoryId as CategoryId,
+    categoryName: item.categoryName,
+    quantity: item.quantity,
+    price: item.price,
+    calories: item.calories,
+    regretScore: item.regretScore,
+    subtitle: item.subtitle,
+  };
+}
+
+function getStoredStatus(value: unknown): FakeOrderStatus | null {
+  if (value === undefined) {
+    return "completed";
+  }
+
+  return value === "draft" || value === "tracking" || value === "completed"
+    ? value
+    : null;
 }
 
 function normalizeOrder(value: unknown): FakeOrderSnapshot | null {
@@ -143,34 +189,49 @@ function normalizeOrder(value: unknown): FakeOrderSnapshot | null {
     typeof order.id !== "string" ||
     typeof order.timestamp !== "string" ||
     !Array.isArray(order.items) ||
-    typeof order.totalPrice !== "number" ||
-    !Number.isFinite(order.totalPrice) ||
-    typeof order.totalCalories !== "number" ||
-    !Number.isFinite(order.totalCalories) ||
-    typeof order.averageRegretScore !== "number" ||
-    !Number.isFinite(order.averageRegretScore) ||
-    typeof order.totalQuantity !== "number" ||
-    !Number.isFinite(order.totalQuantity) ||
-    order.totalQuantity <= 0 ||
     typeof order.showCalories !== "boolean"
   ) {
     return null;
   }
 
-  const normalizedItems = order.items.filter(isValidOrderItem);
+  const status = getStoredStatus(order.status);
+  if (!status) {
+    return null;
+  }
+
+  const normalizedItems = order.items
+    .map(normalizeOrderItem)
+    .filter((item): item is FakeOrderItem => Boolean(item));
   if (normalizedItems.length === 0) {
     return null;
   }
+
+  const totals = normalizedItems.reduce(
+    (runningTotals, item) => {
+      runningTotals.totalQuantity += item.quantity;
+      runningTotals.totalPrice += item.price * item.quantity;
+      runningTotals.totalCalories += item.calories * item.quantity;
+      runningTotals.regretScoreTotal += item.regretScore * item.quantity;
+      return runningTotals;
+    },
+    {
+      totalQuantity: 0,
+      totalPrice: 0,
+      totalCalories: 0,
+      regretScoreTotal: 0,
+    },
+  );
 
   return {
     id: order.id,
     timestamp: order.timestamp,
     items: normalizedItems,
-    totalPrice: order.totalPrice,
-    totalCalories: order.totalCalories,
-    averageRegretScore: order.averageRegretScore,
-    totalQuantity: order.totalQuantity,
+    totalPrice: totals.totalPrice,
+    totalCalories: totals.totalCalories,
+    averageRegretScore: Math.round(totals.regretScoreTotal / totals.totalQuantity),
+    totalQuantity: totals.totalQuantity,
     showCalories: order.showCalories,
+    status,
   };
 }
 
@@ -213,11 +274,21 @@ export function FakeOrderProvider({ children }: { children: ReactNode }) {
     writeStoredOrder(currentOrder);
   }, [currentOrder]);
 
-  const createOrderFromCart = useCallback((items: CartItems, showCalories: boolean) => {
-    const nextOrder = buildOrderSnapshot(items, showCalories);
+  const createOrderFromCart = useCallback((
+    items: CartItems,
+    showCalories: boolean,
+    status: FakeOrderStatus = "draft",
+  ) => {
+    const nextOrder = buildOrderSnapshot(items, showCalories, status);
     setCurrentOrder(nextOrder);
     return nextOrder;
   }, []);
+
+  const updateOrderStatus = useCallback((status: FakeOrderStatus) => {
+    const nextOrder = currentOrder ? { ...currentOrder, status } : null;
+    setCurrentOrder(nextOrder);
+    return nextOrder;
+  }, [currentOrder]);
 
   const clearOrder = useCallback(() => setCurrentOrder(null), []);
 
@@ -225,9 +296,10 @@ export function FakeOrderProvider({ children }: { children: ReactNode }) {
     () => ({
       currentOrder,
       createOrderFromCart,
+      updateOrderStatus,
       clearOrder,
     }),
-    [clearOrder, createOrderFromCart, currentOrder],
+    [clearOrder, createOrderFromCart, currentOrder, updateOrderStatus],
   );
 
   return <FakeOrderContext.Provider value={value}>{children}</FakeOrderContext.Provider>;
