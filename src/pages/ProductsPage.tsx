@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BottomCartBar } from "../components/BottomCartBar";
 import { Button } from "../components/Button";
 import { CategoryChip } from "../components/CategoryChip";
@@ -10,6 +10,7 @@ import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
 import { categories, products, type CategoryId } from "../data/catalog";
 import { useCart } from "../state/cart";
+import { useSettings } from "../state/settings";
 
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
 const categoryIds = new Set(categories.map((category) => category.id));
@@ -24,8 +25,10 @@ function getValidCategoryId(value: string | null): CategoryId | "all" {
 
 export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("Fake shelf open. Nothing here can actually arrive.");
   const cart = useCart();
+  const settings = useSettings();
 
   const selectedCategoryId = getValidCategoryId(searchParams.get("category"));
   const searchQuery = searchParams.get("q") ?? "";
@@ -58,7 +61,11 @@ export function ProductsPage() {
     return () => window.clearTimeout(timeoutId);
   }, [toastMessage]);
 
-  function updateParams(nextCategoryId: CategoryId | "all", nextSearchQuery: string) {
+  function updateParams(
+    nextCategoryId: CategoryId | "all",
+    nextSearchQuery: string,
+    replace = false,
+  ) {
     const params = new URLSearchParams(searchParams);
 
     if (nextCategoryId === "all") {
@@ -73,7 +80,7 @@ export function ProductsPage() {
       params.delete("q");
     }
 
-    setSearchParams(params);
+    setSearchParams(params, { replace });
   }
 
   function handleCategorySelect(categoryId: CategoryId | "all") {
@@ -81,7 +88,7 @@ export function ProductsPage() {
   }
 
   function handleSearchChange(value: string) {
-    updateParams(selectedCategoryId, value);
+    updateParams(selectedCategoryId, value, true);
   }
 
   function showCartToast(message: string) {
@@ -89,7 +96,7 @@ export function ProductsPage() {
   }
 
   function handleCartAction() {
-    showCartToast("Cart review arrives in Phase 4. For now, admire the fake damage.");
+    navigate("/cart");
   }
 
   return (
@@ -200,8 +207,9 @@ export function ProductsPage() {
         totalPrice={cart.totals.totalPrice}
         totalCalories={cart.totals.totalCalories}
         averageRegretScore={cart.totals.averageRegretScore}
+        showCalories={settings.showCalories}
         onAction={handleCartAction}
-        actionLabel="Cart Page Next"
+        actionLabel="Review Cart"
       />
     </div>
   );

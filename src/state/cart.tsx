@@ -10,6 +10,7 @@ import {
 import { products } from "../data/catalog";
 
 const CART_STORAGE_KEY = "blinkamart.cart.v1";
+const MAX_ITEM_QUANTITY = 99;
 const productById = new Map(products.map((product) => [product.id, product]));
 const validProductIds = new Set(productById.keys());
 
@@ -51,11 +52,15 @@ function normalizeCartItems(value: unknown): CartItems {
 
   return Object.entries(value as Record<string, unknown>).reduce<CartItems>(
     (items, [productId, quantity]) => {
-      if (!validProductIds.has(productId) || typeof quantity !== "number") {
+      if (
+        !validProductIds.has(productId) ||
+        typeof quantity !== "number" ||
+        !Number.isFinite(quantity)
+      ) {
         return items;
       }
 
-      const safeQuantity = Math.floor(quantity);
+      const safeQuantity = Math.min(MAX_ITEM_QUANTITY, Math.floor(quantity));
       if (safeQuantity > 0) {
         items[productId] = safeQuantity;
       }
@@ -99,7 +104,10 @@ function updateQuantity(
     return items;
   }
 
-  const nextQuantity = updater(items[productId] ?? 0);
+  const nextQuantity = Math.min(
+    MAX_ITEM_QUANTITY,
+    updater(items[productId] ?? 0),
+  );
   const nextItems = { ...items };
 
   if (nextQuantity > 0) {

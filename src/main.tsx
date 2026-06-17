@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { CartProvider } from "./state/cart";
+import { SettingsProvider } from "./state/settings";
 import "./styles/tokens.css";
 import "./styles/global.css";
 
@@ -15,9 +16,11 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
-      <CartProvider>
-        <App />
-      </CartProvider>
+      <SettingsProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </SettingsProvider>
     </BrowserRouter>
   </StrictMode>,
 );

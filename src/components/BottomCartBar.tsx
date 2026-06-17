@@ -6,6 +6,7 @@ export interface BottomCartBarProps {
   totalPrice?: number;
   totalCalories?: number;
   averageRegretScore?: number;
+  showCalories?: boolean;
   actionLabel?: string;
   actionDisabled?: boolean;
   onAction?: () => void;
@@ -17,6 +18,7 @@ export function BottomCartBar({
   totalPrice = 0,
   totalCalories = 0,
   averageRegretScore = 0,
+  showCalories = true,
   actionLabel,
   actionDisabled = false,
   onAction,
@@ -24,9 +26,10 @@ export function BottomCartBar({
   const isEmpty = totalQuantity === 0;
   const itemLabel = totalQuantity === 1 ? "fake item" : "fake items";
   const label = message ?? (isEmpty ? "Fake cart waiting" : `${totalQuantity} ${itemLabel}`);
+  const caloriesCopy = showCalories ? ` - ${totalCalories} cal avoided if cancelled` : "";
   const note = isEmpty
     ? "No snacks, no payment, no driver drama."
-    : `₹${totalPrice} saved-in-progress · ${totalCalories} cal avoided if cancelled · regret ${averageRegretScore}/100`;
+    : `Rs ${totalPrice} saved-in-progress${caloriesCopy} - regret ${averageRegretScore}/100`;
 
   return (
     <aside className="bottom-cart-bar" aria-label="Fake cart status">

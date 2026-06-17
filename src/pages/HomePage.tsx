@@ -11,6 +11,7 @@ import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
 import { categories, products, type CategoryId } from "../data/catalog";
 import { useCart } from "../state/cart";
+import { useSettings } from "../state/settings";
 
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
 
@@ -40,6 +41,7 @@ export function HomePage() {
   );
   const navigate = useNavigate();
   const cart = useCart();
+  const settings = useSettings();
 
   const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
   const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -241,8 +243,9 @@ export function HomePage() {
         totalPrice={cart.totals.totalPrice}
         totalCalories={cart.totals.totalCalories}
         averageRegretScore={cart.totals.averageRegretScore}
-        actionLabel="Browse Products"
-        onAction={() => navigate("/products")}
+        showCalories={settings.showCalories}
+        actionLabel="Review Cart"
+        onAction={() => navigate("/cart")}
       />
     </div>
   );
