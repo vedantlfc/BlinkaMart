@@ -1,0 +1,50 @@
+:root {
+  --color-page: #fff8ea;
+  --color-surface: #fffdf7;
+  --color-surface-strong: #241c35;
+  --color-text: #241c35;
+  --color-muted: #6d6177;
+  --color-border: #e6d7c4;
+  --color-primary: #ff5c7a;
+  --color-primary-strong: #d9365c;
+  --color-secondary: #2f6f73;
+  --color-secondary-soft: #dff2ee;
+  --color-accent: #ffd166;
+  --color-accent-soft: #fff0bf;
+  --color-lilac: #ded4ff;
+  --color-success: #24785f;
+  --color-shadow: 36 28 53;
+
+  --font-family-base: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 2rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 800;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  --shadow-sm: 0 0.5rem 1rem rgb(var(--color-shadow) / 0.08);
+  --shadow-md: 0 1.25rem 2.5rem rgb(var(--color-shadow) / 0.14);
+
+  --border-standard: 1px solid var(--color-border);
+  --app-max-width: 27.5rem;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}

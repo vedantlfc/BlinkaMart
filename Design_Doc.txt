@@ -1,0 +1,892 @@
+# Design Doc: BlinkaMart — A Fake Quick-Commerce App for Dopamine Release
+
+## 1. Working Title
+
+**BlinkaMart**
+
+Alternative names:
+
+* BhookhMart
+* KalOrder
+* RegretCart
+* Dopamine Cart
+* FakeMart
+* Impulse Cart
+* Order Mat Kar
+
+## 2. One-Line Pitch
+
+A fake quick-commerce app where users can browse late-night snacks, build a cart, and “place” an order that never arrives — giving them the dopamine hit of ordering without spending money, eating junk, or regretting it the next morning.
+
+## 3. Product Concept
+
+BlinkaMart looks and feels like a fun quick-commerce experience, but it does not deliver anything. Users browse familiar impulse items like chips, Coke Zero, ice cream, chocolates, Maggi, momos, energy drinks, biscuits, and random “why am I buying this?” products.
+
+The user adds items to a cart. At checkout, instead of placing a real order, the app gives a satisfying fake confirmation:
+
+> “Order cancelled successfully. You saved ₹486, 1,240 calories, and tomorrow-morning regret.”
+
+The product exists to satisfy the ritual of ordering: browsing, choosing, adding to cart, seeing delivery promises, and getting a receipt — without the consequence.
+
+## 4. Core Insight
+
+People often do not only want the product. They want the feeling of:
+
+* browsing
+* choosing
+* treating themselves
+* breaking boredom
+* reacting to stress
+* feeling in control for a few minutes
+* getting a tiny reward at night
+
+Quick-commerce apps make the path from craving to purchase extremely short. BlinkaMart inserts a fake but satisfying substitute between craving and actual spending.
+
+The product is not anti-food, anti-shopping, or moralistic. It is a playful intervention for the moment when someone knows they are probably about to make an unnecessary impulse order.
+
+## 5. Target Users
+
+### Primary Users
+
+Urban Indian users who frequently open Blinkit, Instamart, Zepto, or food delivery apps late at night out of boredom, craving, stress, or habit.
+
+Likely segments:
+
+1. **Students and hostel residents**
+
+   * Late-night cravings
+   * Low budgets
+   * Meme-heavy sharing behavior
+
+2. **Tech workers and young professionals**
+
+   * Stress ordering after work
+   * Sedentary lifestyle
+   * Weight-loss guilt
+   * High quick-commerce access
+
+3. **Fitness / weight-loss users**
+
+   * Want to avoid chips, ice cream, sugary drinks, chocolate, etc.
+   * Need a fun replacement for impulse ordering
+
+4. **Bored late-night scrollers**
+
+   * Open apps without real hunger
+   * Need a small dopamine loop
+
+5. **Meme page audience**
+
+   * Likely to share fake receipts
+   * Enjoy Hinglish, self-roast, and relatable urban humor
+
+## 6. User Problem
+
+Users often open quick-commerce apps when they are:
+
+* bored
+* hungry but not truly hungry
+* stressed
+* lonely
+* watching football/cricket
+* gaming
+* working late
+* doomscrolling
+* trying to reward themselves
+
+They may order things they did not plan to buy. The next morning, they may regret:
+
+* money spent
+* calories eaten
+* poor sleep
+* breaking a diet
+* unnecessary consumption
+* feeling out of control
+
+Existing solutions like habit trackers, calorie counters, and budgeting apps are too serious. They do not match the emotional state of a person craving chips at 1:30 AM.
+
+BlinkaMart solves this with humor and simulation instead of discipline lectures.
+
+## 7. Product Goals
+
+### Functional Goals
+
+* Let users browse fake quick-commerce items.
+* Let users add items to a cart.
+* Let users get a satisfying fake checkout experience.
+* Show money saved, calories avoided, and regret avoided.
+* Create shareable fake receipts.
+* Encourage users to avoid real impulse ordering.
+* Turn resisting cravings into a game.
+
+### Emotional Goals
+
+* Feel funny, not preachy.
+* Feel familiar, not confusing.
+* Feel like a late-night friend saying, “Bro, don’t do it.”
+* Give the user a small reward for not ordering.
+* Make self-control feel like a meme instead of a punishment.
+
+### Business/Product Goals
+
+* Create a viral MVP.
+* Test whether users return after the initial joke.
+* Build a retention loop using streaks, savings, and social sharing.
+* Validate whether this can evolve into a habit-control, budgeting, or fitness-adjacent product.
+
+## 8. Non-Goals
+
+The MVP should not:
+
+* Actually sell or deliver anything.
+* Accept payment.
+* Collect card/UPI details.
+* Use Blinkit, Zepto, Instamart, Swiggy, or Zomato branding.
+* Copy exact logos, UI, names, or assets from real apps.
+* Mislead users into thinking they are placing real orders.
+* Shame users for eating.
+* Become a calorie-counting app in the first version.
+* Require login in the first session.
+* Become a full marketplace.
+
+## 9. Positioning
+
+BlinkaMart is not a delivery app.
+
+It is:
+
+> A fake ordering app for real cravings.
+
+Possible tagline options:
+
+* “Order nothing. Feel better.”
+* “For cravings that don’t deserve delivery.”
+* “The app for people who open quick commerce at 1 AM and regret it at 9 AM.”
+* “Your order has been emotionally delivered.”
+* “Add to cart. Not to stomach.”
+* “Dopamine without delivery.”
+* “Impulse ordering, minus the order.”
+
+## 10. Core User Flow
+
+### Flow 1: First-Time User
+
+1. User lands on homepage.
+2. App asks: “What are you craving?”
+3. User sees categories:
+
+   * Chips & Namkeen
+   * Cold Drinks
+   * Ice Cream
+   * Chocolate
+   * Maggi & Noodles
+   * Momos
+   * Biscuits
+   * Random Midnight Purchases
+4. User browses fake products.
+5. User adds items to cart.
+6. Cart shows fake total, calories, and “regret score.”
+7. User taps “Place Fake Order.”
+8. App shows fake order tracking:
+
+   * Order received
+   * Rider assigned: Self Control
+   * Packed by: Better Judgement
+   * Delivery ETA: Never
+9. Final screen:
+
+   * “Order cancelled successfully.”
+   * “You saved ₹486.”
+   * “You avoided 1,240 calories.”
+   * “You protected tomorrow morning.”
+10. User gets a shareable fake receipt.
+
+### Flow 2: Returning User
+
+1. User opens app during craving.
+2. App says: “Back again? What almost got you today?”
+3. User builds a fake cart.
+4. Checkout adds to:
+
+   * Total money saved
+   * Total calories avoided
+   * No late-night order streak
+5. User gets a badge or roast.
+6. User can share the result.
+
+### Flow 3: Emergency Craving Mode
+
+1. User taps “I’m about to order for real.”
+2. App starts a 10-minute craving timer.
+3. During timer, app shows:
+
+   * fake cart
+   * memes
+   * water reminder
+   * “eat something basic if actually hungry”
+   * “still hungry after 10 minutes? eat real food, not chaos”
+4. At the end, user chooses:
+
+   * “Craving passed”
+   * “Still hungry”
+   * “I ordered anyway”
+5. App responds without shame.
+
+## 11. Main Screens
+
+### 11.1 Home Screen
+
+Purpose: Immediately match the user’s emotional state.
+
+Content:
+
+* Greeting based on time:
+
+  * “It’s 1:37 AM. Dangerous time to be opening food apps.”
+  * “Your brain wants chips. Your bank account disagrees.”
+* Search bar:
+
+  * “Search for regret…”
+* Category tiles:
+
+  * Chips
+  * Ice Cream
+  * Coke & Cold Drinks
+  * Chocolate
+  * Maggi
+  * Momos
+  * Random Stuff
+* CTA:
+
+  * “Build Fake Cart”
+  * “Emergency Craving Mode”
+
+### 11.2 Product Listing Page
+
+Purpose: Let users enjoy the browsing dopamine.
+
+Each fake product card includes:
+
+* Product name
+* Fake price
+* Estimated calories
+* Regret score
+* Add button
+* Funny subtitle
+
+Example products:
+
+* Masala Chips — “Crunchy bad decision”
+* Coke Zero — “Gateway item”
+* Choco Lava Cake — “You said just one bite”
+* Ice Cream Tub — “For emotional excavation”
+* Maggi 4-Pack — “Not a snack, a lifestyle collapse”
+* Frozen Momos — “You will need chutney and forgiveness”
+
+### 11.3 Product Detail Page
+
+Purpose: Add humor and a stronger parody layer.
+
+Example sections:
+
+* Product name
+* Fake delivery time
+* “Why you want this”
+* “Why future you disagrees”
+* Add to cart
+* Alternative action:
+
+  * “Drink water and pretend”
+  * “Add to fake cart only”
+
+### 11.4 Cart Page
+
+Purpose: Show the emotional cost before fake checkout.
+
+Cart should show:
+
+* Items
+* Fake total
+* Calories
+* Regret score
+* Time-of-night multiplier
+* “Tomorrow morning impact”
+
+Example:
+
+Cart total: ₹642
+Calories: 1,480
+Regret score: 87/100
+Morning version of you: disappointed
+
+CTA:
+
+* “Place Fake Order”
+* Secondary: “I’m actually hungry”
+
+### 11.5 Fake Checkout Page
+
+Purpose: Provide a satisfying climax without real transaction.
+
+No real payment. No address. No UPI.
+
+Fake checkout button examples:
+
+* “Cancel Order Successfully”
+* “Deliver Dopamine Only”
+* “Send to Imaginary Rider”
+* “Place Emotionally, Not Physically”
+
+### 11.6 Fake Order Tracking Page
+
+Purpose: Mimic the rewarding delivery-tracking experience.
+
+Fake stages:
+
+1. Craving received
+2. Self-control assigned
+3. Regret being packed
+4. Order intercepted
+5. Dopamine delivered
+6. Physical delivery cancelled
+
+Example rider:
+
+* Delivery Partner: Self Control
+* Vehicle: Common Sense
+* ETA: Never
+* Tip: Drink water
+
+### 11.7 Receipt Screen
+
+Purpose: Make the experience shareable.
+
+Receipt includes:
+
+* Fake order ID
+* Time
+* Items avoided
+* Money saved
+* Calories avoided
+* Regret avoided
+* Funny badge
+
+Example:
+
+BlinkaMart Receipt
+Order Status: Successfully Not Ordered
+You saved: ₹486
+Calories avoided: 1,240
+Streak: 3 nights
+Badge unlocked: “Midnight Menace Controlled”
+
+Share CTA:
+
+* “Share Receipt”
+* “Send to Friend”
+* “Post Story”
+
+## 12. Gamification
+
+### Streaks
+
+Track:
+
+* Nights without late-night ordering
+* Total fake orders placed
+* Total money saved
+* Total calories avoided
+* Most avoided category
+
+Example:
+
+* “5-night streak: No chips after midnight”
+* “You have avoided ₹2,860 of nonsense”
+* “You are 73% less chaotic this week”
+
+### Badges
+
+Possible badges:
+
+* Coke Zero Gateway Survivor
+* Chips Dodger
+* Ice Cream Resistance Arc
+* Maggi Monk
+* Noida Night Warrior
+* Salary Saved
+* Gym Bro Redemption
+* Emotional Damage Avoided
+* 2 AM Legend
+* Cart Without Consequence
+
+### Leaderboards
+
+Optional later-stage feature:
+
+* City leaderboard
+* Friend leaderboard
+* Hostel leaderboard
+* Office leaderboard
+
+Examples:
+
+* Delhi saved ₹12,40,000 this week
+* Bengaluru avoided 48,000 fake Coke Zeros
+* Noida is currently losing to Gurgaon in self-control
+
+## 13. Tone and Copy Style
+
+The tone should be:
+
+* funny
+* Hinglish-friendly
+* self-aware
+* warm
+* not preachy
+* not shame-based
+* meme-native
+* slightly chaotic
+
+Sample copy:
+
+* “Bro, it’s not hunger. It’s boredom wearing a Swiggy jacket.”
+* “Your order has been emotionally delivered.”
+* “Delivery partner assigned: Self Control.”
+* “This cart would have ruined your sleep.”
+* “You saved ₹372 and one bloated morning.”
+* “Craving cancelled. Character development added.”
+* “Expected delivery: never.”
+* “Your stomach was not consulted.”
+* “This could have been a real order. Thankfully, it wasn’t.”
+* “Late-night cart successfully buried.”
+
+## 14. MVP Scope
+
+### MVP Must Have
+
+* Landing page
+* Fake product categories
+* Product listing
+* Add to cart
+* Cart total
+* Calories avoided estimate
+* Fake checkout
+* Fake order tracking
+* Final receipt
+* Shareable receipt image/text
+* Basic local streak tracking
+* No login required
+
+### MVP Should Have
+
+* Time-based copy
+* Hinglish mode
+* City selector
+* “I almost ordered” tracker
+* Simple badges
+* Mobile-first design
+
+### MVP Could Have Later
+
+* Friend challenges
+* Real quick-commerce spending tracker
+* Browser extension
+* WhatsApp bot
+* Chrome extension to intercept late-night shopping
+* Integration with calorie tracking
+* Budgeting mode
+* Fitness mode
+* AI-generated roasts
+* Personalized craving patterns
+
+## 15. Important Legal and Trust Constraints
+
+The product should avoid impersonating real quick-commerce apps.
+
+Do not:
+
+* Use Blinkit, Zepto, Instamart, Swiggy, or Zomato logos.
+* Copy their exact UI.
+* Use confusingly similar brand names.
+* Use real product images scraped from those apps.
+* Suggest real delivery is happening.
+* Ask for address or payment details.
+* Use dark patterns that confuse users.
+
+Do:
+
+* Use original branding.
+* Clearly state that this is a fake ordering app.
+* Use parody-style fictional products.
+* Make the fake nature clear before checkout.
+* Avoid real payment flows.
+* Make the product feel like entertainment/self-control, not deception.
+
+Suggested footer:
+
+> BlinkaMart is a parody self-control app. It does not sell, deliver, or process orders.
+
+## 16. Ethical Design Principles
+
+This app should reduce harmful impulse loops, not create a new addictive one.
+
+Principles:
+
+1. **No shame**
+
+   * Do not make users feel bad for eating or ordering.
+
+2. **No real payment**
+
+   * Never collect payment details.
+
+3. **No manipulative scarcity**
+
+   * Avoid fake countdowns that increase craving.
+
+4. **Encourage actual food when needed**
+
+   * If the user says they are genuinely hungry, suggest eating something simple and real.
+
+5. **Reward stopping**
+
+   * Make quitting the flow feel like winning.
+
+6. **Avoid eating disorder triggers**
+
+   * Calories should be optional or framed lightly.
+   * Provide a toggle to hide calorie estimates.
+
+7. **Do not over-optimize addiction**
+
+   * The goal is short, satisfying sessions, not endless scrolling.
+
+## 17. Metrics
+
+### Activation Metrics
+
+* Number of users who build first fake cart
+* Percentage who complete fake checkout
+* Percentage who share receipt
+* Time from landing to first fake order
+
+### Retention Metrics
+
+* Day 1 return rate
+* Day 7 return rate
+* Average fake orders per user
+* Streak creation rate
+* Number of emergency craving sessions
+
+### Behavior Metrics
+
+* Total fake money saved
+* Total calories avoided
+* Most common craving categories
+* Peak usage times
+* Users who report “I avoided a real order”
+
+### Viral Metrics
+
+* Receipt shares
+* Story shares
+* Referral clicks
+* Meme page reposts
+* Friend challenge invites
+
+## 18. Success Criteria for MVP
+
+The MVP is successful if:
+
+* Users understand the product within 5 seconds.
+* Users laugh or relate immediately.
+* At least 40% of first-time users complete a fake checkout.
+* At least 10–15% share a receipt.
+* Users return during late-night hours.
+* Some users say it actually stopped them from placing a real order.
+* Meme pages or creators can explain it in one screenshot.
+
+## 19. Launch Strategy
+
+### Phase 1: Meme MVP
+
+Launch as a mobile web app.
+
+Target:
+
+* Twitter/X
+* Instagram meme pages
+* Reddit India communities
+* college groups
+* fitness communities
+* tech worker circles
+* friends who order too much quick commerce
+
+Hook examples:
+
+* “Made an app for people who open Blinkit at 1 AM and regret it at 9 AM.”
+* “Add chips to cart. Receive nothing. Save ₹500.”
+* “Fake Blinkit for self-control.”
+* “Your delivery partner is Self Control.”
+
+### Phase 2: Social Receipts
+
+Make receipt sharing the growth loop.
+
+Users should want to post:
+
+* “I avoided ₹642 of late-night damage”
+* “BlinkaMart saved me from Maggi + chips + ice cream”
+* “Order successfully not delivered”
+
+### Phase 3: Habit Layer
+
+Add:
+
+* streaks
+* weekly savings
+* friend challenges
+* city battles
+* “No late-night order” goals
+
+### Phase 4: Monetization Experiments
+
+Possible future monetization:
+
+* premium themes
+* fitness creator partnerships
+* budgeting app partnerships
+* habit-tracking premium
+* anonymous city insights
+* sponsored healthy alternatives, only if clearly labeled and not manipulative
+
+Avoid monetization that pushes users back into impulse buying.
+
+## 20. Risks
+
+### Risk 1: One-Time Meme
+
+Users may try it once, laugh, and never return.
+
+Mitigation:
+
+* Add streaks.
+* Add savings tracker.
+* Add emergency craving mode.
+* Make weekly summaries.
+
+### Risk 2: Legal Issues
+
+A too-close clone of Blinkit/Zepto/Instamart could create trademark or passing-off risk.
+
+Mitigation:
+
+* Original brand.
+* Fictional products.
+* Clear parody disclaimer.
+* No copied logos or UI.
+
+### Risk 3: It Becomes Too Preachy
+
+Users do not want a lecture at 1 AM.
+
+Mitigation:
+
+* Humor first.
+* Self-control second.
+* No guilt-heavy language.
+
+### Risk 4: It Triggers Food Shame
+
+Calories and regret framing could be harmful for some users.
+
+Mitigation:
+
+* Optional calorie display.
+* Focus on impulse and budget, not body shame.
+* Add “actually hungry?” flow.
+
+### Risk 5: No Clear Business Model
+
+The product may become viral but not monetizable.
+
+Mitigation:
+
+* Treat MVP as validation.
+* Build audience first.
+* Later test habit, fitness, budgeting, and creator-led models.
+
+## 21. Future Feature Ideas
+
+### 21.1 WhatsApp Bot
+
+User messages:
+
+> “I’m about to order chips.”
+
+Bot replies with:
+
+> “Send me your cart. I’ll emotionally cancel it.”
+
+### 21.2 Browser/App Interruption
+
+A browser extension or Android overlay that activates when users open quick-commerce apps late at night.
+
+Example:
+
+> “Do you want to place this order for real, or try a fake cart first?”
+
+### 21.3 Friend Intervention
+
+User can nominate a friend.
+
+When they almost order:
+
+> “Vedant is about to order ice cream at 1:18 AM. Stop him.”
+
+### 21.4 Fitness Mode
+
+For users trying to lose weight:
+
+* weekly avoided calories
+* gym streak tie-in
+* “cutting season” mode
+* high-protein alternative suggestions
+
+### 21.5 Budget Mode
+
+For users trying to save money:
+
+* monthly impulse savings
+* “rent saved”
+* “SIP instead of chips”
+* “you saved one coffee date”
+
+### 21.6 City Mode
+
+Local humor by city:
+
+* Noida: “Sector 137 snack attack detected”
+* Bengaluru: “Koramangala craving surge”
+* Mumbai: “Andheri midnight munchies”
+* Delhi: “Rajma chawal thoughts after 11 PM”
+* Gurgaon: “Cyberhub salary destruction prevented”
+
+## 22. MVP Product Requirements
+
+### User Stories
+
+1. As a user, I want to browse fake snacks so that I can satisfy the urge to shop/order.
+2. As a user, I want to add items to a fake cart so that I feel the reward of choosing.
+3. As a user, I want a fake checkout so that I can complete the ritual without spending money.
+4. As a user, I want to see money saved so that I feel rewarded.
+5. As a user, I want a funny receipt so that I can share it with friends.
+6. As a user, I want streaks so that I can turn self-control into a game.
+7. As a user, I want an emergency craving mode so that I can pause before placing a real order.
+
+### MVP Acceptance Criteria
+
+* User can open the app on mobile.
+* User can browse at least 5 categories.
+* User can add and remove fake items.
+* Cart calculates fake total.
+* Cart estimates calories avoided.
+* User can complete fake checkout.
+* User sees fake order tracking.
+* User receives shareable receipt.
+* User can start a streak without creating an account.
+* App clearly states that no real order will be placed.
+
+## 23. Suggested MVP Categories and Products
+
+### Chips & Namkeen
+
+* Masala Chips
+* Cream & Onion Chips
+* Bhujia
+* Kurkure-style Snack
+* Nachos
+* Peanut Masala
+
+### Cold Drinks
+
+* Coke Zero-type Drink
+* Cola
+* Lemon Soda
+* Energy Drink
+* Iced Tea
+
+### Sweet Cravings
+
+* Chocolate Bar
+* Choco Pie
+* Brownie
+* Ice Cream Tub
+* Ice Cream Stick
+* Cookies
+
+### Lazy Meals
+
+* Maggi
+* Cup Noodles
+* Frozen Momos
+* Garlic Bread
+* Fries
+* Pizza Pockets
+
+### Random Midnight Items
+
+* Scented Candle
+* Phone Cable
+* Face Wash
+* Batteries
+* Protein Bar
+* “Why did I add this?” Mystery Item
+
+## 24. Design Direction
+
+Visual style:
+
+* Mobile-first
+* Bright but not identical to any real quick-commerce app
+* Playful product cards
+* Large cart CTA
+* Smooth fake checkout animation
+* Receipt-style final screen
+* Meme-friendly screenshots
+
+Design should feel:
+
+* familiar enough to trigger the ordering ritual
+* different enough to avoid being a clone
+* funny enough to share
+* simple enough to use while sleepy
+
+## 25. Open Questions
+
+1. Should the app start as a web app or Android app?
+2. Should calories be shown by default or hidden behind a toggle?
+3. Should the tone be mostly English, Hinglish, or city-specific?
+4. Should users be able to create custom fake products?
+5. Should receipts be image-based for Instagram sharing?
+6. Should the app allow anonymous city leaderboards?
+7. Should the product be positioned as parody, self-control, fitness, or budgeting?
+8. Should the first version include login, or remain fully anonymous?
+9. Should the app have a “still hungry” flow with real healthy suggestions?
+10. Should it eventually integrate with real spending data, or stay purely fake?
+
+## 26. Recommended First Version
+
+The first version should be a mobile web app with no login.
+
+Core flow:
+
+Home → Browse Products → Add to Cart → Fake Checkout → Fake Tracking → Receipt → Share
+
+The product should be funny within the first 10 seconds.
+
+The main success moment should be:
+
+> “I built a fake cart, laughed, did not order, and shared the receipt.”
+
+If the MVP can create that moment reliably, the idea is worth expanding.
