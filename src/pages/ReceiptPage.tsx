@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
@@ -75,6 +75,23 @@ function buildShareText(
   return lines.join(" ");
 }
 
+function isShareAbortError(error: unknown) {
+  if (
+    typeof DOMException !== "undefined" &&
+    error instanceof DOMException &&
+    error.name === "AbortError"
+  ) {
+    return true;
+  }
+
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "name" in error &&
+    (error as { name?: unknown }).name === "AbortError"
+  );
+}
+
 export function ReceiptPage() {
   const fakeOrder = useFakeOrder();
   const receiptProgress = useReceiptProgress();
@@ -102,6 +119,29 @@ export function ReceiptPage() {
     typeof navigator !== "undefined" && typeof navigator.share === "function"
       ? "Share Receipt"
       : "Copy Receipt";
+
+  useLayoutEffect(() => {
+    if (order) {
+      const resetScroll = () => {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      };
+      const previousScrollRestoration = window.history.scrollRestoration;
+
+      window.history.scrollRestoration = "manual";
+      resetScroll();
+
+      const animationFrameId = window.requestAnimationFrame(resetScroll);
+      const timeoutId = window.setTimeout(resetScroll, 0);
+
+      return () => {
+        window.cancelAnimationFrame(animationFrameId);
+        window.clearTimeout(timeoutId);
+        window.history.scrollRestoration = previousScrollRestoration;
+      };
+    }
+
+    return undefined;
+  }, [order?.id]);
 
   useEffect(() => {
     if (order) {
@@ -140,8 +180,13 @@ export function ReceiptPage() {
         });
         showToast("Share sheet opened.", "success");
         return;
-      } catch {
-        // Fall through to copy support.
+      } catch (error) {
+        if (isShareAbortError(error)) {
+          setShowShareFallback(false);
+          showToast("Share cancelled. Receipt stayed fake.");
+          return;
+        }
+        // Non-cancel share failures fall through to copy support.
       }
     }
 
