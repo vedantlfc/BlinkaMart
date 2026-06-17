@@ -7,6 +7,7 @@ import { PageHeader } from "../components/PageHeader";
 import { Toast } from "../components/Toast";
 import { categories, products, type Product } from "../data/catalog";
 import { useCart } from "../state/cart";
+import { useFakeOrder } from "../state/fakeOrder";
 import { useSettings } from "../state/settings";
 
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
@@ -48,6 +49,7 @@ function getCartProducts(items: Record<string, number>) {
 export function CartPage() {
   const cart = useCart();
   const settings = useSettings();
+  const fakeOrder = useFakeOrder();
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("");
   const [showHungryGuidance, setShowHungryGuidance] = useState(false);
@@ -66,7 +68,13 @@ export function CartPage() {
   }, [toastMessage]);
 
   function handlePlaceFakeOrder() {
-    setToastMessage("Fake checkout lands in Phase 5. No order has been placed.");
+    const order = fakeOrder.createOrderFromCart(cart.items, settings.showCalories);
+    if (!order) {
+      setToastMessage("Add a fake item first. Checkout needs something imaginary to cancel.");
+      return;
+    }
+
+    navigate("/checkout");
   }
 
   return (

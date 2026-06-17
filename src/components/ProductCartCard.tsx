@@ -9,6 +9,7 @@ export interface ProductCartCardProps {
   onIncrement: () => void;
   onDecrement: () => void;
   onRemove: () => void;
+  showCalories?: boolean;
 }
 
 export function ProductCartCard({
@@ -19,6 +20,7 @@ export function ProductCartCard({
   onIncrement,
   onDecrement,
   onRemove,
+  showCalories = true,
 }: ProductCartCardProps) {
   const inCart = quantity > 0;
 
@@ -39,10 +41,12 @@ export function ProductCartCard({
           <dt>Fake price</dt>
           <dd>Rs {product.price}</dd>
         </div>
-        <div>
-          <dt>Calories</dt>
-          <dd>{product.calories}</dd>
-        </div>
+        {showCalories ? (
+          <div>
+            <dt>Calories</dt>
+            <dd>{product.calories}</dd>
+          </div>
+        ) : null}
         <div>
           <dt>Regret</dt>
           <dd>{product.regretScore}/100</dd>

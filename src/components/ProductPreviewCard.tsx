@@ -4,11 +4,13 @@ import type { Product } from "../data/catalog";
 export interface ProductPreviewCardProps {
   product: Product;
   categoryName: string;
+  showCalories?: boolean;
 }
 
 export function ProductPreviewCard({
   product,
   categoryName,
+  showCalories = true,
 }: ProductPreviewCardProps) {
   return (
     <article className="product-card">
@@ -27,10 +29,12 @@ export function ProductPreviewCard({
           <dt>Fake price</dt>
           <dd>Rs {product.price}</dd>
         </div>
-        <div>
-          <dt>Calories</dt>
-          <dd>{product.calories}</dd>
-        </div>
+        {showCalories ? (
+          <div>
+            <dt>Calories</dt>
+            <dd>{product.calories}</dd>
+          </div>
+        ) : null}
         <div>
           <dt>Regret</dt>
           <dd>{product.regretScore}/100</dd>

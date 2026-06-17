@@ -155,6 +155,7 @@ export function ProductsPage() {
                   product={product}
                   categoryName={categoryNames.get(product.categoryId) ?? "Fake shelf"}
                   quantity={quantity}
+                  showCalories={settings.showCalories}
                   onAdd={() => {
                     cart.addItem(product.id);
                     showCartToast(`${product.name} joined the fake cart.`);
