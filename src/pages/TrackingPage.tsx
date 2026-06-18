@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
+import { useCart } from "../state/cart";
 import { useFakeOrder } from "../state/fakeOrder";
 
 const trackingStages = [
@@ -42,6 +43,7 @@ function getPrefersReducedMotion() {
 
 export function TrackingPage() {
   const fakeOrder = useFakeOrder();
+  const { clearCart } = useCart();
   const navigate = useNavigate();
   const [activeStageIndex, setActiveStageIndex] = useState(0);
   const hasNavigatedRef = useRef(false);
@@ -75,29 +77,40 @@ export function TrackingPage() {
 
     const timeoutId = window.setTimeout(() => {
       hasNavigatedRef.current = true;
-      fakeOrder.updateOrderStatus("completed");
-      navigate("/receipt", { replace: true });
+      const completedOrder = fakeOrder.updateOrderStatus("completed");
+      if (completedOrder) {
+        clearCart();
+        navigate("/receipt", { replace: true });
+      }
     }, finalStageDelay);
 
     return () => window.clearTimeout(timeoutId);
-  }, [activeStageIndex, fakeOrder, finalStageDelay, finalStageIndex, hasTrackableOrder, navigate]);
+  }, [
+    activeStageIndex,
+    clearCart,
+    fakeOrder,
+    finalStageDelay,
+    finalStageIndex,
+    hasTrackableOrder,
+    navigate,
+  ]);
 
   return (
     <div className="tracking-page">
       <PageHeader
         title="Tracking the order that will never arrive."
-        subtitle="A calm little progress ritual for a very fake delivery."
+        subtitle="A calm little progress ritual for a delivery that stays imaginary."
         trailing={<span className="status-dot">ETA: never</span>}
       />
 
       {!hasTrackableOrder || !fakeOrder.currentOrder ? (
-        <section className="tracking-empty-section" aria-label="No fake order tracking">
+        <section className="tracking-empty-section" aria-label="No order tracking">
           <EmptyState
-            title="No fake order is currently being tracked."
-            message="Build a fake cart first, then we can assign Self Control to the case."
+            title="No order is currently being tracked."
+            message="Build a cart first, then we can assign Self Control to the case."
           />
           <Button type="button" onClick={() => navigate("/products")}>
-            Browse Fake Shelf
+            Browse Shelf
           </Button>
         </section>
       ) : (
@@ -106,7 +119,7 @@ export function TrackingPage() {
             <div className="section-heading">
               <span className="section-kicker">Parody tracking</span>
               <h2 id="rider-title">Rider details</h2>
-              <p>No map, no location, no delivery. Just a fake progress bar with manners.</p>
+              <p>No map, no location, no delivery. Just a progress bar with manners.</p>
             </div>
 
             <div className="rider-grid">
@@ -131,7 +144,7 @@ export function TrackingPage() {
 
           <section className="tracking-progress" aria-labelledby="tracking-progress-title">
             <div className="section-heading">
-              <h2 id="tracking-progress-title">Fake tracking progress</h2>
+              <h2 id="tracking-progress-title">Tracking progress</h2>
               <p>Order {fakeOrder.currentOrder.id} is being successfully not delivered.</p>
             </div>
 

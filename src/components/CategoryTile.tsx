@@ -39,7 +39,7 @@ export function CategoryTile({
         <span className="category-tile__name">{category.name}</span>
         <span className="category-tile__description">{category.description}</span>
         <span className="category-tile__meta">
-          {productCount} fake items - {category.vibe}
+          {productCount} items - {category.vibe}
         </span>
       </span>
     </button>

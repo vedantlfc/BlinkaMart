@@ -26,7 +26,7 @@ function getValidCategoryId(value: string | null): CategoryId | "all" {
 export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [toastMessage, setToastMessage] = useState("Fake shelf open. Nothing here can actually arrive.");
+  const [toastMessage, setToastMessage] = useState("Shelf open. Nothing here can actually arrive.");
   const cart = useCart();
   const settings = useSettings();
 
@@ -102,8 +102,8 @@ export function ProductsPage() {
   return (
     <div className="products-page">
       <PageHeader
-        title="Browse the fake shelf."
-        subtitle="Add cravings to a fake cart. No delivery, no payment, no actual snacks."
+        title="Browse the shelf."
+        subtitle="Add cravings to a cart. No delivery, no payment, no actual snacks."
         trailing={<span className="status-dot">No real checkout</span>}
       />
 
@@ -112,13 +112,13 @@ export function ProductsPage() {
         value={searchQuery}
         onChange={handleSearchChange}
         placeholder="Search chips, cola, momos, bad ideas..."
-        aria-label="Search fake products"
+        aria-label="Search products"
       />
 
       <section className="filter-panel" aria-labelledby="filter-title">
         <div className="section-heading">
           <h2 id="filter-title">Filter the temptation</h2>
-          <p>{filteredProducts.length} fake products visible.</p>
+          <p>{filteredProducts.length} products visible.</p>
         </div>
         <div className="chip-list" aria-label="Product category filters">
           <CategoryChip
@@ -153,12 +153,12 @@ export function ProductsPage() {
                 <ProductCartCard
                   key={product.id}
                   product={product}
-                  categoryName={categoryNames.get(product.categoryId) ?? "Fake shelf"}
+                  categoryName={categoryNames.get(product.categoryId) ?? "Shelf"}
                   quantity={quantity}
                   showCalories={settings.showCalories}
                   onAdd={() => {
                     cart.addItem(product.id);
-                    showCartToast(`${product.name} joined the fake cart.`);
+                    showCartToast(`${product.name} joined the cart.`);
                   }}
                   onIncrement={() => {
                     cart.incrementItem(product.id);
@@ -168,13 +168,13 @@ export function ProductsPage() {
                     cart.decrementItem(product.id);
                     showCartToast(
                       quantity === 1
-                        ? `${product.name} removed from the fake cart.`
+                        ? `${product.name} removed from the cart.`
                         : `${product.name} quantity decreased.`,
                     );
                   }}
                   onRemove={() => {
                     cart.removeItem(product.id);
-                    showCartToast(`${product.name} removed from the fake cart.`);
+                    showCartToast(`${product.name} removed from the cart.`);
                   }}
                 />
               );
@@ -182,7 +182,7 @@ export function ProductsPage() {
           </div>
         ) : (
           <EmptyState
-            title="No fake products found."
+            title="No products found."
             message="Try a different craving. This shelf is emotionally out of stock."
           />
         )}
@@ -195,10 +195,10 @@ export function ProductsPage() {
           size="compact"
           onClick={() => {
             cart.clearCart();
-            showCartToast("Fake cart cleared. Character development added.");
+            showCartToast("Cart cleared. Character development added.");
           }}
         >
-          Clear Fake Cart
+          Clear Cart
         </Button>
       ) : null}
 

@@ -56,11 +56,11 @@ export function ProgressPage() {
       {!hasProgress ? (
         <section className="progress-empty-section" aria-label="No progress yet">
           <EmptyState
-            title="No fake wins logged yet."
-            message="Complete a fake checkout ritual and this dashboard will start keeping score locally."
+            title="No wins logged yet."
+            message="Complete a checkout ritual and this dashboard will start keeping score locally."
           />
           <Button type="button" onClick={() => navigate("/products")}>
-            Browse Fake Shelf
+            Browse Shelf
           </Button>
         </section>
       ) : (
@@ -71,7 +71,7 @@ export function ProgressPage() {
               <h2 id="progress-hero-title">Receipts became receipts of restraint.</h2>
               <p>
                 No account, no backend, no leaderboard. Just this browser quietly
-                remembering your fake escapes.
+                remembering your escapes.
               </p>
             </div>
             <span className="progress-hero-mark">{summary.currentStreak}</span>
@@ -85,7 +85,7 @@ export function ProgressPage() {
 
             <dl className="progress-stat-grid">
               <div>
-                <dt>Fake orders avoided</dt>
+                <dt>Orders avoided</dt>
                 <dd>{summary.totalFakeOrders}</dd>
               </div>
               <div>
@@ -113,7 +113,7 @@ export function ProgressPage() {
             <div className="section-heading">
               <span className="section-kicker">Badges</span>
               <h2 id="progress-badges-title">Tiny trophies, locally stored</h2>
-              <p>Unlocked badges come from completed fake orders only.</p>
+              <p>Unlocked badges come from completed order rituals only.</p>
             </div>
 
             <div className="progress-badge-grid">
@@ -144,7 +144,7 @@ export function ProgressPage() {
             <div className="section-heading">
               <span className="section-kicker">Recent history</span>
               <h2 id="progress-history-title">Recently avoided carts</h2>
-              <p>Only completed fake orders appear here.</p>
+              <p>Only completed order rituals appear here.</p>
             </div>
 
             <ol className="progress-history-list">
@@ -178,7 +178,7 @@ export function ProgressPage() {
 
           <div className="cart-cta-row" aria-label="Progress actions">
             <Button type="button" onClick={() => navigate("/products")}>
-              Build Another Fake Cart
+              Build Another Cart
             </Button>
             <Button type="button" variant="secondary" onClick={() => navigate("/")}>
               Home

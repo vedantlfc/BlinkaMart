@@ -70,7 +70,7 @@ export function CartPage() {
   function handlePlaceFakeOrder() {
     const order = fakeOrder.createOrderFromCart(cart.items, settings.showCalories);
     if (!order) {
-      setToastMessage("Add a fake item first. Checkout needs something imaginary to cancel.");
+      setToastMessage("Add an item first. Checkout needs something imaginary to process.");
       return;
     }
 
@@ -82,17 +82,17 @@ export function CartPage() {
       <PageHeader
         title="Review the fictional damage."
         subtitle="No payment. No address. Just a cart-shaped pause."
-        trailing={<span className="status-dot">Still fake</span>}
+        trailing={<span className="status-dot">Parody flow</span>}
       />
 
       {!hasItems ? (
-        <section className="cart-empty-section" aria-label="Empty fake cart">
+        <section className="cart-empty-section" aria-label="Empty cart">
           <EmptyState
-            title="No fake damage yet."
-            message="Your cart is emotionally empty. Browse the fake shelf when the craving starts negotiating."
+            title="No damage yet."
+            message="Your cart is emotionally empty. Browse the shelf when the craving starts negotiating."
           />
           <Button type="button" onClick={() => navigate("/products")}>
-            Browse Fake Shelf
+            Browse Shelf
           </Button>
         </section>
       ) : (
@@ -101,16 +101,16 @@ export function CartPage() {
             <div className="section-heading">
               <span className="section-kicker">Impact summary</span>
               <h2 id="impact-title">If this gets cancelled, you keep the win.</h2>
-              <p>Numbers are estimates for the fake ritual, not a lecture.</p>
+              <p>Numbers are estimates for the ritual, not a lecture.</p>
             </div>
 
             <div className="impact-grid">
               <div className="impact-stat">
-                <span>Fake total avoided</span>
+                <span>Total avoided</span>
                 <strong>Rs {cart.totals.totalPrice}</strong>
               </div>
               <div className="impact-stat">
-                <span>Fake items</span>
+                <span>Items</span>
                 <strong>{cart.totals.totalQuantity}</strong>
               </div>
               {settings.showCalories ? (
@@ -148,7 +148,7 @@ export function CartPage() {
           <section className="cart-items" aria-labelledby="cart-items-title">
             <div className="section-heading">
               <h2 id="cart-items-title">Cart items</h2>
-              <p>Adjust the fake cart before the fake checkout exists.</p>
+              <p>Adjust the cart before the checkout ritual starts.</p>
             </div>
 
             <div className="cart-item-list">
@@ -157,7 +157,7 @@ export function CartPage() {
                   <div className="cart-item-card__header">
                     <div>
                       <span className="product-card__category">
-                        {categoryNames.get(product.categoryId) ?? "Fake shelf"}
+                        {categoryNames.get(product.categoryId) ?? "Shelf"}
                       </span>
                       <h3>{product.name}</h3>
                     </div>
@@ -167,7 +167,7 @@ export function CartPage() {
                   <p>{product.subtitle}</p>
 
                   <div className="cart-item-card__impact">
-                    <span>{quantity} in fake cart</span>
+                    <span>{quantity} in cart</span>
                     {settings.showCalories ? (
                       <span>{product.calories * quantity} cal avoided if cancelled</span>
                     ) : null}
@@ -186,7 +186,7 @@ export function CartPage() {
                     </Button>
                     <span
                       className="cart-controls__quantity"
-                      aria-label={`${quantity} in fake cart`}
+                      aria-label={`${quantity} in cart`}
                     >
                       {quantity}
                     </span>
@@ -204,7 +204,7 @@ export function CartPage() {
                       variant="ghost"
                       size="compact"
                       onClick={() => cart.removeItem(product.id)}
-                      aria-label={`Remove ${product.name} from fake cart`}
+                      aria-label={`Remove ${product.name} from cart`}
                     >
                       Remove
                     </Button>
@@ -230,7 +230,7 @@ export function CartPage() {
 
           <div className="cart-cta-row" aria-label="Cart actions">
             <Button type="button" onClick={handlePlaceFakeOrder}>
-              Place Fake Order
+              Place order successfully
             </Button>
             <Button
               type="button"

@@ -24,9 +24,9 @@ export function ProductPreviewCard({
 
       <p>{product.subtitle}</p>
 
-      <dl className="product-card__stats" aria-label={`${product.name} fake stats`}>
+      <dl className="product-card__stats" aria-label={`${product.name} stats`}>
         <div>
-          <dt>Fake price</dt>
+          <dt>Price</dt>
           <dd>Rs {product.price}</dd>
         </div>
         {showCalories ? (

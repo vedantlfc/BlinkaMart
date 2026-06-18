@@ -78,7 +78,7 @@ function buildOrderSnapshot(
         productId: product.id,
         name: product.name,
         categoryId: product.categoryId,
-        categoryName: categoryNames.get(product.categoryId) ?? "Fake shelf",
+        categoryName: categoryNames.get(product.categoryId) ?? "Shelf",
         quantity,
         price: product.price,
         calories: product.calories,
@@ -261,7 +261,7 @@ function writeStoredOrder(order: FakeOrderSnapshot | null) {
       window.localStorage.removeItem(FAKE_ORDER_STORAGE_KEY);
     }
   } catch {
-    // The fake order flow can still recover if storage is unavailable.
+    // The order flow can still recover if storage is unavailable.
   }
 }
 

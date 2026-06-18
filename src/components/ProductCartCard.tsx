@@ -36,9 +36,9 @@ export function ProductCartCard({
 
       <p>{product.subtitle}</p>
 
-      <dl className="product-card__stats" aria-label={`${product.name} fake stats`}>
+      <dl className="product-card__stats" aria-label={`${product.name} stats`}>
         <div>
-          <dt>Fake price</dt>
+          <dt>Price</dt>
           <dd>Rs {product.price}</dd>
         </div>
         {showCalories ? (
@@ -64,7 +64,7 @@ export function ProductCartCard({
           >
             -
           </Button>
-          <span className="cart-controls__quantity" aria-label={`${quantity} in fake cart`}>
+          <span className="cart-controls__quantity" aria-label={`${quantity} in cart`}>
             {quantity}
           </span>
           <Button
@@ -81,7 +81,7 @@ export function ProductCartCard({
             variant="ghost"
             size="compact"
             onClick={onRemove}
-            aria-label={`Remove ${product.name} from fake cart`}
+            aria-label={`Remove ${product.name} from cart`}
           >
             Remove
           </Button>
@@ -92,7 +92,7 @@ export function ProductCartCard({
           variant="primary"
           size="compact"
           onClick={onAdd}
-          aria-label={`Add ${product.name} to fake cart`}
+          aria-label={`Add ${product.name} to cart`}
         >
           Add
         </Button>

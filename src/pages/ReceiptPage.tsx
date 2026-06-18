@@ -26,7 +26,7 @@ function formatOrderTime(timestamp: string) {
 }
 
 function getItemCountLabel(totalQuantity: number) {
-  return totalQuantity === 1 ? "1 fake item" : `${totalQuantity} fake items`;
+  return totalQuantity === 1 ? "1 item" : `${totalQuantity} items`;
 }
 
 function getStreakCopy(streak: number) {
@@ -164,7 +164,7 @@ export function ReceiptPage() {
       } catch (error) {
         if (isShareAbortError(error)) {
           setShowShareFallback(false);
-          showToast("Share cancelled. Receipt stayed fake.");
+          showToast("Share cancelled. Receipt stayed yours.");
           return;
         }
         // Non-cancel share failures fall through to copy support.
@@ -198,13 +198,13 @@ export function ReceiptPage() {
       />
 
       {!order ? (
-        <section className="receipt-empty-section" aria-label="No fake receipt">
+        <section className="receipt-empty-section" aria-label="No receipt">
           <EmptyState
-            title="No fake receipt yet."
-            message="There is no completed fake tracking flow to summarize right now."
+            title="No receipt yet."
+            message="There is no completed tracking flow to summarize right now."
           />
           <Button type="button" onClick={() => navigate("/products")}>
-            Browse Fake Shelf
+            Browse Shelf
           </Button>
         </section>
       ) : (
@@ -219,9 +219,9 @@ export function ReceiptPage() {
               </p>
             </div>
 
-            <dl className="receipt-meta-grid" aria-label="Fake order details">
+            <dl className="receipt-meta-grid" aria-label="Order details">
               <div>
-                <dt>Fake order ID</dt>
+                <dt>Order ID</dt>
                 <dd>{order.id}</dd>
               </div>
               <div>
@@ -256,7 +256,7 @@ export function ReceiptPage() {
             <div className="section-heading">
               <span className="section-kicker">Avoided items</span>
               <h2 id="receipt-items-title">Things that did not arrive</h2>
-              <p>Compact proof for the fake bag that stayed fictional.</p>
+              <p>Compact proof for the bag that stayed fictional.</p>
             </div>
 
             <ol className="receipt-item-list">
@@ -279,7 +279,7 @@ export function ReceiptPage() {
               <span className="section-kicker">Streak</span>
               <h2>{getStreakCopy(displayedProgress.currentStreak)}</h2>
               <p>
-                {displayedProgress.totalCompletedFakeOrders} fake orders avoided in
+                {displayedProgress.totalCompletedFakeOrders} orders avoided in
                 total. Same-day wins count, but the daily streak stays honest.
               </p>
             </div>
@@ -291,7 +291,7 @@ export function ReceiptPage() {
               <span className="section-kicker">Share</span>
               <h2 id="receipt-share-title">Cause mild confusion responsibly</h2>
               <p>
-                Share text stays short, fake, and free of private details because
+                Share text stays short, odd, and free of private details because
                 BlinkaMart never collected any.
               </p>
             </div>
@@ -322,7 +322,7 @@ export function ReceiptPage() {
 
           <div className="cart-cta-row" aria-label="Receipt actions">
             <Button type="button" onClick={() => navigate("/products")}>
-              Browse Fake Shelf
+              Browse Shelf
             </Button>
             <Button type="button" variant="secondary" onClick={() => navigate("/progress")}>
               View Progress

@@ -35,7 +35,7 @@ function getTimeGreeting(date: Date) {
 }
 
 function getFakeOrderLabel(totalFakeOrders: number) {
-  return totalFakeOrders === 1 ? "1 fake order avoided" : `${totalFakeOrders} fake orders avoided`;
+  return totalFakeOrders === 1 ? "1 order avoided" : `${totalFakeOrders} orders avoided`;
 }
 
 function getCurrentStreakCopy(currentStreak: number) {
@@ -48,7 +48,7 @@ export function HomePage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<CategoryId>(categories[0].id);
   const [searchQuery, setSearchQuery] = useState("");
   const [toastMessage, setToastMessage] = useState(
-    "Fake shelf stocked. Real orders still very cancelled.",
+    "Shelf stocked. Real orders still very cancelled.",
   );
   const navigate = useNavigate();
   const cart = useCart();
@@ -105,23 +105,19 @@ export function HomePage() {
   function handleCategorySelect(categoryId: CategoryId) {
     setSelectedCategoryId(categoryId);
     setSearchQuery("");
-    setToastMessage("Shelf switched. Still fake, still safer than checkout.");
+    setToastMessage("Shelf switched. Still safer than checkout.");
   }
 
   function handleBuildFakeCart() {
     navigate("/products");
   }
 
-  function handleEmergencyMode() {
-    setToastMessage("Emergency Craving Mode is warming up for a later phase.");
-  }
-
   return (
     <div className="home-page">
       <PageHeader
         title={greeting}
-        subtitle="Fake ordering for real cravings."
-        trailing={<span className="status-dot">Open for fake business</span>}
+        subtitle="Parody ordering for real cravings."
+        trailing={<span className="status-dot">Open for restraint</span>}
       />
 
       <section className="hero-panel" aria-labelledby="home-hero-title">
@@ -134,26 +130,19 @@ export function HomePage() {
           </p>
         </div>
 
-        <div className="hero-ticket" aria-label="Fake order preview">
+        <div className="hero-ticket" aria-label="Order preview">
           <span className="ticket-label">Delivery partner</span>
           <strong>Self Control</strong>
           <span>ETA: never</span>
         </div>
       </section>
 
-      <div className="cta-row" aria-label="Fake cart actions">
+      <div className="cta-row" aria-label="Cart actions">
         <Button
           type="button"
           onClick={handleBuildFakeCart}
         >
-          Build Fake Cart
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={handleEmergencyMode}
-        >
-          Emergency Craving Mode
+          Build Cart
         </Button>
       </div>
 
@@ -182,11 +171,11 @@ export function HomePage() {
       ) : null}
 
       <SearchInput
-        label="Search the fake shelf"
+        label="Search the shelf"
         value={searchQuery}
         onChange={setSearchQuery}
         placeholder="Search chips, cola, emotional support Maggi..."
-        aria-label="Search fake products"
+        aria-label="Search products"
       />
 
       <section className="category-section" aria-labelledby="category-title">
@@ -194,7 +183,7 @@ export function HomePage() {
           <h2 id="category-title">Pick your almost-mistake</h2>
           <p>Tap a shelf. Browse the craving. No real order can escape.</p>
         </div>
-        <div className="category-grid" aria-label="Fake product categories">
+        <div className="category-grid" aria-label="Product categories">
           {categories.map((category) => (
             <CategoryTile
               key={category.id}
@@ -216,11 +205,11 @@ export function HomePage() {
             {normalizedQuery ? "Search mode" : selectedCategory?.vibe}
           </span>
           <h2 id="shelf-title">
-            {normalizedQuery ? "Search results" : "Tonight's fake shelf"}
+            {normalizedQuery ? "Search results" : "Tonight's shelf"}
           </h2>
           <p>
             {normalizedQuery
-              ? `Showing fake items that match "${searchQuery.trim()}".`
+              ? `Showing items that match "${searchQuery.trim()}".`
               : `${selectedCategory?.name} products are ready to be admired, not delivered.`}
           </p>
         </div>
@@ -231,12 +220,12 @@ export function HomePage() {
               <ProductCartCard
                 key={product.id}
                 product={product}
-                categoryName={categoryNames.get(product.categoryId) ?? "Fake shelf"}
+                categoryName={categoryNames.get(product.categoryId) ?? "Shelf"}
                 quantity={cart.getQuantity(product.id)}
                 showCalories={settings.showCalories}
                 onAdd={() => {
                   cart.addItem(product.id);
-                  setToastMessage(`${product.name} joined the fake cart.`);
+                  setToastMessage(`${product.name} joined the cart.`);
                 }}
                 onIncrement={() => {
                   cart.incrementItem(product.id);
@@ -247,13 +236,13 @@ export function HomePage() {
                   cart.decrementItem(product.id);
                   setToastMessage(
                     quantity === 1
-                      ? `${product.name} removed from the fake cart.`
+                      ? `${product.name} removed from the cart.`
                       : `${product.name} quantity decreased.`,
                   );
                 }}
                 onRemove={() => {
                   cart.removeItem(product.id);
-                  setToastMessage(`${product.name} removed from the fake cart.`);
+                  setToastMessage(`${product.name} removed from the cart.`);
                 }}
               />
             ))}

@@ -37,7 +37,7 @@ function getCartSummary(
         productId: product.id,
         name: product.name,
         categoryId: product.categoryId,
-        categoryName: categoryNames.get(product.categoryId) ?? "Fake shelf",
+        categoryName: categoryNames.get(product.categoryId) ?? "Shelf",
         quantity,
         price: product.price,
         calories: product.calories,
@@ -77,7 +77,7 @@ function getCartSummary(
     totalCalories: totals.totalCalories,
     averageRegretScore: Math.round(totals.regretScoreTotal / totals.totalQuantity),
     showCalories,
-    sourceLabel: "Current fake cart",
+    sourceLabel: "Current cart",
   };
 }
 
@@ -89,7 +89,7 @@ function getOrderSummary(order: FakeOrderSnapshot): CheckoutSummary {
     totalCalories: order.totalCalories,
     averageRegretScore: order.averageRegretScore,
     showCalories: order.showCalories,
-    sourceLabel: "Saved fake order draft",
+    sourceLabel: "Saved order draft",
   };
 }
 
@@ -123,29 +123,29 @@ export function CheckoutPage() {
   return (
     <div className="checkout-page">
       <PageHeader
-        title="Fake checkout reality check."
+        title="Checkout reality check."
         subtitle="Final pause before the imaginary rider starts doing imaginary work."
         trailing={<span className="status-dot">No real payment</span>}
       />
 
       {!summary && hasTrackingOrder ? (
-        <section className="checkout-empty-section" aria-label="Fake order already tracking">
+        <section className="checkout-empty-section" aria-label="Order already tracking">
           <EmptyState
-            title="This fake order is already being tracked."
+            title="This order is already being tracked."
             message="It is past checkout and currently being successfully not delivered."
           />
           <Button type="button" onClick={() => navigate("/tracking")}>
-            Resume Fake Tracking
+            Resume Tracking
           </Button>
         </section>
       ) : !summary ? (
-        <section className="checkout-empty-section" aria-label="No fake order checkout">
+        <section className="checkout-empty-section" aria-label="No order checkout">
           <EmptyState
-            title="No fake order to cancel."
-            message="There is no fake cart or saved fake order draft ready for checkout."
+            title="No order to review."
+            message="There is no cart or saved order draft ready for checkout."
           />
           <Button type="button" onClick={() => navigate("/products")}>
-            Browse Fake Shelf
+            Browse Shelf
           </Button>
         </section>
       ) : (
@@ -154,8 +154,8 @@ export function CheckoutPage() {
             <span className="section-kicker">Reality check</span>
             <h2 id="checkout-disclaimer-title">This checkout cannot charge you.</h2>
             <p>
-              Final reality check: this is a fake checkout. No address, no
-              payment, no delivery. We are only cancelling the craving ritual.
+              Final reality check: this is a parody checkout. No address, no
+              payment, no delivery. We are only staging the craving ritual.
             </p>
             <p>
               BlinkaMart does not sell, deliver, or process orders. The next step
@@ -167,16 +167,16 @@ export function CheckoutPage() {
             <div className="section-heading">
               <span className="section-kicker">{summary.sourceLabel}</span>
               <h2 id="checkout-summary-title">About to not order</h2>
-              <p>This snapshot carries into fake tracking and the Phase 6 receipt handoff.</p>
+              <p>This snapshot carries into tracking and the receipt handoff.</p>
             </div>
 
             <div className="impact-grid">
               <div className="impact-stat">
-                <span>Fake total avoided</span>
+                <span>Total avoided</span>
                 <strong>Rs {summary.totalPrice}</strong>
               </div>
               <div className="impact-stat">
-                <span>Fake items</span>
+                <span>Items</span>
                 <strong>{summary.totalQuantity}</strong>
               </div>
               {summary.showCalories ? (
@@ -216,7 +216,7 @@ export function CheckoutPage() {
 
           <div className="cart-cta-row" aria-label="Checkout actions">
             <Button type="button" onClick={handleConfirmFakeCheckout}>
-              Cancel Order Successfully
+              Place order successfully
             </Button>
             <Button type="button" variant="secondary" onClick={() => navigate("/cart")}>
               Back to Cart

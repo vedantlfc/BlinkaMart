@@ -83,7 +83,7 @@ export const progressBadgeDefinitions: ProgressBadgeDefinition[] = [
   {
     id: "chips-dodger",
     name: "Chips Dodger",
-    lockedHint: "Avoid one fake order with Chips & Namkeen.",
+    lockedHint: "Avoid one order with Chips & Namkeen.",
   },
   {
     id: "maggi-monk",
@@ -93,7 +93,7 @@ export const progressBadgeDefinitions: ProgressBadgeDefinition[] = [
   {
     id: "cart-without-consequence",
     name: "Cart Without Consequence",
-    lockedHint: "Complete 3 fake orders total.",
+    lockedHint: "Complete 3 order rituals total.",
   },
   {
     id: "two-am-legend",
@@ -103,7 +103,7 @@ export const progressBadgeDefinitions: ProgressBadgeDefinition[] = [
   {
     id: "salary-saved",
     name: "Salary Saved",
-    lockedHint: "Reach Rs 1000 total fake money saved.",
+    lockedHint: "Reach Rs 1000 total money saved.",
   },
 ];
 
@@ -224,7 +224,7 @@ function normalizeItemSummary(value: unknown): CompletedOrderItemSummary | null 
     productId: product.id,
     name: product.name,
     categoryId: product.categoryId,
-    categoryName: categoryNames.get(product.categoryId) ?? "Fake shelf",
+    categoryName: categoryNames.get(product.categoryId) ?? "Shelf",
     quantity: item.quantity,
     price: product.price,
     calories: product.calories,

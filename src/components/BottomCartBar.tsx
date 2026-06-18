@@ -24,15 +24,15 @@ export function BottomCartBar({
   onAction,
 }: BottomCartBarProps) {
   const isEmpty = totalQuantity === 0;
-  const itemLabel = totalQuantity === 1 ? "fake item" : "fake items";
-  const label = message ?? (isEmpty ? "Fake cart waiting" : `${totalQuantity} ${itemLabel}`);
+  const itemLabel = totalQuantity === 1 ? "item" : "items";
+  const label = message ?? (isEmpty ? "Cart waiting" : `${totalQuantity} ${itemLabel}`);
   const caloriesCopy = showCalories ? ` - ${totalCalories} cal avoided if cancelled` : "";
   const note = isEmpty
     ? "No snacks, no payment, no driver drama."
     : `Rs ${totalPrice} saved-in-progress${caloriesCopy} - regret ${averageRegretScore}/100`;
 
   return (
-    <aside className="bottom-cart-bar" aria-label="Fake cart status">
+    <aside className="bottom-cart-bar" aria-label="Cart status">
       <div>
         <span className="cart-label">{label}</span>
         <span className="cart-note">{note}</span>
