@@ -112,7 +112,7 @@ export function CheckoutPage() {
     const nextOrder = cartSummary
       ? orderState.createOrderFromCart(cart.items, settings.showCalories, "tracking")
       : savedDraftOrder
-        ? orderState.updateOrderStatus("tracking")
+        ? orderState.beginTracking()
         : null;
 
     if (nextOrder) {

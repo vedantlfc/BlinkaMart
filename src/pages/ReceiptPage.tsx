@@ -46,6 +46,12 @@ function getAvoidedItemSummary(items: OrderSnapshot["items"]) {
   return visibleItems.join(", ");
 }
 
+function getDeliveryOutcomeCopy(order: OrderSnapshot) {
+  return order.tracking.trackingOutcome === "lost"
+    ? "Lost near Self Control Signal"
+    : "Arrived at character development";
+}
+
 function buildShareText(
   order: OrderSnapshot,
   badge: string,
@@ -55,6 +61,7 @@ function buildShareText(
     "Successfully Not Ordered on BlinkaMart.",
     `Badge unlocked: ${badge}.`,
     `Saved Rs ${order.totalPrice} by avoiding ${getItemCountLabel(order.totalQuantity)}.`,
+    `Delivery outcome: ${getDeliveryOutcomeCopy(order)}.`,
     `Streak: ${getStreakCopy(progress.currentStreak)}.`,
   ];
 
@@ -111,6 +118,10 @@ export function ReceiptPage() {
   );
   const avoidedItemSummary = useMemo(
     () => (order ? getAvoidedItemSummary(order.items) : ""),
+    [order],
+  );
+  const deliveryOutcome = useMemo(
+    () => (order ? getDeliveryOutcomeCopy(order) : ""),
     [order],
   );
   const shareButtonLabel =
@@ -239,6 +250,11 @@ export function ReceiptPage() {
             <div className="receipt-poster-items">
               <span>Items left on stage</span>
               <strong>{avoidedItemSummary}</strong>
+            </div>
+
+            <div className="receipt-outcome">
+              <span>Delivery outcome</span>
+              <strong>{deliveryOutcome}</strong>
             </div>
 
             <dl className="receipt-meta-grid" aria-label="Order details">

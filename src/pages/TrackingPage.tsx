@@ -2,36 +2,51 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
+import { FictionalDeliveryMap } from "../components/FictionalDeliveryMap";
 import { PageHeader } from "../components/PageHeader";
+import { products } from "../data/catalog";
 import { useCart } from "../state/cart";
-import { useOrder } from "../state/order";
+import { useOrder, type OrderSnapshot } from "../state/order";
+
+const TRACKING_STAGE_MS = 2200;
+const FINAL_STAGE_DELAY_MS = 2200;
+const REDUCED_MOTION_STAGE_MS = 1100;
+const REDUCED_MOTION_FINAL_DELAY_MS = 1600;
 
 const trackingStages = [
   {
-    title: "Craving received",
-    copy: "The impulse has entered the building and immediately looked suspicious.",
+    title: "Order received",
+    copy: "Your order reached the Late-Night Craving Desk and got a tiny clipboard.",
+    mapLabel: "Desk check-in",
   },
   {
-    title: "Self-control assigned",
-    copy: "Your imaginary delivery partner has picked up the assignment.",
+    title: "Packing your order",
+    copy: "The bag is being filled with snacks, suspense, and one dramatic pause.",
+    mapLabel: "Bag getting serious",
   },
   {
-    title: "Regret being packed",
-    copy: "Better Judgement is sealing the bag with excellent tape.",
+    title: "Delivery partner assigned",
+    copy: "A delivery partner has accepted the ritual and is checking the route.",
+    mapLabel: "Partner assigned",
   },
   {
-    title: "Order intercepted",
-    copy: "Common Sense has taken a clean turn away from chaos.",
+    title: "On the way",
+    copy: "Your order is moving through Snack Flyover with concerning confidence.",
+    mapLabel: "On the way",
   },
   {
-    title: "Dopamine delivered",
-    copy: "The ritual is complete. Nothing edible was harmed.",
+    title: "Almost there",
+    copy: "The marker is near your sofa. The craving is leaning forward.",
+    mapLabel: "Almost there",
   },
   {
-    title: "Doorbell crisis averted",
-    copy: "Self Control takes a tiny bow.",
+    title: "Order lost",
+    copy: "The order got lost. You did not. Self Control Signal reports excellent timing.",
+    mapLabel: "Self Control Signal",
   },
 ];
+
+const productById = new Map(products.map((product) => [product.id, product]));
 
 function getPrefersReducedMotion() {
   if (typeof window === "undefined" || !window.matchMedia) {
@@ -41,35 +56,172 @@ function getPrefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function getStartedAtMs(order: OrderSnapshot | null) {
+  if (!order?.tracking.trackingStartedAt) {
+    return null;
+  }
+
+  const startedAtMs = new Date(order.tracking.trackingStartedAt).getTime();
+  return Number.isNaN(startedAtMs) ? null : startedAtMs;
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getActiveStageIndex(startedAtMs: number | null, now: number, stageMs: number) {
+  if (!startedAtMs) {
+    return 0;
+  }
+
+  const elapsed = Math.max(0, now - startedAtMs);
+  return clamp(Math.floor(elapsed / stageMs), 0, trackingStages.length - 1);
+}
+
+function getStageFraction(startedAtMs: number | null, now: number, stageMs: number) {
+  if (!startedAtMs) {
+    return 0;
+  }
+
+  const elapsed = Math.max(0, now - startedAtMs);
+  return clamp((elapsed % stageMs) / stageMs, 0, 1);
+}
+
+function getMapProgress(stageIndex: number, stageFraction: number) {
+  if (stageIndex <= 0) {
+    return 0.04;
+  }
+
+  if (stageIndex === 1) {
+    return 0.1;
+  }
+
+  if (stageIndex === 2) {
+    return 0.18 + stageFraction * 0.08;
+  }
+
+  if (stageIndex === 3) {
+    return 0.28 + stageFraction * 0.38;
+  }
+
+  if (stageIndex === 4) {
+    return 0.72 + stageFraction * 0.24;
+  }
+
+  return 0.86;
+}
+
+function getItemLabel(quantity: number) {
+  return quantity === 1 ? "1 item" : `${quantity} items`;
+}
+
+function renderPackingPreview(order: OrderSnapshot) {
+  return (
+    <section className="packing-preview" aria-labelledby="packing-preview-title">
+      <div className="section-heading">
+        <span className="section-kicker">Packing preview</span>
+        <h2 id="packing-preview-title">Bag contents entering the drama</h2>
+      </div>
+      <div className="packing-preview__items">
+        {order.items.slice(0, 3).map((item) => {
+          const product = productById.get(item.productId);
+
+          return (
+            <article className="packing-preview__item" key={item.productId}>
+              {product ? (
+                <img
+                  src={product.imageSrc}
+                  alt={product.fullName || product.name}
+                  loading="lazy"
+                />
+              ) : null}
+              <div>
+                <strong>{item.name}</strong>
+                <span>{getItemLabel(item.quantity)}</span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function renderPartnerCard(order: OrderSnapshot) {
+  return (
+    <section className="delivery-partner-card" aria-labelledby="delivery-partner-title">
+      <div>
+        <span className="section-kicker">Delivery partner</span>
+        <h2 id="delivery-partner-title">{order.tracking.deliveryPartner.name}</h2>
+        <p>{order.tracking.deliveryPartner.oneLineStatus}</p>
+      </div>
+      <dl className="delivery-partner-grid">
+        <div>
+          <dt>Vehicle</dt>
+          <dd>{order.tracking.deliveryPartner.vehicle}</dd>
+        </div>
+        <div>
+          <dt>Reliability</dt>
+          <dd>{order.tracking.deliveryPartner.reliabilityLabel}</dd>
+        </div>
+      </dl>
+    </section>
+  );
+}
+
 export function TrackingPage() {
   const orderState = useOrder();
   const { clearCart } = useCart();
   const navigate = useNavigate();
-  const [activeStageIndex, setActiveStageIndex] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
+  const hasStartedRef = useRef(false);
   const hasNavigatedRef = useRef(false);
-  const hasTrackableOrder = orderState.currentOrder?.status === "tracking";
-
+  const order = orderState.currentOrder;
+  const hasTrackableOrder = order?.status === "tracking";
   const prefersReducedMotion = useMemo(() => getPrefersReducedMotion(), []);
-  const finalStageIndex = trackingStages.length - 1;
-  const stepDuration = prefersReducedMotion ? 450 : 1050;
-  const finalStageDelay = prefersReducedMotion ? 700 : 1300;
-
-  useEffect(() => {
-    if (!hasTrackableOrder || activeStageIndex >= finalStageIndex) {
-      return undefined;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setActiveStageIndex((currentIndex) => Math.min(currentIndex + 1, finalStageIndex));
-    }, stepDuration);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [activeStageIndex, finalStageIndex, hasTrackableOrder, stepDuration]);
+  const stageDuration = prefersReducedMotion ? REDUCED_MOTION_STAGE_MS : TRACKING_STAGE_MS;
+  const finalStageDelay = prefersReducedMotion
+    ? REDUCED_MOTION_FINAL_DELAY_MS
+    : FINAL_STAGE_DELAY_MS;
+  const startedAtMs = getStartedAtMs(order);
+  const activeStageIndex = getActiveStageIndex(startedAtMs, now, stageDuration);
+  const activeStage = trackingStages[activeStageIndex];
+  const stageFraction = getStageFraction(startedAtMs, now, stageDuration);
+  const mapProgress = getMapProgress(activeStageIndex, stageFraction);
+  const isLostStage = activeStage.title === "Order lost";
+  const showPackingPreview = activeStageIndex >= 1;
+  const showPartnerCard = activeStageIndex >= 2;
+  const showMapBeforeSummary = activeStageIndex >= 3 && !isLostStage;
+  const showLostMessageBeforeSummary = isLostStage;
 
   useEffect(() => {
     if (
       !hasTrackableOrder ||
-      activeStageIndex < finalStageIndex ||
+      order?.tracking.trackingStartedAt ||
+      hasStartedRef.current
+    ) {
+      return;
+    }
+
+    hasStartedRef.current = true;
+    orderState.beginTracking();
+  }, [hasTrackableOrder, order?.tracking.trackingStartedAt, orderState]);
+
+  useEffect(() => {
+    if (!hasTrackableOrder || !order?.tracking.trackingStartedAt) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => setNow(Date.now()), 250);
+    setNow(Date.now());
+
+    return () => window.clearInterval(intervalId);
+  }, [hasTrackableOrder, order?.tracking.trackingStartedAt]);
+
+  useEffect(() => {
+    if (
+      !hasTrackableOrder ||
+      activeStageIndex < trackingStages.length - 1 ||
       hasNavigatedRef.current
     ) {
       return undefined;
@@ -77,7 +229,8 @@ export function TrackingPage() {
 
     const timeoutId = window.setTimeout(() => {
       hasNavigatedRef.current = true;
-      const completedOrder = orderState.updateOrderStatus("completed");
+      const completedOrder = orderState.completeTracking("lost");
+
       if (completedOrder) {
         clearCart();
         navigate("/receipt", { replace: true });
@@ -88,26 +241,31 @@ export function TrackingPage() {
   }, [
     activeStageIndex,
     clearCart,
-    orderState,
     finalStageDelay,
-    finalStageIndex,
     hasTrackableOrder,
     navigate,
+    orderState,
   ]);
 
   return (
     <div className="tracking-page">
       <PageHeader
-        title="Tracking the craving handoff."
-        subtitle="A calm progress ritual with Self Control in uniform."
-        trailing={<span className="status-dot">ETA: never</span>}
+        title="Tracking your order."
+        subtitle="A tiny quick-commerce drama, locally simulated."
+        trailing={
+          hasTrackableOrder && order ? (
+            <span className="status-dot">ETA {order.tracking.etaMinutes} min</span>
+          ) : (
+            <span className="status-dot">Cart ritual</span>
+          )
+        }
       />
 
-      {!hasTrackableOrder || !orderState.currentOrder ? (
+      {!hasTrackableOrder || !order ? (
         <section className="tracking-empty-section" aria-label="No order tracking">
           <EmptyState
             title="No order is currently being tracked."
-            message="Build a cart first, then we can assign Self Control to the case."
+            message="Build a cart first, then the route theatre can begin."
           />
           <Button type="button" onClick={() => navigate("/products")}>
             Browse Shelf
@@ -115,37 +273,68 @@ export function TrackingPage() {
         </section>
       ) : (
         <>
-          <section className="rider-panel" aria-labelledby="rider-title">
-            <div className="section-heading">
-              <span className="section-kicker">Tracking ritual</span>
-              <h2 id="rider-title">Ritual details</h2>
-              <p>A progress ritual with a clipboard, a wink, and excellent timing.</p>
-            </div>
+          {showLostMessageBeforeSummary ? (
+            <section className="lost-order-panel" aria-labelledby="lost-order-title">
+              <span className="section-kicker">Final update</span>
+              <h2 id="lost-order-title">Sorry, your order is lost.</h2>
+              <p>The order got lost. You did not. Self Control Signal reports excellent timing.</p>
+            </section>
+          ) : null}
 
-            <div className="rider-grid">
-              <div>
-                <span>Ritual Partner</span>
-                <strong>Self Control</strong>
-              </div>
-              <div>
-                <span>Vehicle</span>
-                <strong>Common Sense</strong>
-              </div>
-              <div>
-                <span>ETA</span>
-                <strong>Never</strong>
-              </div>
-              <div>
-                <span>Tip</span>
-                <strong>Drink water</strong>
-              </div>
+          {showMapBeforeSummary ? (
+            <FictionalDeliveryMap
+              routeSeed={order.tracking.routeSeed}
+              progress={mapProgress}
+              darkStoreName={order.tracking.darkStoreName}
+              stage={activeStage.mapLabel}
+              isLost={isLostStage}
+            />
+          ) : null}
+
+          <section className="tracking-hero-card" aria-labelledby="tracking-current-title">
+            <div className="tracking-hero-card__copy">
+              <span className="section-kicker">{order.tracking.darkStoreName}</span>
+              <h2 id="tracking-current-title">{activeStage.title}</h2>
+              <p>{activeStage.copy}</p>
             </div>
+            <dl className="tracking-summary-grid" aria-label="Tracking summary">
+              <div>
+                <dt>Order ID</dt>
+                <dd>{order.id}</dd>
+              </div>
+              <div>
+                <dt>ETA</dt>
+                <dd>{order.tracking.etaMinutes} min</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>{isLostStage ? "Lost near Self Control Signal" : activeStage.title}</dd>
+              </div>
+            </dl>
           </section>
+
+          {showPackingPreview && !showMapBeforeSummary ? renderPackingPreview(order) : null}
+
+          {showPartnerCard && !showMapBeforeSummary ? renderPartnerCard(order) : null}
+
+          {!showMapBeforeSummary ? (
+            <FictionalDeliveryMap
+              routeSeed={order.tracking.routeSeed}
+              progress={mapProgress}
+              darkStoreName={order.tracking.darkStoreName}
+              stage={activeStage.mapLabel}
+              isLost={isLostStage}
+            />
+          ) : null}
+
+          {showPartnerCard && showMapBeforeSummary ? renderPartnerCard(order) : null}
+
+          {showPackingPreview && showMapBeforeSummary ? renderPackingPreview(order) : null}
 
           <section className="tracking-progress" aria-labelledby="tracking-progress-title">
             <div className="section-heading">
-              <h2 id="tracking-progress-title">Tracking progress</h2>
-              <p>Order {orderState.currentOrder.id} is being escorted into receipt history.</p>
+              <h2 id="tracking-progress-title">Tracking timeline</h2>
+              <p>Display ETA is theatrical; this simulation runs in seconds.</p>
             </div>
 
             <ol className="tracking-stage-list">

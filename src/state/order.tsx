@@ -18,6 +18,23 @@ const categoryNames = new Map(categories.map((category) => [category.id, categor
 const validCategoryIds = new Set(categories.map((category) => category.id));
 
 export type OrderStatus = "draft" | "tracking" | "completed";
+export type TrackingOutcome = "pending" | "lost";
+
+export interface DeliveryPartner {
+  name: string;
+  vehicle: string;
+  reliabilityLabel: string;
+  oneLineStatus: string;
+}
+
+export interface OrderTrackingMetadata {
+  etaMinutes: number;
+  deliveryPartner: DeliveryPartner;
+  routeSeed: number;
+  trackingStartedAt: string | null;
+  trackingOutcome: TrackingOutcome;
+  darkStoreName: string;
+}
 
 export interface OrderItem {
   productId: string;
@@ -41,6 +58,7 @@ export interface OrderSnapshot {
   totalQuantity: number;
   showCalories: boolean;
   status: OrderStatus;
+  tracking: OrderTrackingMetadata;
 }
 
 export interface OrderContextValue {
@@ -51,6 +69,8 @@ export interface OrderContextValue {
     status?: OrderStatus,
   ) => OrderSnapshot | null;
   updateOrderStatus: (status: OrderStatus) => OrderSnapshot | null;
+  beginTracking: () => OrderSnapshot | null;
+  completeTracking: (outcome: "lost") => OrderSnapshot | null;
   clearOrder: () => void;
 }
 
@@ -62,11 +82,134 @@ function createOrderId() {
   return `BM-${timePart}-${randomPart}`;
 }
 
+const deliveryPartnerNames = [
+  "Asha Pause",
+  "Kabir Calm",
+  "Mira Maybe",
+  "Nikhil Nope",
+  "Tara Timeout",
+  "Ravi Reroute",
+];
+
+const deliveryVehicles = [
+  "Scooter of Second Thoughts",
+  "Cycle of Common Sense",
+  "Moped of Mild Reflection",
+  "Tiny Van of Timing",
+  "Shortcut Scooter",
+  "Snack Patrol Bike",
+];
+
+const reliabilityLabels = [
+  "99% drama-aware",
+  "Calm under snack pressure",
+  "Excellent at heroic detours",
+  "Certified cart negotiator",
+  "Very steady near sofas",
+  "Knows every craving shortcut",
+];
+
+const partnerStatuses = [
+  "Scanning the route for snack fog.",
+  "Carrying the bag with theatrical seriousness.",
+  "Keeping one eye on Self Control Signal.",
+  "Preparing for a graceful wrong turn.",
+  "Respectfully questioning the craving.",
+  "Rolling through the imaginary delivery grid.",
+];
+
+const darkStoreNames = [
+  "Craving Store 7",
+  "Late-Night Craving Desk",
+  "Snack Annex 12",
+  "Midnight Aisle Hub",
+  "Almost Ordered Depot",
+  "Tiny Temptation Warehouse",
+];
+
+function hashOrderId(value: string) {
+  let hash = 2166136261;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function pickStableValue<T>(values: T[], seed: number, offset: number) {
+  return values[(seed + offset) % values.length];
+}
+
+function buildTrackingMetadata(
+  orderId: string,
+  status: OrderStatus,
+  trackingStartedAt: string | null,
+): OrderTrackingMetadata {
+  const seed = hashOrderId(orderId);
+
+  return {
+    etaMinutes: 8 + (seed % 13),
+    deliveryPartner: {
+      name: pickStableValue(deliveryPartnerNames, seed, 1),
+      vehicle: pickStableValue(deliveryVehicles, seed, 3),
+      reliabilityLabel: pickStableValue(reliabilityLabels, seed, 5),
+      oneLineStatus: pickStableValue(partnerStatuses, seed, 7),
+    },
+    routeSeed: seed,
+    trackingStartedAt,
+    trackingOutcome: status === "completed" ? "lost" : "pending",
+    darkStoreName: pickStableValue(darkStoreNames, seed, 9),
+  };
+}
+
+function isValidIsoTimestamp(value: string) {
+  return !Number.isNaN(new Date(value).getTime());
+}
+
+function normalizeTrackingMetadata(
+  value: unknown,
+  orderId: string,
+  status: OrderStatus,
+): OrderTrackingMetadata {
+  const fallback = buildTrackingMetadata(orderId, status, null);
+
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return fallback;
+  }
+
+  const tracking = value as Partial<OrderTrackingMetadata>;
+  const storedStartedAt =
+    typeof tracking.trackingStartedAt === "string" &&
+    isValidIsoTimestamp(tracking.trackingStartedAt)
+      ? tracking.trackingStartedAt
+      : null;
+
+  return {
+    etaMinutes: fallback.etaMinutes,
+    deliveryPartner: fallback.deliveryPartner,
+    routeSeed: fallback.routeSeed,
+    trackingStartedAt: storedStartedAt,
+    trackingOutcome: status === "completed" ? "lost" : "pending",
+    darkStoreName: fallback.darkStoreName,
+  };
+}
+
+function ensureTrackingMetadata(order: OrderSnapshot): OrderSnapshot {
+  return {
+    ...order,
+    tracking: normalizeTrackingMetadata(order.tracking, order.id, order.status),
+  };
+}
+
 function buildOrderSnapshot(
   items: CartItems,
   showCalories: boolean,
   status: OrderStatus = "draft",
 ): OrderSnapshot | null {
+  const id = createOrderId();
+  const timestamp = new Date().toISOString();
   const orderItems = Object.entries(items).reduce<OrderItem[]>(
     (runningItems, [productId, quantity]) => {
       const product = productById.get(productId);
@@ -113,8 +256,8 @@ function buildOrderSnapshot(
   }
 
   return {
-    id: createOrderId(),
-    timestamp: new Date().toISOString(),
+    id,
+    timestamp,
     items: orderItems,
     totalPrice: totals.totalPrice,
     totalCalories: totals.totalCalories,
@@ -122,6 +265,11 @@ function buildOrderSnapshot(
     totalQuantity: totals.totalQuantity,
     showCalories,
     status,
+    tracking: buildTrackingMetadata(
+      id,
+      status,
+      status === "tracking" ? timestamp : null,
+    ),
   };
 }
 
@@ -233,6 +381,7 @@ function normalizeOrder(value: unknown): OrderSnapshot | null {
     totalQuantity: totals.totalQuantity,
     showCalories: order.showCalories,
     status,
+    tracking: normalizeTrackingMetadata(order.tracking, order.id, status),
   };
 }
 
@@ -286,7 +435,49 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateOrderStatus = useCallback((status: OrderStatus) => {
-    const nextOrder = currentOrder ? { ...currentOrder, status } : null;
+    const nextOrder = currentOrder
+      ? ensureTrackingMetadata({
+          ...currentOrder,
+          status,
+          tracking: {
+            ...currentOrder.tracking,
+            trackingOutcome: status === "completed" ? "lost" : currentOrder.tracking.trackingOutcome,
+          },
+        })
+      : null;
+    setCurrentOrder(nextOrder);
+    return nextOrder;
+  }, [currentOrder]);
+
+  const beginTracking = useCallback(() => {
+    const nextOrder = currentOrder
+      ? ensureTrackingMetadata({
+          ...currentOrder,
+          status: "tracking",
+          tracking: {
+            ...currentOrder.tracking,
+            trackingStartedAt: currentOrder.tracking.trackingStartedAt ?? new Date().toISOString(),
+            trackingOutcome: "pending",
+          },
+        })
+      : null;
+
+    setCurrentOrder(nextOrder);
+    return nextOrder;
+  }, [currentOrder]);
+
+  const completeTracking = useCallback((outcome: "lost") => {
+    const nextOrder = currentOrder
+      ? ensureTrackingMetadata({
+          ...currentOrder,
+          status: "completed",
+          tracking: {
+            ...currentOrder.tracking,
+            trackingOutcome: outcome,
+          },
+        })
+      : null;
+
     setCurrentOrder(nextOrder);
     return nextOrder;
   }, [currentOrder]);
@@ -298,9 +489,18 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       currentOrder,
       createOrderFromCart,
       updateOrderStatus,
+      beginTracking,
+      completeTracking,
       clearOrder,
     }),
-    [clearOrder, createOrderFromCart, currentOrder, updateOrderStatus],
+    [
+      beginTracking,
+      clearOrder,
+      completeTracking,
+      createOrderFromCart,
+      currentOrder,
+      updateOrderStatus,
+    ],
   );
 
   return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>;
