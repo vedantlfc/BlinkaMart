@@ -10,15 +10,16 @@ import {
 import { categories, products, type CategoryId } from "../data/catalog";
 import type { CartItems } from "./cart";
 
-const FAKE_ORDER_STORAGE_KEY = "blinkamart.currentFakeOrder.v1";
+// Keep legacy storage key for existing browsers.
+const ORDER_STORAGE_KEY = "blinkamart.currentFakeOrder.v1";
 const MAX_ORDER_ITEM_QUANTITY = 99;
 const productById = new Map(products.map((product) => [product.id, product]));
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
 const validCategoryIds = new Set(categories.map((category) => category.id));
 
-export type FakeOrderStatus = "draft" | "tracking" | "completed";
+export type OrderStatus = "draft" | "tracking" | "completed";
 
-export interface FakeOrderItem {
+export interface OrderItem {
   productId: string;
   name: string;
   categoryId: CategoryId;
@@ -30,30 +31,30 @@ export interface FakeOrderItem {
   subtitle: string;
 }
 
-export interface FakeOrderSnapshot {
+export interface OrderSnapshot {
   id: string;
   timestamp: string;
-  items: FakeOrderItem[];
+  items: OrderItem[];
   totalPrice: number;
   totalCalories: number;
   averageRegretScore: number;
   totalQuantity: number;
   showCalories: boolean;
-  status: FakeOrderStatus;
+  status: OrderStatus;
 }
 
-export interface FakeOrderContextValue {
-  currentOrder: FakeOrderSnapshot | null;
+export interface OrderContextValue {
+  currentOrder: OrderSnapshot | null;
   createOrderFromCart: (
     items: CartItems,
     showCalories: boolean,
-    status?: FakeOrderStatus,
-  ) => FakeOrderSnapshot | null;
-  updateOrderStatus: (status: FakeOrderStatus) => FakeOrderSnapshot | null;
+    status?: OrderStatus,
+  ) => OrderSnapshot | null;
+  updateOrderStatus: (status: OrderStatus) => OrderSnapshot | null;
   clearOrder: () => void;
 }
 
-const FakeOrderContext = createContext<FakeOrderContextValue | undefined>(undefined);
+const OrderContext = createContext<OrderContextValue | undefined>(undefined);
 
 function createOrderId() {
   const timePart = Date.now().toString(36).toUpperCase();
@@ -64,9 +65,9 @@ function createOrderId() {
 function buildOrderSnapshot(
   items: CartItems,
   showCalories: boolean,
-  status: FakeOrderStatus = "draft",
-): FakeOrderSnapshot | null {
-  const orderItems = Object.entries(items).reduce<FakeOrderItem[]>(
+  status: OrderStatus = "draft",
+): OrderSnapshot | null {
+  const orderItems = Object.entries(items).reduce<OrderItem[]>(
     (runningItems, [productId, quantity]) => {
       const product = productById.get(productId);
 
@@ -124,12 +125,12 @@ function buildOrderSnapshot(
   };
 }
 
-function normalizeOrderItem(value: unknown): FakeOrderItem | null {
+function normalizeOrderItem(value: unknown): OrderItem | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
   }
 
-  const item = value as Partial<FakeOrderItem>;
+  const item = value as Partial<OrderItem>;
   if (
     typeof item.productId !== "string" ||
     typeof item.name !== "string" ||
@@ -169,7 +170,7 @@ function normalizeOrderItem(value: unknown): FakeOrderItem | null {
   };
 }
 
-function getStoredStatus(value: unknown): FakeOrderStatus | null {
+function getStoredStatus(value: unknown): OrderStatus | null {
   if (value === undefined) {
     return "completed";
   }
@@ -179,12 +180,12 @@ function getStoredStatus(value: unknown): FakeOrderStatus | null {
     : null;
 }
 
-function normalizeOrder(value: unknown): FakeOrderSnapshot | null {
+function normalizeOrder(value: unknown): OrderSnapshot | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
   }
 
-  const order = value as Partial<FakeOrderSnapshot>;
+  const order = value as Partial<OrderSnapshot>;
   if (
     typeof order.id !== "string" ||
     typeof order.timestamp !== "string" ||
@@ -201,7 +202,7 @@ function normalizeOrder(value: unknown): FakeOrderSnapshot | null {
 
   const normalizedItems = order.items
     .map(normalizeOrderItem)
-    .filter((item): item is FakeOrderItem => Boolean(item));
+    .filter((item): item is OrderItem => Boolean(item));
   if (normalizedItems.length === 0) {
     return null;
   }
@@ -235,38 +236,38 @@ function normalizeOrder(value: unknown): FakeOrderSnapshot | null {
   };
 }
 
-function readStoredOrder(): FakeOrderSnapshot | null {
+function readStoredOrder(): OrderSnapshot | null {
   if (typeof window === "undefined") {
     return null;
   }
 
   try {
     return normalizeOrder(
-      JSON.parse(window.localStorage.getItem(FAKE_ORDER_STORAGE_KEY) ?? "null"),
+      JSON.parse(window.localStorage.getItem(ORDER_STORAGE_KEY) ?? "null"),
     );
   } catch {
     return null;
   }
 }
 
-function writeStoredOrder(order: FakeOrderSnapshot | null) {
+function writeStoredOrder(order: OrderSnapshot | null) {
   if (typeof window === "undefined") {
     return;
   }
 
   try {
     if (order) {
-      window.localStorage.setItem(FAKE_ORDER_STORAGE_KEY, JSON.stringify(order));
+      window.localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order));
     } else {
-      window.localStorage.removeItem(FAKE_ORDER_STORAGE_KEY);
+      window.localStorage.removeItem(ORDER_STORAGE_KEY);
     }
   } catch {
     // The order flow can still recover if storage is unavailable.
   }
 }
 
-export function FakeOrderProvider({ children }: { children: ReactNode }) {
-  const [currentOrder, setCurrentOrder] = useState<FakeOrderSnapshot | null>(() =>
+export function OrderProvider({ children }: { children: ReactNode }) {
+  const [currentOrder, setCurrentOrder] = useState<OrderSnapshot | null>(() =>
     readStoredOrder(),
   );
 
@@ -277,14 +278,14 @@ export function FakeOrderProvider({ children }: { children: ReactNode }) {
   const createOrderFromCart = useCallback((
     items: CartItems,
     showCalories: boolean,
-    status: FakeOrderStatus = "draft",
+    status: OrderStatus = "draft",
   ) => {
     const nextOrder = buildOrderSnapshot(items, showCalories, status);
     setCurrentOrder(nextOrder);
     return nextOrder;
   }, []);
 
-  const updateOrderStatus = useCallback((status: FakeOrderStatus) => {
+  const updateOrderStatus = useCallback((status: OrderStatus) => {
     const nextOrder = currentOrder ? { ...currentOrder, status } : null;
     setCurrentOrder(nextOrder);
     return nextOrder;
@@ -292,7 +293,7 @@ export function FakeOrderProvider({ children }: { children: ReactNode }) {
 
   const clearOrder = useCallback(() => setCurrentOrder(null), []);
 
-  const value = useMemo<FakeOrderContextValue>(
+  const value = useMemo<OrderContextValue>(
     () => ({
       currentOrder,
       createOrderFromCart,
@@ -302,14 +303,14 @@ export function FakeOrderProvider({ children }: { children: ReactNode }) {
     [clearOrder, createOrderFromCart, currentOrder, updateOrderStatus],
   );
 
-  return <FakeOrderContext.Provider value={value}>{children}</FakeOrderContext.Provider>;
+  return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>;
 }
 
-export function useFakeOrder() {
-  const order = useContext(FakeOrderContext);
+export function useOrder() {
+  const order = useContext(OrderContext);
 
   if (!order) {
-    throw new Error("useFakeOrder must be used inside FakeOrderProvider.");
+    throw new Error("useOrder must be used inside OrderProvider.");
   }
 
   return order;

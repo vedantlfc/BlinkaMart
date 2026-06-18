@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { CartProvider } from "./state/cart";
-import { FakeOrderProvider } from "./state/fakeOrder";
+import { OrderProvider } from "./state/order";
 import { ReceiptProgressProvider } from "./state/receiptProgress";
 import { SettingsProvider } from "./state/settings";
 import "./styles/tokens.css";
@@ -20,11 +20,11 @@ createRoot(rootElement).render(
     <BrowserRouter>
       <SettingsProvider>
         <CartProvider>
-          <FakeOrderProvider>
+          <OrderProvider>
             <ReceiptProgressProvider>
               <App />
             </ReceiptProgressProvider>
-          </FakeOrderProvider>
+          </OrderProvider>
         </CartProvider>
       </SettingsProvider>
     </BrowserRouter>

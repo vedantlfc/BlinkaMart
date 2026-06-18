@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { categories, products, type CategoryId, type Product } from "../data/catalog";
-import type { FakeOrderSnapshot } from "./fakeOrder";
+import type { OrderSnapshot } from "./order";
 
 const RECEIPT_PROGRESS_STORAGE_KEY = "blinkamart.receiptProgress.v1";
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -44,7 +44,7 @@ export interface CompletedOrderItemSummary {
   regretScore: number;
 }
 
-export interface CompletedFakeOrderRecord {
+export interface CompletedOrderRecord {
   id: string;
   timestamp: string;
   items: CompletedOrderItemSummary[];
@@ -60,23 +60,23 @@ export interface ReceiptProgressState {
   lastCompletedLocalDate: string | null;
   currentStreak: number;
   longestStreak: number;
-  totalCompletedFakeOrders: number;
-  completedOrders: CompletedFakeOrderRecord[];
+  totalCompletedOrders: number;
+  completedOrders: CompletedOrderRecord[];
 }
 
 export interface ReceiptProgressSummary {
-  totalFakeOrders: number;
+  totalOrders: number;
   totalMoneySaved: number;
   totalCaloriesAvoided: number;
   currentStreak: number;
   longestStreak: number;
   unlockedBadgeIds: ProgressBadgeId[];
-  recentOrders: CompletedFakeOrderRecord[];
+  recentOrders: CompletedOrderRecord[];
 }
 
 export interface ReceiptProgressContextValue {
   progress: ReceiptProgressState;
-  recordCompletedOrder: (order: FakeOrderSnapshot) => ReceiptProgressState;
+  recordCompletedOrder: (order: OrderSnapshot) => ReceiptProgressState;
 }
 
 export const progressBadgeDefinitions: ProgressBadgeDefinition[] = [
@@ -98,7 +98,7 @@ export const progressBadgeDefinitions: ProgressBadgeDefinition[] = [
   {
     id: "two-am-legend",
     name: "2 AM Legend",
-    lockedHint: "Successfully not-order something between 2:00 AM and 2:59 AM.",
+    lockedHint: "Complete an order ritual between 2:00 AM and 2:59 AM.",
   },
   {
     id: "salary-saved",
@@ -114,7 +114,7 @@ const defaultProgress: ReceiptProgressState = {
   lastCompletedLocalDate: null,
   currentStreak: 0,
   longestStreak: 0,
-  totalCompletedFakeOrders: 0,
+  totalCompletedOrders: 0,
   completedOrders: [],
 };
 
@@ -272,12 +272,12 @@ function normalizeBadgeIds(value: unknown): ProgressBadgeId[] {
   );
 }
 
-function normalizeCompletedOrderRecord(value: unknown): CompletedFakeOrderRecord | null {
+function normalizeCompletedOrderRecord(value: unknown): CompletedOrderRecord | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
   }
 
-  const record = value as Partial<CompletedFakeOrderRecord>;
+  const record = value as Partial<CompletedOrderRecord>;
   if (
     typeof record.id !== "string" ||
     record.id.trim().length === 0 ||
@@ -312,7 +312,7 @@ function normalizeCompletedOrderRecord(value: unknown): CompletedFakeOrderRecord
   };
 }
 
-function getUniqueOrderRecords(records: CompletedFakeOrderRecord[]) {
+function getUniqueOrderRecords(records: CompletedOrderRecord[]) {
   const seenOrderIds = new Set<string>();
   return records.filter((record) => {
     if (seenOrderIds.has(record.id)) {
@@ -324,7 +324,7 @@ function getUniqueOrderRecords(records: CompletedFakeOrderRecord[]) {
   });
 }
 
-function getSortedOrderRecords(records: CompletedFakeOrderRecord[]) {
+function getSortedOrderRecords(records: CompletedOrderRecord[]) {
   return [...records].sort((firstOrder, secondOrder) => {
     const timestampDifference =
       getSafeDate(firstOrder.timestamp).getTime() - getSafeDate(secondOrder.timestamp).getTime();
@@ -333,13 +333,13 @@ function getSortedOrderRecords(records: CompletedFakeOrderRecord[]) {
   });
 }
 
-function deriveStreakMetadata(completedOrders: CompletedFakeOrderRecord[]) {
+function deriveStreakMetadata(completedOrders: CompletedOrderRecord[]) {
   if (completedOrders.length === 0) {
     return {
       lastCompletedLocalDate: null,
       currentStreak: 0,
       longestStreak: 0,
-      totalCompletedFakeOrders: 0,
+      totalCompletedOrders: 0,
     };
   }
 
@@ -375,13 +375,13 @@ function deriveStreakMetadata(completedOrders: CompletedFakeOrderRecord[]) {
     lastCompletedLocalDate,
     currentStreak: isActiveStreak ? runByDateKey.get(lastCompletedLocalDate) ?? 0 : 0,
     longestStreak,
-    totalCompletedFakeOrders: completedOrders.length,
+    totalCompletedOrders: completedOrders.length,
   };
 }
 
 function getBadgeIdsForCompletedOrder(
-  order: Pick<CompletedFakeOrderRecord, "items" | "timestamp">,
-  nextCompletedOrders: CompletedFakeOrderRecord[],
+  order: Pick<CompletedOrderRecord, "items" | "timestamp">,
+  nextCompletedOrders: CompletedOrderRecord[],
 ): ProgressBadgeId[] {
   const totalMoneySaved = getTotalMoneySaved(nextCompletedOrders);
   const badgeIds: ProgressBadgeId[] = [];
@@ -409,9 +409,9 @@ function getBadgeIdsForCompletedOrder(
   return badgeIds;
 }
 
-function deriveBadgeIds(completedOrders: CompletedFakeOrderRecord[]) {
+function deriveBadgeIds(completedOrders: CompletedOrderRecord[]) {
   const badgeIdsByOrderId = new Map<string, ProgressBadgeId[]>();
-  const runningOrders: CompletedFakeOrderRecord[] = [];
+  const runningOrders: CompletedOrderRecord[] = [];
 
   getSortedOrderRecords(completedOrders).forEach((order) => {
     const nextOrder = {
@@ -436,7 +436,7 @@ function deriveBadgeIds(completedOrders: CompletedFakeOrderRecord[]) {
 
 function buildProgressState(
   countedOrderIds: string[],
-  completedOrders: CompletedFakeOrderRecord[],
+  completedOrders: CompletedOrderRecord[],
 ): ReceiptProgressState {
   const uniqueCompletedOrders = deriveBadgeIds(getUniqueOrderRecords(completedOrders));
   const uniqueCountedOrderIds = Array.from(
@@ -464,7 +464,7 @@ function normalizeProgress(value: unknown): ReceiptProgressState {
     Array.isArray(progress.completedOrders)
       ? progress.completedOrders
           .map(normalizeCompletedOrderRecord)
-          .filter((record): record is CompletedFakeOrderRecord => Boolean(record))
+          .filter((record): record is CompletedOrderRecord => Boolean(record))
       : [],
   );
   const countedOrderIds = Array.from(
@@ -507,18 +507,18 @@ function writeStoredProgress(progress: ReceiptProgressState) {
   }
 }
 
-function getTotalMoneySaved(records: CompletedFakeOrderRecord[]) {
+function getTotalMoneySaved(records: CompletedOrderRecord[]) {
   return records.reduce((total, order) => total + order.totalPrice, 0);
 }
 
-function getTotalCaloriesAvoided(records: CompletedFakeOrderRecord[]) {
+function getTotalCaloriesAvoided(records: CompletedOrderRecord[]) {
   return records.reduce((total, order) => total + order.totalCalories, 0);
 }
 
 function buildCompletedOrderRecord(
-  order: FakeOrderSnapshot,
+  order: OrderSnapshot,
   badgeIds: ProgressBadgeId[],
-): CompletedFakeOrderRecord | null {
+): CompletedOrderRecord | null {
   const items = order.items
     .map((item) =>
       normalizeItemSummary({
@@ -549,8 +549,8 @@ function buildCompletedOrderRecord(
 }
 
 function addOrderRecord(
-  completedOrders: CompletedFakeOrderRecord[],
-  order: FakeOrderSnapshot,
+  completedOrders: CompletedOrderRecord[],
+  order: OrderSnapshot,
 ) {
   const placeholderRecord = buildCompletedOrderRecord(order, []);
   if (!placeholderRecord) {
@@ -568,7 +568,7 @@ function addOrderRecord(
 
 function getNextProgress(
   currentProgress: ReceiptProgressState,
-  order: FakeOrderSnapshot,
+  order: OrderSnapshot,
 ): ReceiptProgressState {
   const hasCountedOrder = currentProgress.countedOrderIds.includes(order.id);
   const hasHistoryRecord = currentProgress.completedOrders.some(
@@ -592,7 +592,7 @@ function getNextProgress(
 
 export function getProjectedReceiptProgress(
   currentProgress: ReceiptProgressState,
-  order: FakeOrderSnapshot,
+  order: OrderSnapshot,
 ) {
   return getNextProgress(currentProgress, order);
 }
@@ -605,7 +605,7 @@ export function getReceiptProgressSummary(
   );
 
   return {
-    totalFakeOrders: progress.completedOrders.length,
+    totalOrders: progress.completedOrders.length,
     totalMoneySaved: getTotalMoneySaved(progress.completedOrders),
     totalCaloriesAvoided: getTotalCaloriesAvoided(progress.completedOrders),
     currentStreak: progress.currentStreak,
@@ -641,7 +641,7 @@ export function ReceiptProgressProvider({ children }: { children: ReactNode }) {
     writeStoredProgress(progress);
   }, [progress]);
 
-  const recordCompletedOrder = useCallback((order: FakeOrderSnapshot) => {
+  const recordCompletedOrder = useCallback((order: OrderSnapshot) => {
     const recordedProgress = getProjectedReceiptProgress(progressRef.current, order);
     progressRef.current = recordedProgress;
     setProgress(recordedProgress);

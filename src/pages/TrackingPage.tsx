@@ -4,7 +4,7 @@ import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { useCart } from "../state/cart";
-import { useFakeOrder } from "../state/fakeOrder";
+import { useOrder } from "../state/order";
 
 const trackingStages = [
   {
@@ -28,8 +28,8 @@ const trackingStages = [
     copy: "The ritual is complete. Nothing edible was harmed.",
   },
   {
-    title: "Physical delivery cancelled",
-    copy: "No doorbell. No payment. No 1 AM negotiation.",
+    title: "Doorbell crisis averted",
+    copy: "Self Control takes a tiny bow.",
   },
 ];
 
@@ -42,12 +42,12 @@ function getPrefersReducedMotion() {
 }
 
 export function TrackingPage() {
-  const fakeOrder = useFakeOrder();
+  const orderState = useOrder();
   const { clearCart } = useCart();
   const navigate = useNavigate();
   const [activeStageIndex, setActiveStageIndex] = useState(0);
   const hasNavigatedRef = useRef(false);
-  const hasTrackableOrder = fakeOrder.currentOrder?.status === "tracking";
+  const hasTrackableOrder = orderState.currentOrder?.status === "tracking";
 
   const prefersReducedMotion = useMemo(() => getPrefersReducedMotion(), []);
   const finalStageIndex = trackingStages.length - 1;
@@ -77,7 +77,7 @@ export function TrackingPage() {
 
     const timeoutId = window.setTimeout(() => {
       hasNavigatedRef.current = true;
-      const completedOrder = fakeOrder.updateOrderStatus("completed");
+      const completedOrder = orderState.updateOrderStatus("completed");
       if (completedOrder) {
         clearCart();
         navigate("/receipt", { replace: true });
@@ -88,7 +88,7 @@ export function TrackingPage() {
   }, [
     activeStageIndex,
     clearCart,
-    fakeOrder,
+    orderState,
     finalStageDelay,
     finalStageIndex,
     hasTrackableOrder,
@@ -98,12 +98,12 @@ export function TrackingPage() {
   return (
     <div className="tracking-page">
       <PageHeader
-        title="Tracking the order that will never arrive."
-        subtitle="A calm little progress ritual for a delivery that stays imaginary."
+        title="Tracking the craving handoff."
+        subtitle="A calm progress ritual with Self Control in uniform."
         trailing={<span className="status-dot">ETA: never</span>}
       />
 
-      {!hasTrackableOrder || !fakeOrder.currentOrder ? (
+      {!hasTrackableOrder || !orderState.currentOrder ? (
         <section className="tracking-empty-section" aria-label="No order tracking">
           <EmptyState
             title="No order is currently being tracked."
@@ -118,13 +118,13 @@ export function TrackingPage() {
           <section className="rider-panel" aria-labelledby="rider-title">
             <div className="section-heading">
               <span className="section-kicker">Parody tracking</span>
-              <h2 id="rider-title">Rider details</h2>
-              <p>No map, no location, no delivery. Just a progress bar with manners.</p>
+              <h2 id="rider-title">Ritual details</h2>
+              <p>A progress ritual with a clipboard, a wink, and excellent timing.</p>
             </div>
 
             <div className="rider-grid">
               <div>
-                <span>Delivery Partner</span>
+                <span>Ritual Partner</span>
                 <strong>Self Control</strong>
               </div>
               <div>
@@ -145,7 +145,7 @@ export function TrackingPage() {
           <section className="tracking-progress" aria-labelledby="tracking-progress-title">
             <div className="section-heading">
               <h2 id="tracking-progress-title">Tracking progress</h2>
-              <p>Order {fakeOrder.currentOrder.id} is being successfully not delivered.</p>
+              <p>Order {orderState.currentOrder.id} is being escorted into receipt history.</p>
             </div>
 
             <ol className="tracking-stage-list">

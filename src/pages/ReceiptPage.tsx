@@ -4,7 +4,7 @@ import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { Toast } from "../components/Toast";
-import { useFakeOrder, type FakeOrderSnapshot } from "../state/fakeOrder";
+import { useOrder, type OrderSnapshot } from "../state/order";
 import {
   getPrimaryBadgeNameForOrder,
   getProjectedReceiptProgress,
@@ -30,11 +30,11 @@ function getItemCountLabel(totalQuantity: number) {
 }
 
 function getStreakCopy(streak: number) {
-  return streak === 1 ? "1-day not-ordering streak" : `${streak}-day not-ordering streak`;
+  return streak === 1 ? "1-day restraint streak" : `${streak}-day restraint streak`;
 }
 
 function buildShareText(
-  order: FakeOrderSnapshot,
+  order: OrderSnapshot,
   badge: string,
   progress: ReceiptProgressState,
 ) {
@@ -49,7 +49,7 @@ function buildShareText(
     lines.push(`Calories avoided: ${order.totalCalories}.`);
   }
 
-  lines.push("No real orders were placed.");
+  lines.push("The receipt ceremony remains delightfully private.");
   return lines.join(" ");
 }
 
@@ -71,7 +71,7 @@ function isShareAbortError(error: unknown) {
 }
 
 export function ReceiptPage() {
-  const fakeOrder = useFakeOrder();
+  const orderState = useOrder();
   const receiptProgress = useReceiptProgress();
   const navigate = useNavigate();
   const [toast, setToast] = useState<{ message: string; tone: "info" | "success" }>({
@@ -80,7 +80,7 @@ export function ReceiptPage() {
   });
   const [showShareFallback, setShowShareFallback] = useState(false);
   const order =
-    fakeOrder.currentOrder?.status === "completed" ? fakeOrder.currentOrder : null;
+    orderState.currentOrder?.status === "completed" ? orderState.currentOrder : null;
   const displayedProgress = useMemo(
     () =>
       order
@@ -193,7 +193,7 @@ export function ReceiptPage() {
     <div className="receipt-page">
       <PageHeader
         title="Successfully Not Ordered."
-        subtitle="A tiny trophy for cancelling a very imaginary delivery."
+        subtitle="A tiny trophy for catching the craving in time."
         trailing={<span className="status-dot">Receipt ready</span>}
       />
 
@@ -215,7 +215,7 @@ export function ReceiptPage() {
               <h2 id="receipt-status-title">Successfully Not Ordered</h2>
               <span className="receipt-badge">Badge unlocked: {badge}</span>
               <p>
-                The craving got a full ceremony, and nothing showed up at the door.
+                The craving got a full ceremony, then took a graceful bow.
               </p>
             </div>
 
@@ -255,8 +255,8 @@ export function ReceiptPage() {
           <section className="receipt-items-section" aria-labelledby="receipt-items-title">
             <div className="section-heading">
               <span className="section-kicker">Avoided items</span>
-              <h2 id="receipt-items-title">Things that did not arrive</h2>
-              <p>Compact proof for the bag that stayed fictional.</p>
+              <h2 id="receipt-items-title">Items left on the stage</h2>
+              <p>Compact proof for the cart that chose applause over chaos.</p>
             </div>
 
             <ol className="receipt-item-list">
@@ -279,7 +279,7 @@ export function ReceiptPage() {
               <span className="section-kicker">Streak</span>
               <h2>{getStreakCopy(displayedProgress.currentStreak)}</h2>
               <p>
-                {displayedProgress.totalCompletedFakeOrders} orders avoided in
+                {displayedProgress.totalCompletedOrders} orders avoided in
                 total. Same-day wins count, but the daily streak stays honest.
               </p>
             </div>
@@ -310,14 +310,6 @@ export function ReceiptPage() {
                 {shareText}
               </p>
             ) : null}
-          </section>
-
-          <section className="receipt-parody-note" aria-label="Parody disclaimer">
-            <h2>Nothing was sold. Nothing is coming.</h2>
-            <p>
-              BlinkaMart is a parody self-control app. It does not sell, deliver,
-              or process orders.
-            </p>
           </section>
 
           <div className="cart-cta-row" aria-label="Receipt actions">

@@ -26,7 +26,7 @@ function getValidCategoryId(value: string | null): CategoryId | "all" {
 export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [toastMessage, setToastMessage] = useState("Shelf open. Nothing here can actually arrive.");
+  const [toastMessage, setToastMessage] = useState("Shelf open. The cravings are rehearsing.");
   const cart = useCart();
   const settings = useSettings();
 
@@ -103,8 +103,8 @@ export function ProductsPage() {
     <div className="products-page">
       <PageHeader
         title="Browse the shelf."
-        subtitle="Add cravings to a cart. No delivery, no payment, no actual snacks."
-        trailing={<span className="status-dot">No real checkout</span>}
+        subtitle="Add cravings to a cart and let the ritual do its weird little job."
+        trailing={<span className="status-dot">Cart ritual</span>}
       />
 
       <SearchInput
@@ -140,7 +140,7 @@ export function ProductsPage() {
       <section className="product-shelf" aria-labelledby="products-title">
         <div className="section-heading">
           <span className="section-kicker">Dopamine aisle</span>
-          <h2 id="products-title">Products that thankfully do not ship</h2>
+          <h2 id="products-title">Products currently auditioning</h2>
           <p>Tap Add for the ritual. Future you remains unbothered.</p>
         </div>
 

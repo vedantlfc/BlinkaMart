@@ -26,9 +26,9 @@ export function BottomCartBar({
   const isEmpty = totalQuantity === 0;
   const itemLabel = totalQuantity === 1 ? "item" : "items";
   const label = message ?? (isEmpty ? "Cart waiting" : `${totalQuantity} ${itemLabel}`);
-  const caloriesCopy = showCalories ? ` - ${totalCalories} cal avoided if cancelled` : "";
+  const caloriesCopy = showCalories ? ` - ${totalCalories} cal kept offstage` : "";
   const note = isEmpty
-    ? "No snacks, no payment, no driver drama."
+    ? "Cart is calm. Cravings are rehearsing."
     : `Rs ${totalPrice} saved-in-progress${caloriesCopy} - regret ${averageRegretScore}/100`;
 
   return (

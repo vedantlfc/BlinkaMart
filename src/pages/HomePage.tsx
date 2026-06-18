@@ -34,8 +34,8 @@ function getTimeGreeting(date: Date) {
   return "Prime cart-building danger zone.";
 }
 
-function getFakeOrderLabel(totalFakeOrders: number) {
-  return totalFakeOrders === 1 ? "1 order avoided" : `${totalFakeOrders} orders avoided`;
+function getOrderLabel(totalOrders: number) {
+  return totalOrders === 1 ? "1 order avoided" : `${totalOrders} orders avoided`;
 }
 
 function getCurrentStreakCopy(currentStreak: number) {
@@ -47,9 +47,7 @@ function getCurrentStreakCopy(currentStreak: number) {
 export function HomePage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<CategoryId>(categories[0].id);
   const [searchQuery, setSearchQuery] = useState("");
-  const [toastMessage, setToastMessage] = useState(
-    "Shelf stocked. Real orders still very cancelled.",
-  );
+  const [toastMessage, setToastMessage] = useState("Shelf stocked. The ritual may begin.");
   const navigate = useNavigate();
   const cart = useCart();
   const settings = useSettings();
@@ -62,7 +60,7 @@ export function HomePage() {
     () => getReceiptProgressSummary(receiptProgress.progress),
     [receiptProgress.progress],
   );
-  const hasProgress = progressSummary.totalFakeOrders > 0 || progressSummary.recentOrders.length > 0;
+  const hasProgress = progressSummary.totalOrders > 0 || progressSummary.recentOrders.length > 0;
 
   const visibleProducts = useMemo(() => {
     if (normalizedQuery) {
@@ -108,7 +106,7 @@ export function HomePage() {
     setToastMessage("Shelf switched. Still safer than checkout.");
   }
 
-  function handleBuildFakeCart() {
+  function handleBuildCart() {
     navigate("/products");
   }
 
@@ -122,11 +120,11 @@ export function HomePage() {
 
       <section className="hero-panel" aria-labelledby="home-hero-title">
         <div className="hero-copy">
-          <span className="hero-tag">No delivery. Full drama.</span>
+          <span className="hero-tag">Full drama. Tiny pause.</span>
           <h2 id="home-hero-title">Add to cart. Not to stomach.</h2>
           <p>
-            Build a cart. Save the money. Skip the regret. No delivery, no
-            payment, no actual snacks.
+            Build a cart. Save the money. Skip the regret. Let Self Control take
+            the wheel.
           </p>
         </div>
 
@@ -140,7 +138,7 @@ export function HomePage() {
       <div className="cta-row" aria-label="Cart actions">
         <Button
           type="button"
-          onClick={handleBuildFakeCart}
+          onClick={handleBuildCart}
         >
           Build Cart
         </Button>
@@ -150,7 +148,7 @@ export function HomePage() {
         <section className="home-progress-panel" aria-labelledby="home-progress-title">
           <div>
             <span className="section-kicker">Local progress</span>
-            <h2 id="home-progress-title">{getFakeOrderLabel(progressSummary.totalFakeOrders)}</h2>
+            <h2 id="home-progress-title">{getOrderLabel(progressSummary.totalOrders)}</h2>
             <p>
               Rs {progressSummary.totalMoneySaved} stayed with you.{" "}
               {getCurrentStreakCopy(progressSummary.currentStreak)}
@@ -181,7 +179,7 @@ export function HomePage() {
       <section className="category-section" aria-labelledby="category-title">
         <div className="section-heading">
           <h2 id="category-title">Pick your almost-mistake</h2>
-          <p>Tap a shelf. Browse the craving. No real order can escape.</p>
+          <p>Tap a shelf. Every craving gets a little stage time.</p>
         </div>
         <div className="category-grid" aria-label="Product categories">
           {categories.map((category) => (
@@ -210,7 +208,7 @@ export function HomePage() {
           <p>
             {normalizedQuery
               ? `Showing items that match "${searchQuery.trim()}".`
-              : `${selectedCategory?.name} products are ready to be admired, not delivered.`}
+              : `${selectedCategory?.name} products are ready to be admired, debated, and left onstage.`}
           </p>
         </div>
 
@@ -259,7 +257,7 @@ export function HomePage() {
         <Card>
           <span className="card-kicker">Reminder</span>
           <h3>Your delivery partner is Self Control.</h3>
-          <p>No address needed. No payment needed. No awkward doorbell at 1 AM.</p>
+          <p>Self Control arrives with a clipboard and suspiciously good timing.</p>
         </Card>
         <Card>
           <span className="card-kicker">Current cart</span>

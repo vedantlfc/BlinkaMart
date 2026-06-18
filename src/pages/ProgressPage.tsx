@@ -9,7 +9,7 @@ import {
   getReceiptProgressSummary,
   progressBadgeDefinitions,
   useReceiptProgress,
-  type CompletedFakeOrderRecord,
+  type CompletedOrderRecord,
 } from "../state/receiptProgress";
 
 function formatOrderTime(timestamp: string) {
@@ -29,7 +29,7 @@ function getItemLabel(totalQuantity: number) {
   return totalQuantity === 1 ? "1 item avoided" : `${totalQuantity} items avoided`;
 }
 
-function getPrimaryBadgeName(order: CompletedFakeOrderRecord) {
+function getPrimaryBadgeName(order: CompletedOrderRecord) {
   const primaryBadgeId = order.badgeIds[0];
   return primaryBadgeId ? getProgressBadgeName(primaryBadgeId) : "Successfully Not Ordered";
 }
@@ -43,12 +43,12 @@ export function ProgressPage() {
     [receiptProgress.progress],
   );
   const unlockedBadgeIds = new Set(summary.unlockedBadgeIds);
-  const hasProgress = summary.totalFakeOrders > 0 || summary.recentOrders.length > 0;
+  const hasProgress = summary.totalOrders > 0 || summary.recentOrders.length > 0;
 
   return (
     <div className="progress-page">
       <PageHeader
-        title="Your Not-Ordering Career."
+        title="Your Cart Ritual Career."
         subtitle="Local-only progress for carts that never became deliveries."
         trailing={<span className="status-dot">Saved on this browser</span>}
       />
@@ -86,7 +86,7 @@ export function ProgressPage() {
             <dl className="progress-stat-grid">
               <div>
                 <dt>Orders avoided</dt>
-                <dd>{summary.totalFakeOrders}</dd>
+                <dd>{summary.totalOrders}</dd>
               </div>
               <div>
                 <dt>Money not spent</dt>
@@ -131,7 +131,7 @@ export function ProgressPage() {
                     <h3>{badge.name}</h3>
                     <p>
                       {unlocked
-                        ? "Earned by successfully not-ordering at the right moment."
+                        ? "Earned by catching the craving at the right moment."
                         : badge.lockedHint}
                     </p>
                   </article>

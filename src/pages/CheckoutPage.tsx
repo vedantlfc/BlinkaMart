@@ -5,14 +5,14 @@ import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { categories, products, type Product } from "../data/catalog";
 import { useCart } from "../state/cart";
-import { useFakeOrder, type FakeOrderItem, type FakeOrderSnapshot } from "../state/fakeOrder";
+import { useOrder, type OrderItem, type OrderSnapshot } from "../state/order";
 import { useSettings } from "../state/settings";
 
 const productById = new Map(products.map((product) => [product.id, product]));
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
 
 interface CheckoutSummary {
-  items: FakeOrderItem[];
+  items: OrderItem[];
   totalQuantity: number;
   totalPrice: number;
   totalCalories: number;
@@ -25,7 +25,7 @@ function getCartSummary(
   cartItems: Record<string, number>,
   showCalories: boolean,
 ): CheckoutSummary | null {
-  const items = Object.entries(cartItems).reduce<FakeOrderItem[]>(
+  const items = Object.entries(cartItems).reduce<OrderItem[]>(
     (summaryItems, [productId, quantity]) => {
       const product: Product | undefined = productById.get(productId);
 
@@ -81,7 +81,7 @@ function getCartSummary(
   };
 }
 
-function getOrderSummary(order: FakeOrderSnapshot): CheckoutSummary {
+function getOrderSummary(order: OrderSnapshot): CheckoutSummary {
   return {
     items: order.items,
     totalQuantity: order.totalQuantity,
@@ -95,7 +95,7 @@ function getOrderSummary(order: FakeOrderSnapshot): CheckoutSummary {
 
 export function CheckoutPage() {
   const cart = useCart();
-  const fakeOrder = useFakeOrder();
+  const orderState = useOrder();
   const settings = useSettings();
   const navigate = useNavigate();
 
@@ -104,15 +104,15 @@ export function CheckoutPage() {
     [cart.items, settings.showCalories],
   );
   const savedDraftOrder =
-    fakeOrder.currentOrder?.status === "draft" ? fakeOrder.currentOrder : null;
-  const hasTrackingOrder = fakeOrder.currentOrder?.status === "tracking";
+    orderState.currentOrder?.status === "draft" ? orderState.currentOrder : null;
+  const hasTrackingOrder = orderState.currentOrder?.status === "tracking";
   const summary = cartSummary ?? (savedDraftOrder ? getOrderSummary(savedDraftOrder) : null);
 
-  function handleConfirmFakeCheckout() {
+  function handleConfirmCheckout() {
     const nextOrder = cartSummary
-      ? fakeOrder.createOrderFromCart(cart.items, settings.showCalories, "tracking")
+      ? orderState.createOrderFromCart(cart.items, settings.showCalories, "tracking")
       : savedDraftOrder
-        ? fakeOrder.updateOrderStatus("tracking")
+        ? orderState.updateOrderStatus("tracking")
         : null;
 
     if (nextOrder) {
@@ -124,15 +124,15 @@ export function CheckoutPage() {
     <div className="checkout-page">
       <PageHeader
         title="Checkout reality check."
-        subtitle="Final pause before the imaginary rider starts doing imaginary work."
-        trailing={<span className="status-dot">No real payment</span>}
+        subtitle="Final pause before Self Control starts doing excellent work."
+        trailing={<span className="status-dot">Parody checkout</span>}
       />
 
       {!summary && hasTrackingOrder ? (
         <section className="checkout-empty-section" aria-label="Order already tracking">
           <EmptyState
             title="This order is already being tracked."
-            message="It is past checkout and currently being successfully not delivered."
+            message="It is past checkout and already in the tracking ritual."
           />
           <Button type="button" onClick={() => navigate("/tracking")}>
             Resume Tracking
@@ -150,23 +150,23 @@ export function CheckoutPage() {
         </section>
       ) : (
         <>
-          <section className="fake-disclaimer" aria-labelledby="checkout-disclaimer-title">
+          <section className="checkout-note" aria-labelledby="checkout-disclaimer-title">
             <span className="section-kicker">Reality check</span>
-            <h2 id="checkout-disclaimer-title">This checkout cannot charge you.</h2>
+            <h2 id="checkout-disclaimer-title">One last pause before Self Control clocks in.</h2>
             <p>
-              Final reality check: this is a parody checkout. No address, no
-              payment, no delivery. We are only staging the craving ritual.
+              This parody checkout keeps the ritual theatrical while the craving
+              gets one final look in the mirror.
             </p>
             <p>
-              BlinkaMart does not sell, deliver, or process orders. The next step
-              is parody tracking, starring Self Control.
+              Next up: Self Control gets assigned, the cart gets ceremonious,
+              and the receipt gets its tiny spotlight.
             </p>
           </section>
 
           <section className="checkout-summary" aria-labelledby="checkout-summary-title">
             <div className="section-heading">
               <span className="section-kicker">{summary.sourceLabel}</span>
-              <h2 id="checkout-summary-title">About to not order</h2>
+              <h2 id="checkout-summary-title">Cart ritual summary</h2>
               <p>This snapshot carries into tracking and the receipt handoff.</p>
             </div>
 
@@ -215,7 +215,7 @@ export function CheckoutPage() {
           </section>
 
           <div className="cart-cta-row" aria-label="Checkout actions">
-            <Button type="button" onClick={handleConfirmFakeCheckout}>
+            <Button type="button" onClick={handleConfirmCheckout}>
               Place order successfully
             </Button>
             <Button type="button" variant="secondary" onClick={() => navigate("/cart")}>

@@ -7,7 +7,7 @@ import { PageHeader } from "../components/PageHeader";
 import { Toast } from "../components/Toast";
 import { categories, products, type Product } from "../data/catalog";
 import { useCart } from "../state/cart";
-import { useFakeOrder } from "../state/fakeOrder";
+import { useOrder } from "../state/order";
 import { useSettings } from "../state/settings";
 
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
@@ -49,7 +49,7 @@ function getCartProducts(items: Record<string, number>) {
 export function CartPage() {
   const cart = useCart();
   const settings = useSettings();
-  const fakeOrder = useFakeOrder();
+  const orderState = useOrder();
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("");
   const [showHungryGuidance, setShowHungryGuidance] = useState(false);
@@ -67,8 +67,8 @@ export function CartPage() {
     return () => window.clearTimeout(timeoutId);
   }, [toastMessage]);
 
-  function handlePlaceFakeOrder() {
-    const order = fakeOrder.createOrderFromCart(cart.items, settings.showCalories);
+  function handlePlaceOrder() {
+    const order = orderState.createOrderFromCart(cart.items, settings.showCalories);
     if (!order) {
       setToastMessage("Add an item first. Checkout needs something imaginary to process.");
       return;
@@ -81,7 +81,7 @@ export function CartPage() {
     <div className="cart-page">
       <PageHeader
         title="Review the fictional damage."
-        subtitle="No payment. No address. Just a cart-shaped pause."
+        subtitle="A cart-shaped pause before the craving commits."
         trailing={<span className="status-dot">Parody flow</span>}
       />
 
@@ -100,7 +100,7 @@ export function CartPage() {
           <section className="impact-summary" aria-labelledby="impact-title">
             <div className="section-heading">
               <span className="section-kicker">Impact summary</span>
-              <h2 id="impact-title">If this gets cancelled, you keep the win.</h2>
+              <h2 id="impact-title">If this becomes a receipt, you keep the win.</h2>
               <p>Numbers are estimates for the ritual, not a lecture.</p>
             </div>
 
@@ -169,7 +169,7 @@ export function CartPage() {
                   <div className="cart-item-card__impact">
                     <span>{quantity} in cart</span>
                     {settings.showCalories ? (
-                      <span>{product.calories * quantity} cal avoided if cancelled</span>
+                      <span>{product.calories * quantity} cal kept offstage</span>
                     ) : null}
                     <span>Regret {product.regretScore}/100</span>
                   </div>
@@ -229,7 +229,7 @@ export function CartPage() {
           ) : null}
 
           <div className="cart-cta-row" aria-label="Cart actions">
-            <Button type="button" onClick={handlePlaceFakeOrder}>
+            <Button type="button" onClick={handlePlaceOrder}>
               Place order successfully
             </Button>
             <Button

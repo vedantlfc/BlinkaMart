@@ -16,17 +16,16 @@ export function AppShell({ children }: AppShellProps) {
             </span>
             <span>
               <span className="brand-name">BlinkaMart</span>
-              <span className="brand-kicker">Nothing delivered. Crisis managed.</span>
+              <span className="brand-kicker">Cravings meet theatre.</span>
             </span>
           </Link>
-          <span className="fake-pill">Parody app</span>
+          <span className="parody-pill">Parody app</span>
         </header>
 
         <main className="app-content">{children}</main>
 
         <footer className="app-footer">
-          BlinkaMart is a parody self-control app. It does not sell, deliver, or
-          process orders.
+          Cart rituals, tiny trophies, excellent timing.
         </footer>
       </div>
     </div>
