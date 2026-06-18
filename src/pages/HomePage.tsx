@@ -68,9 +68,14 @@ export function HomePage() {
         const categoryName = categoryNames.get(product.categoryId) ?? "";
         const searchable = [
           product.name,
+          product.fullName,
+          product.brandName,
+          product.subcategory,
           product.subtitle,
+          product.originalCategory,
           product.tag ?? "",
           categoryName,
+          product.searchKeywords.join(" "),
         ]
           .join(" ")
           .toLowerCase();

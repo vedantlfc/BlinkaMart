@@ -41,9 +41,14 @@ export function ProductsPage() {
         selectedCategoryId === "all" || product.categoryId === selectedCategoryId;
       const searchable = [
         product.name,
+        product.fullName,
+        product.brandName,
+        product.subcategory,
         product.subtitle,
+        product.originalCategory,
         product.tag ?? "",
         categoryName,
+        product.searchKeywords.join(" "),
       ]
         .join(" ")
         .toLowerCase();

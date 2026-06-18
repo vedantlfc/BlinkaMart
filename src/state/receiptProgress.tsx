@@ -88,7 +88,7 @@ export const progressBadgeDefinitions: ProgressBadgeDefinition[] = [
   {
     id: "maggi-monk",
     name: "Maggi Monk",
-    lockedHint: "Cancel a lazy meal or noodle-shaped almost-order.",
+    lockedHint: "Complete an instant-food or noodle-shaped order ritual.",
   },
   {
     id: "cart-without-consequence",
@@ -152,9 +152,14 @@ function isCategoryId(value: unknown): value is CategoryId {
   return (
     value === "chips-namkeen" ||
     value === "cold-drinks" ||
-    value === "sweet-cravings" ||
-    value === "lazy-meals" ||
-    value === "random-midnight"
+    value === "chocolate" ||
+    value === "ice-cream" ||
+    value === "instant-food" ||
+    value === "bakery" ||
+    value === "frozen-snacks" ||
+    value === "breakfast-regrets" ||
+    value === "random-non-food-items" ||
+    value === "emotional-purchases"
   );
 }
 
@@ -390,7 +395,7 @@ function getBadgeIdsForCompletedOrder(
     badgeIds.push("chips-dodger");
   }
 
-  if (order.items.some((item) => item.categoryId === "lazy-meals")) {
+  if (order.items.some((item) => item.categoryId === "instant-food")) {
     badgeIds.push("maggi-monk");
   }
 

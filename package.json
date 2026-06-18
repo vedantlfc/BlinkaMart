@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "generate:catalog": "node scripts/generate-catalog.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview"
   },
