@@ -116,7 +116,7 @@ export function HomePage() {
   }
 
   return (
-    <div className="home-page">
+    <div className={["home-page", cart.totals.totalQuantity > 0 ? "page-with-bottom-cart" : ""].filter(Boolean).join(" ")}>
       <PageHeader
         title={greeting}
         subtitle="Parody ordering for real cravings."
@@ -267,7 +267,7 @@ export function HomePage() {
         <Card>
           <span className="card-kicker">Current cart</span>
           <h3>Emotionally loaded, physically empty.</h3>
-          <p>This could have been a real order. Thankfully, it is only theatre.</p>
+          <p>This could have become a checkout spiral. Thankfully, it stays theatre.</p>
         </Card>
       </section>
 

@@ -38,7 +38,9 @@ export function ProductsPage() {
     return products.filter((product) => {
       const categoryName = categoryNames.get(product.categoryId) ?? "";
       const matchesCategory =
-        selectedCategoryId === "all" || product.categoryId === selectedCategoryId;
+        normalizedQuery ||
+        selectedCategoryId === "all" ||
+        product.categoryId === selectedCategoryId;
       const searchable = [
         product.name,
         product.fullName,
@@ -53,7 +55,7 @@ export function ProductsPage() {
         .join(" ")
         .toLowerCase();
 
-      return matchesCategory && (!normalizedQuery || searchable.includes(normalizedQuery));
+      return Boolean(matchesCategory) && (!normalizedQuery || searchable.includes(normalizedQuery));
     });
   }, [normalizedQuery, selectedCategoryId]);
 
@@ -89,11 +91,11 @@ export function ProductsPage() {
   }
 
   function handleCategorySelect(categoryId: CategoryId | "all") {
-    updateParams(categoryId, searchQuery);
+    updateParams(categoryId, "");
   }
 
   function handleSearchChange(value: string) {
-    updateParams(selectedCategoryId, value, true);
+    updateParams(value.trim() ? "all" : selectedCategoryId, value, true);
   }
 
   function showCartToast(message: string) {
@@ -105,10 +107,10 @@ export function ProductsPage() {
   }
 
   return (
-    <div className="products-page">
+    <div className={["products-page", cart.totals.totalQuantity > 0 ? "page-with-bottom-cart" : ""].filter(Boolean).join(" ")}>
       <PageHeader
         title="Browse the shelf."
-        subtitle="Add cravings to a cart and let the ritual do its weird little job."
+        subtitle="Add cravings, then let the ritual catch them."
         trailing={<span className="status-dot">Cart ritual</span>}
       />
 
@@ -116,26 +118,32 @@ export function ProductsPage() {
         label="Search products"
         value={searchQuery}
         onChange={handleSearchChange}
-        placeholder="Search chips, cola, momos, bad ideas..."
+        placeholder="Search momos, coffee, cable, stress..."
         aria-label="Search products"
       />
 
       <section className="filter-panel" aria-labelledby="filter-title">
         <div className="section-heading">
-          <h2 id="filter-title">Filter the temptation</h2>
-          <p>{filteredProducts.length} products visible.</p>
+          <h2 id="filter-title">
+            {normalizedQuery ? "Searching all shelves" : "Choose a shelf"}
+          </h2>
+          <p>
+            {normalizedQuery
+              ? `${filteredProducts.length} results across all shelves.`
+              : `${filteredProducts.length} products visible.`}
+          </p>
         </div>
         <div className="chip-list" aria-label="Product category filters">
           <CategoryChip
             label="All"
-            active={selectedCategoryId === "all"}
+            active={Boolean(normalizedQuery) || selectedCategoryId === "all"}
             onClick={() => handleCategorySelect("all")}
           />
           {categories.map((category) => (
             <CategoryChip
               key={category.id}
               label={category.name}
-              active={selectedCategoryId === category.id}
+              active={!normalizedQuery && selectedCategoryId === category.id}
               onClick={() => handleCategorySelect(category.id)}
             />
           ))}
@@ -145,8 +153,14 @@ export function ProductsPage() {
       <section className="product-shelf" aria-labelledby="products-title">
         <div className="section-heading">
           <span className="section-kicker">Dopamine aisle</span>
-          <h2 id="products-title">Products currently auditioning</h2>
-          <p>Tap Add for the ritual. Future you remains unbothered.</p>
+          <h2 id="products-title">
+            {normalizedQuery ? "Search results" : "Products currently auditioning"}
+          </h2>
+          <p>
+            {normalizedQuery
+              ? `Showing catalog matches for "${searchQuery.trim()}".`
+              : "Tap Add for the ritual. Future you remains unbothered."}
+          </p>
         </div>
 
         {filteredProducts.length > 0 ? (

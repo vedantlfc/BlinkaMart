@@ -30,9 +30,15 @@ export function BottomCartBar({
   const note = isEmpty
     ? "Cart is calm. Cravings are rehearsing."
     : `Rs ${totalPrice} saved-in-progress${caloriesCopy} - regret ${averageRegretScore}/100`;
+  const hasAction = !isEmpty && Boolean(actionLabel) && Boolean(onAction);
 
   return (
-    <aside className="bottom-cart-bar" aria-label="Cart status">
+    <aside
+      className={["bottom-cart-bar", hasAction ? "bottom-cart-bar--active" : ""]
+        .filter(Boolean)
+        .join(" ")}
+      aria-label="Cart status"
+    >
       <div>
         <span className="cart-label">{label}</span>
         <span className="cart-note">{note}</span>

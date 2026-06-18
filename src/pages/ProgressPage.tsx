@@ -34,6 +34,31 @@ function getPrimaryBadgeName(order: CompletedOrderRecord) {
   return primaryBadgeId ? getProgressBadgeName(primaryBadgeId) : "Successfully Not Ordered";
 }
 
+function getNextGoalPrompt(
+  summary: ReturnType<typeof getReceiptProgressSummary>,
+  unlockedBadgeIds: Set<string>,
+) {
+  const nextBadge = progressBadgeDefinitions.find((badge) => !unlockedBadgeIds.has(badge.id));
+
+  if (!nextBadge) {
+    return "All current badges are unlocked. The next goal is keeping the streak alive.";
+  }
+
+  if (nextBadge.id === "cart-without-consequence") {
+    const remainingOrders = Math.max(1, 3 - summary.totalOrders);
+    return `${remainingOrders} more completed ritual${
+      remainingOrders === 1 ? "" : "s"
+    } unlocks Cart Without Consequence.`;
+  }
+
+  if (nextBadge.id === "salary-saved") {
+    const remainingMoney = Math.max(1, 1000 - summary.totalMoneySaved);
+    return `Rs ${remainingMoney} more saved unlocks Salary Saved.`;
+  }
+
+  return nextBadge.lockedHint;
+}
+
 export function ProgressPage() {
   const navigate = useNavigate();
   const settings = useSettings();
@@ -43,13 +68,17 @@ export function ProgressPage() {
     [receiptProgress.progress],
   );
   const unlockedBadgeIds = new Set(summary.unlockedBadgeIds);
+  const nextGoalPrompt = useMemo(
+    () => getNextGoalPrompt(summary, unlockedBadgeIds),
+    [summary, unlockedBadgeIds],
+  );
   const hasProgress = summary.totalOrders > 0 || summary.recentOrders.length > 0;
 
   return (
     <div className="progress-page">
       <PageHeader
         title="Your Cart Ritual Career."
-        subtitle="Local-only progress for carts that never became deliveries."
+        subtitle="Local progress for cart rituals that ended well."
         trailing={<span className="status-dot">Saved on this browser</span>}
       />
 
@@ -70,9 +99,9 @@ export function ProgressPage() {
               <span className="section-kicker">Progress</span>
               <h2 id="progress-hero-title">Receipts became receipts of restraint.</h2>
               <p>
-                No account, no backend, no leaderboard. Just this browser quietly
-                remembering your escapes.
+                A quiet scoreboard for your exits, saved on this browser.
               </p>
+              <p className="progress-next-goal">{nextGoalPrompt}</p>
             </div>
             <span className="progress-hero-mark">{summary.currentStreak}</span>
           </section>
@@ -127,7 +156,10 @@ export function ProgressPage() {
                     }`}
                     key={badge.id}
                   >
-                    <span>{unlocked ? "Unlocked" : "Locked"}</span>
+                    <div className="progress-badge-card__top">
+                      <span>{unlocked ? "Unlocked" : "Locked"}</span>
+                      <strong aria-hidden="true">{unlocked ? "OK" : "--"}</strong>
+                    </div>
                     <h3>{badge.name}</h3>
                     <p>
                       {unlocked

@@ -27,22 +27,26 @@ export function ProductCartCard({
 
   return (
     <article className={["product-card", inCart ? "product-card--in-cart" : ""].filter(Boolean).join(" ")}>
-      <div className="product-card__media">
-        <img src={product.imageSrc} alt={imageAlt} loading="lazy" />
-      </div>
-
-      <div className="product-card__header">
-        <div>
-          <span className="product-card__category">{categoryName}</span>
-          <h3>{product.name}</h3>
-          <span className="product-card__meta">
-            {product.brandName} - {product.subcategory}
-          </span>
+      <div className="product-card__top">
+        <div className="product-card__media">
+          <img src={product.imageSrc} alt={imageAlt} loading="lazy" />
         </div>
-        {product.tag ? <span className="product-card__tag">{product.tag}</span> : null}
-      </div>
 
-      <p>{product.subtitle}</p>
+        <div className="product-card__body">
+          <div className="product-card__header">
+            <div>
+              <span className="product-card__category">{categoryName}</span>
+              <h3>{product.name}</h3>
+              <span className="product-card__meta">
+                {product.brandName} - {product.subcategory}
+              </span>
+            </div>
+            {product.tag ? <span className="product-card__tag">{product.tag}</span> : null}
+          </div>
+
+          <p>{product.subtitle}</p>
+        </div>
+      </div>
 
       <dl className="product-card__stats" aria-label={`${product.name} stats`}>
         <div>

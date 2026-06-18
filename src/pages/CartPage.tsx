@@ -82,7 +82,7 @@ export function CartPage() {
       <PageHeader
         title="Review the fictional damage."
         subtitle="A cart-shaped pause before the craving commits."
-        trailing={<span className="status-dot">Parody flow</span>}
+        trailing={<span className="status-dot">Cart ritual</span>}
       />
 
       {!hasItems ? (
@@ -154,14 +154,23 @@ export function CartPage() {
             <div className="cart-item-list">
               {cartProducts.map(({ product, quantity }) => (
                 <article className="cart-item-card" key={product.id}>
-                  <div className="cart-item-card__header">
-                    <div>
-                      <span className="product-card__category">
-                        {categoryNames.get(product.categoryId) ?? "Shelf"}
-                      </span>
-                      <h3>{product.name}</h3>
+                  <div className="cart-item-card__top">
+                    <div className="cart-item-card__thumb">
+                      <img
+                        src={product.imageSrc}
+                        alt={product.fullName || product.name}
+                        loading="lazy"
+                      />
                     </div>
-                    <strong>Rs {product.price * quantity}</strong>
+                    <div className="cart-item-card__header">
+                      <div>
+                        <span className="product-card__category">
+                          {categoryNames.get(product.categoryId) ?? "Shelf"}
+                        </span>
+                        <h3>{product.name}</h3>
+                      </div>
+                      <strong>Rs {product.price * quantity}</strong>
+                    </div>
                   </div>
 
                   <p>{product.subtitle}</p>

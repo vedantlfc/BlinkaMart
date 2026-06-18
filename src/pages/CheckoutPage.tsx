@@ -125,7 +125,7 @@ export function CheckoutPage() {
       <PageHeader
         title="Checkout reality check."
         subtitle="Final pause before Self Control starts doing excellent work."
-        trailing={<span className="status-dot">Parody checkout</span>}
+        trailing={<span className="status-dot">Final pause</span>}
       />
 
       {!summary && hasTrackingOrder ? (
@@ -154,8 +154,8 @@ export function CheckoutPage() {
             <span className="section-kicker">Reality check</span>
             <h2 id="checkout-disclaimer-title">One last pause before Self Control clocks in.</h2>
             <p>
-              This parody checkout keeps the ritual theatrical while the craving
-              gets one final look in the mirror.
+              This checkout keeps the ritual theatrical while the craving gets one
+              final look in the mirror.
             </p>
             <p>
               Next up: Self Control gets assigned, the cart gets ceremonious,
@@ -195,22 +195,40 @@ export function CheckoutPage() {
           <section className="checkout-items" aria-labelledby="checkout-items-title">
             <div className="section-heading">
               <h2 id="checkout-items-title">Imaginary bag contents</h2>
-              <p>No one is packing this. That is the entire feature.</p>
+              <p>A compact cast list for the cart that gets the spotlight.</p>
             </div>
 
             <div className="mini-item-list">
-              {summary.items.map((item) => (
-                <article className="mini-item" key={item.productId}>
-                  <div>
-                    <span className="product-card__category">{item.categoryName}</span>
-                    <h3>{item.name}</h3>
-                    <p>{item.subtitle}</p>
-                  </div>
-                  <strong>
-                    {item.quantity} x Rs {item.price}
-                  </strong>
-                </article>
-              ))}
+              {summary.items.map((item) => {
+                const product = productById.get(item.productId);
+
+                return (
+                  <article
+                    className={["mini-item", product ? "" : "mini-item--no-thumb"]
+                      .filter(Boolean)
+                      .join(" ")}
+                    key={item.productId}
+                  >
+                    {product ? (
+                      <div className="mini-item__thumb">
+                        <img
+                          src={product.imageSrc}
+                          alt={product.fullName || product.name}
+                          loading="lazy"
+                        />
+                      </div>
+                    ) : null}
+                    <div className="mini-item__body">
+                      <span className="product-card__category">{item.categoryName}</span>
+                      <h3>{item.name}</h3>
+                      <p>{item.subtitle}</p>
+                    </div>
+                    <strong>
+                      {item.quantity} x Rs {item.price}
+                    </strong>
+                  </article>
+                );
+              })}
             </div>
           </section>
 

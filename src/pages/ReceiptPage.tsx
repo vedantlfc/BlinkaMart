@@ -33,6 +33,19 @@ function getStreakCopy(streak: number) {
   return streak === 1 ? "1-day restraint streak" : `${streak}-day restraint streak`;
 }
 
+function getAvoidedItemSummary(items: OrderSnapshot["items"]) {
+  const visibleItems = items
+    .slice(0, 3)
+    .map((item) => (item.quantity > 1 ? `${item.name} x${item.quantity}` : item.name));
+  const remainingCount = items.length - visibleItems.length;
+
+  if (remainingCount > 0) {
+    return `${visibleItems.join(", ")} +${remainingCount} more`;
+  }
+
+  return visibleItems.join(", ");
+}
+
 function buildShareText(
   order: OrderSnapshot,
   badge: string,
@@ -95,6 +108,10 @@ export function ReceiptPage() {
   const shareText = useMemo(
     () => (order ? buildShareText(order, badge, displayedProgress) : ""),
     [badge, displayedProgress, order],
+  );
+  const avoidedItemSummary = useMemo(
+    () => (order ? getAvoidedItemSummary(order.items) : ""),
+    [order],
   );
   const shareButtonLabel =
     typeof navigator !== "undefined" && typeof navigator.share === "function"
@@ -192,7 +209,7 @@ export function ReceiptPage() {
   return (
     <div className="receipt-page">
       <PageHeader
-        title="Successfully Not Ordered."
+        title="Receipt ready."
         subtitle="A tiny trophy for catching the craving in time."
         trailing={<span className="status-dot">Receipt ready</span>}
       />
@@ -217,6 +234,11 @@ export function ReceiptPage() {
               <p>
                 The craving got a full ceremony, then took a graceful bow.
               </p>
+            </div>
+
+            <div className="receipt-poster-items">
+              <span>Items left on stage</span>
+              <strong>{avoidedItemSummary}</strong>
             </div>
 
             <dl className="receipt-meta-grid" aria-label="Order details">
@@ -248,6 +270,10 @@ export function ReceiptPage() {
               <div>
                 <dt>Regret avoided</dt>
                 <dd>{order.averageRegretScore}/100 avg</dd>
+              </div>
+              <div>
+                <dt>Streak</dt>
+                <dd>{displayedProgress.currentStreak}</dd>
               </div>
             </dl>
           </section>
@@ -291,8 +317,7 @@ export function ReceiptPage() {
               <span className="section-kicker">Share</span>
               <h2 id="receipt-share-title">Cause mild confusion responsibly</h2>
               <p>
-                Share text stays short, odd, and free of private details because
-                BlinkaMart never collected any.
+                Share text stays short, odd, and free of private details.
               </p>
             </div>
 

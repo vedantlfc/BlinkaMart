@@ -117,7 +117,7 @@ export function TrackingPage() {
         <>
           <section className="rider-panel" aria-labelledby="rider-title">
             <div className="section-heading">
-              <span className="section-kicker">Parody tracking</span>
+              <span className="section-kicker">Tracking ritual</span>
               <h2 id="rider-title">Ritual details</h2>
               <p>A progress ritual with a clipboard, a wink, and excellent timing.</p>
             </div>
