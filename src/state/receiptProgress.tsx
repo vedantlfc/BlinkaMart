@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { categories, products, type CategoryId, type Product } from "../data/catalog";
-import type { OrderSnapshot } from "./order";
+import { getOrderCompletionTimestamp, type OrderSnapshot } from "./order";
 
 const RECEIPT_PROGRESS_STORAGE_KEY = "blinkamart.receiptProgress.v1";
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -543,7 +543,7 @@ function buildCompletedOrderRecord(
 
   return {
     id: order.id,
-    timestamp: order.timestamp,
+    timestamp: getOrderCompletionTimestamp(order),
     items,
     totalPrice: totals.totalPrice,
     totalCalories: totals.totalCalories,

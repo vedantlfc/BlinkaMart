@@ -154,7 +154,7 @@ export function CheckoutPage() {
             <span className="section-kicker">Reality check</span>
             <h2 id="checkout-disclaimer-title">One last pause before Self Control clocks in.</h2>
             <p>
-              This checkout keeps the ritual theatrical while the craving gets one
+              This checkout keeps the ritual playful while the craving gets one
               final look in the mirror.
             </p>
             <p>

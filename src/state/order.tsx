@@ -32,6 +32,7 @@ export interface OrderTrackingMetadata {
   deliveryPartner: DeliveryPartner;
   routeSeed: number;
   trackingStartedAt: string | null;
+  completedAt: string | null;
   trackingOutcome: TrackingOutcome;
   darkStoreName: string;
 }
@@ -111,7 +112,7 @@ const reliabilityLabels = [
 
 const partnerStatuses = [
   "Scanning the route for snack fog.",
-  "Carrying the bag with theatrical seriousness.",
+  "Carrying the bag with delivery seriousness.",
   "Keeping one eye on Self Control Signal.",
   "Preparing for a graceful wrong turn.",
   "Respectfully questioning the craving.",
@@ -159,6 +160,7 @@ function buildTrackingMetadata(
     },
     routeSeed: seed,
     trackingStartedAt,
+    completedAt: null,
     trackingOutcome: status === "completed" ? "lost" : "pending",
     darkStoreName: pickStableValue(darkStoreNames, seed, 9),
   };
@@ -166,6 +168,12 @@ function buildTrackingMetadata(
 
 function isValidIsoTimestamp(value: string) {
   return !Number.isNaN(new Date(value).getTime());
+}
+
+export function getOrderCompletionTimestamp(order: OrderSnapshot) {
+  return order.tracking.completedAt && isValidIsoTimestamp(order.tracking.completedAt)
+    ? order.tracking.completedAt
+    : order.timestamp;
 }
 
 function normalizeTrackingMetadata(
@@ -185,12 +193,18 @@ function normalizeTrackingMetadata(
     isValidIsoTimestamp(tracking.trackingStartedAt)
       ? tracking.trackingStartedAt
       : null;
+  const storedCompletedAt =
+    typeof tracking.completedAt === "string" &&
+    isValidIsoTimestamp(tracking.completedAt)
+      ? tracking.completedAt
+      : null;
 
   return {
     etaMinutes: fallback.etaMinutes,
     deliveryPartner: fallback.deliveryPartner,
     routeSeed: fallback.routeSeed,
     trackingStartedAt: storedStartedAt,
+    completedAt: status === "completed" ? storedCompletedAt : null,
     trackingOutcome: status === "completed" ? "lost" : "pending",
     darkStoreName: fallback.darkStoreName,
   };
@@ -442,6 +456,10 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           tracking: {
             ...currentOrder.tracking,
             trackingOutcome: status === "completed" ? "lost" : currentOrder.tracking.trackingOutcome,
+            completedAt:
+              status === "completed"
+                ? currentOrder.tracking.completedAt ?? new Date().toISOString()
+                : null,
           },
         })
       : null;
@@ -457,6 +475,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           tracking: {
             ...currentOrder.tracking,
             trackingStartedAt: currentOrder.tracking.trackingStartedAt ?? new Date().toISOString(),
+            completedAt: null,
             trackingOutcome: "pending",
           },
         })
@@ -473,6 +492,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           status: "completed",
           tracking: {
             ...currentOrder.tracking,
+            completedAt: currentOrder.tracking.completedAt ?? new Date().toISOString(),
             trackingOutcome: outcome,
           },
         })

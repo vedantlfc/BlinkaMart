@@ -9,9 +9,7 @@ import { useCart } from "../state/cart";
 import { useOrder, type OrderSnapshot } from "../state/order";
 
 const TRACKING_STAGE_MS = 2200;
-const FINAL_STAGE_DELAY_MS = 2200;
 const REDUCED_MOTION_STAGE_MS = 1100;
-const REDUCED_MOTION_FINAL_DELAY_MS = 1600;
 
 const trackingStages = [
   {
@@ -115,6 +113,34 @@ function getItemLabel(quantity: number) {
   return quantity === 1 ? "1 item" : `${quantity} items`;
 }
 
+function getEtaSupportCopy(stageIndex: number) {
+  if (stageIndex <= 1) {
+    return "Packing is underway.";
+  }
+
+  if (stageIndex === 2) {
+    return "Delivery partner is getting ready.";
+  }
+
+  if (stageIndex === 3) {
+    return "Moving through Snack Flyover.";
+  }
+
+  if (stageIndex === 4) {
+    return "Almost near Your Sofa.";
+  }
+
+  return "Route update changed at Self Control Signal.";
+}
+
+function getEtaMeterProgress(stageIndex: number, mapProgress: number) {
+  if (stageIndex >= trackingStages.length - 1) {
+    return 100;
+  }
+
+  return Math.round(clamp(mapProgress, 0, 1) * 100);
+}
+
 function renderPackingPreview(order: OrderSnapshot) {
   return (
     <section className="packing-preview" aria-labelledby="packing-preview-title">
@@ -174,20 +200,19 @@ export function TrackingPage() {
   const { clearCart } = useCart();
   const navigate = useNavigate();
   const [now, setNow] = useState(() => Date.now());
+  const [isCompleting, setIsCompleting] = useState(false);
   const hasStartedRef = useRef(false);
-  const hasNavigatedRef = useRef(false);
+  const hasCompletedRef = useRef(false);
   const order = orderState.currentOrder;
   const hasTrackableOrder = order?.status === "tracking";
   const prefersReducedMotion = useMemo(() => getPrefersReducedMotion(), []);
   const stageDuration = prefersReducedMotion ? REDUCED_MOTION_STAGE_MS : TRACKING_STAGE_MS;
-  const finalStageDelay = prefersReducedMotion
-    ? REDUCED_MOTION_FINAL_DELAY_MS
-    : FINAL_STAGE_DELAY_MS;
   const startedAtMs = getStartedAtMs(order);
   const activeStageIndex = getActiveStageIndex(startedAtMs, now, stageDuration);
   const activeStage = trackingStages[activeStageIndex];
   const stageFraction = getStageFraction(startedAtMs, now, stageDuration);
   const mapProgress = getMapProgress(activeStageIndex, stageFraction);
+  const etaMeterProgress = getEtaMeterProgress(activeStageIndex, mapProgress);
   const isLostStage = activeStage.title === "Order lost";
   const showPackingPreview = activeStageIndex >= 1;
   const showPartnerCard = activeStageIndex >= 2;
@@ -218,40 +243,30 @@ export function TrackingPage() {
     return () => window.clearInterval(intervalId);
   }, [hasTrackableOrder, order?.tracking.trackingStartedAt]);
 
-  useEffect(() => {
-    if (
-      !hasTrackableOrder ||
-      activeStageIndex < trackingStages.length - 1 ||
-      hasNavigatedRef.current
-    ) {
-      return undefined;
+  function handleViewReceipt() {
+    if (!hasTrackableOrder || !order || hasCompletedRef.current) {
+      return;
     }
 
-    const timeoutId = window.setTimeout(() => {
-      hasNavigatedRef.current = true;
-      const completedOrder = orderState.completeTracking("lost");
+    hasCompletedRef.current = true;
+    setIsCompleting(true);
+    const completedOrder = orderState.completeTracking("lost");
 
-      if (completedOrder) {
-        clearCart();
-        navigate("/receipt", { replace: true });
-      }
-    }, finalStageDelay);
+    if (completedOrder) {
+      clearCart();
+      navigate("/receipt", { replace: true });
+      return;
+    }
 
-    return () => window.clearTimeout(timeoutId);
-  }, [
-    activeStageIndex,
-    clearCart,
-    finalStageDelay,
-    hasTrackableOrder,
-    navigate,
-    orderState,
-  ]);
+    hasCompletedRef.current = false;
+    setIsCompleting(false);
+  }
 
   return (
     <div className="tracking-page">
       <PageHeader
         title="Tracking your order."
-        subtitle="A tiny quick-commerce drama, locally simulated."
+        subtitle="Your cart is moving through the late-night delivery grid."
         trailing={
           hasTrackableOrder && order ? (
             <span className="status-dot">ETA {order.tracking.etaMinutes} min</span>
@@ -273,11 +288,34 @@ export function TrackingPage() {
         </section>
       ) : (
         <>
+          <section className="eta-arrival-card" aria-labelledby="eta-arrival-title">
+            <div>
+              <span className="section-kicker">Arrival estimate</span>
+              <h2 id="eta-arrival-title">
+                Your order will arrive in {order.tracking.etaMinutes} minutes
+              </h2>
+              <p>{getEtaSupportCopy(activeStageIndex)}</p>
+            </div>
+            <div
+              className="eta-arrival-meter"
+              role="progressbar"
+              aria-label="Route progress"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={etaMeterProgress}
+            >
+              <span style={{ width: `${etaMeterProgress}%` }} />
+            </div>
+          </section>
+
           {showLostMessageBeforeSummary ? (
             <section className="lost-order-panel" aria-labelledby="lost-order-title">
               <span className="section-kicker">Final update</span>
               <h2 id="lost-order-title">Sorry, your order is lost.</h2>
               <p>The order got lost. You did not. Self Control Signal reports excellent timing.</p>
+              <Button type="button" onClick={handleViewReceipt} disabled={isCompleting}>
+                View Receipt
+              </Button>
             </section>
           ) : null}
 
@@ -334,7 +372,7 @@ export function TrackingPage() {
           <section className="tracking-progress" aria-labelledby="tracking-progress-title">
             <div className="section-heading">
               <h2 id="tracking-progress-title">Tracking timeline</h2>
-              <p>Display ETA is theatrical; this simulation runs in seconds.</p>
+              <p>Status updates appear as the route changes.</p>
             </div>
 
             <ol className="tracking-stage-list">

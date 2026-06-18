@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { Toast } from "../components/Toast";
-import { useOrder, type OrderSnapshot } from "../state/order";
+import { getOrderCompletionTimestamp, useOrder, type OrderSnapshot } from "../state/order";
 import {
   getPrimaryBadgeNameForOrder,
   getProjectedReceiptProgress,
@@ -99,6 +99,7 @@ export function ReceiptPage() {
     tone: "info",
   });
   const [showShareFallback, setShowShareFallback] = useState(false);
+  const recordedOrderIdRef = useRef<string | null>(null);
   const order =
     orderState.currentOrder?.status === "completed" ? orderState.currentOrder : null;
   const displayedProgress = useMemo(
@@ -122,6 +123,10 @@ export function ReceiptPage() {
   );
   const deliveryOutcome = useMemo(
     () => (order ? getDeliveryOutcomeCopy(order) : ""),
+    [order],
+  );
+  const completionTimestamp = useMemo(
+    () => (order ? getOrderCompletionTimestamp(order) : ""),
     [order],
   );
   const shareButtonLabel =
@@ -153,10 +158,11 @@ export function ReceiptPage() {
   }, [order?.id]);
 
   useEffect(() => {
-    if (order) {
+    if (order && recordedOrderIdRef.current !== order.id) {
+      recordedOrderIdRef.current = order.id;
       receiptProgress.recordCompletedOrder(order);
     }
-  }, [order, receiptProgress]);
+  }, [order, receiptProgress.recordCompletedOrder]);
 
   useEffect(() => {
     if (!toast.message) {
@@ -264,7 +270,7 @@ export function ReceiptPage() {
               </div>
               <div>
                 <dt>Completed</dt>
-                <dd>{formatOrderTime(order.timestamp)}</dd>
+                <dd>{formatOrderTime(completionTimestamp)}</dd>
               </div>
             </dl>
 
