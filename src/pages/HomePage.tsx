@@ -38,6 +38,12 @@ function getFakeOrderLabel(totalFakeOrders: number) {
   return totalFakeOrders === 1 ? "1 fake order avoided" : `${totalFakeOrders} fake orders avoided`;
 }
 
+function getCurrentStreakCopy(currentStreak: number) {
+  return currentStreak > 0
+    ? `Current streak: ${currentStreak}.`
+    : "Current streak paused.";
+}
+
 export function HomePage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<CategoryId>(categories[0].id);
   const [searchQuery, setSearchQuery] = useState("");
@@ -157,9 +163,8 @@ export function HomePage() {
             <span className="section-kicker">Local progress</span>
             <h2 id="home-progress-title">{getFakeOrderLabel(progressSummary.totalFakeOrders)}</h2>
             <p>
-              Rs {progressSummary.totalMoneySaved} stayed with you. Current streak:
-              {" "}
-              {progressSummary.currentStreak}.
+              Rs {progressSummary.totalMoneySaved} stayed with you.{" "}
+              {getCurrentStreakCopy(progressSummary.currentStreak)}
               {settings.showCalories
                 ? ` Calories avoided: ${progressSummary.totalCaloriesAvoided}.`
                 : ""}

@@ -8,11 +8,17 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { CategoryId } from "../data/catalog";
+import { categories, products, type CategoryId, type Product } from "../data/catalog";
 import type { FakeOrderSnapshot } from "./fakeOrder";
 
 const RECEIPT_PROGRESS_STORAGE_KEY = "blinkamart.receiptProgress.v1";
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const MAX_COMPLETED_ORDER_ITEM_QUANTITY = 99;
+const productById = new Map(products.map((product) => [product.id, product]));
+const productByLegacyKey = new Map(
+  products.map((product) => [getLegacyProductKey(product.name, product.categoryId), product]),
+);
+const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
 
 export type ProgressBadgeId =
   | "chips-dodger"
@@ -28,10 +34,14 @@ export interface ProgressBadgeDefinition {
 }
 
 export interface CompletedOrderItemSummary {
+  productId: string;
   name: string;
   categoryId: CategoryId;
   categoryName: string;
   quantity: number;
+  price: number;
+  calories: number;
+  regretScore: number;
 }
 
 export interface CompletedFakeOrderRecord {
@@ -148,6 +158,45 @@ function isCategoryId(value: unknown): value is CategoryId {
   );
 }
 
+function getLegacyProductKey(name: string, categoryId: CategoryId) {
+  return `${categoryId}::${name.trim()}`;
+}
+
+function hasValidCatalogStats(product: Product) {
+  return (
+    Number.isFinite(product.price) &&
+    product.price >= 0 &&
+    Number.isFinite(product.calories) &&
+    product.calories >= 0 &&
+    Number.isFinite(product.regretScore) &&
+    product.regretScore >= 0 &&
+    product.regretScore <= 100
+  );
+}
+
+function resolveCatalogProduct(item: Partial<CompletedOrderItemSummary>): Product | null {
+  if (typeof item.name !== "string" || !isCategoryId(item.categoryId)) {
+    return null;
+  }
+
+  const itemName = item.name.trim();
+  if (!itemName) {
+    return null;
+  }
+
+  if (typeof item.productId === "string" && item.productId.trim().length > 0) {
+    const product = productById.get(item.productId.trim());
+    if (!product || product.name !== itemName || product.categoryId !== item.categoryId) {
+      return null;
+    }
+
+    return hasValidCatalogStats(product) ? product : null;
+  }
+
+  const legacyProduct = productByLegacyKey.get(getLegacyProductKey(itemName, item.categoryId));
+  return legacyProduct && hasValidCatalogStats(legacyProduct) ? legacyProduct : null;
+}
+
 function normalizeItemSummary(value: unknown): CompletedOrderItemSummary | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
@@ -157,21 +206,57 @@ function normalizeItemSummary(value: unknown): CompletedOrderItemSummary | null 
   if (
     typeof item.name !== "string" ||
     !isCategoryId(item.categoryId) ||
-    typeof item.categoryName !== "string" ||
     typeof item.quantity !== "number" ||
     !Number.isFinite(item.quantity) ||
     !Number.isInteger(item.quantity) ||
     item.quantity <= 0 ||
-    item.quantity > 99
+    item.quantity > MAX_COMPLETED_ORDER_ITEM_QUANTITY
   ) {
     return null;
   }
 
+  const product = resolveCatalogProduct(item);
+  if (!product) {
+    return null;
+  }
+
   return {
-    name: item.name,
-    categoryId: item.categoryId,
-    categoryName: item.categoryName,
+    productId: product.id,
+    name: product.name,
+    categoryId: product.categoryId,
+    categoryName: categoryNames.get(product.categoryId) ?? "Fake shelf",
     quantity: item.quantity,
+    price: product.price,
+    calories: product.calories,
+    regretScore: product.regretScore,
+  };
+}
+
+function getCompletedOrderTotals(items: CompletedOrderItemSummary[]) {
+  const totals = items.reduce(
+    (runningTotals, item) => {
+      runningTotals.totalQuantity += item.quantity;
+      runningTotals.totalPrice += item.price * item.quantity;
+      runningTotals.totalCalories += item.calories * item.quantity;
+      runningTotals.regretScoreTotal += item.regretScore * item.quantity;
+      return runningTotals;
+    },
+    {
+      totalQuantity: 0,
+      totalPrice: 0,
+      totalCalories: 0,
+      regretScoreTotal: 0,
+    },
+  );
+
+  return {
+    totalQuantity: totals.totalQuantity,
+    totalPrice: totals.totalPrice,
+    totalCalories: totals.totalCalories,
+    averageRegretScore:
+      totals.totalQuantity > 0
+        ? Math.round(totals.regretScoreTotal / totals.totalQuantity)
+        : 0,
   };
 }
 
@@ -195,24 +280,10 @@ function normalizeCompletedOrderRecord(value: unknown): CompletedFakeOrderRecord
   const record = value as Partial<CompletedFakeOrderRecord>;
   if (
     typeof record.id !== "string" ||
-    record.id.length === 0 ||
+    record.id.trim().length === 0 ||
     typeof record.timestamp !== "string" ||
     !getValidDate(record.timestamp) ||
-    !Array.isArray(record.items) ||
-    typeof record.totalPrice !== "number" ||
-    !Number.isFinite(record.totalPrice) ||
-    record.totalPrice < 0 ||
-    typeof record.totalCalories !== "number" ||
-    !Number.isFinite(record.totalCalories) ||
-    record.totalCalories < 0 ||
-    typeof record.totalQuantity !== "number" ||
-    !Number.isFinite(record.totalQuantity) ||
-    !Number.isInteger(record.totalQuantity) ||
-    record.totalQuantity <= 0 ||
-    typeof record.averageRegretScore !== "number" ||
-    !Number.isFinite(record.averageRegretScore) ||
-    record.averageRegretScore < 0 ||
-    record.averageRegretScore > 100
+    !Array.isArray(record.items)
   ) {
     return null;
   }
@@ -224,19 +295,19 @@ function normalizeCompletedOrderRecord(value: unknown): CompletedFakeOrderRecord
     return null;
   }
 
-  const totalQuantity = items.reduce((total, item) => total + item.quantity, 0);
-  if (totalQuantity !== record.totalQuantity) {
+  const totals = getCompletedOrderTotals(items);
+  if (totals.totalQuantity <= 0) {
     return null;
   }
 
   return {
-    id: record.id,
+    id: record.id.trim(),
     timestamp: record.timestamp,
     items,
-    totalPrice: record.totalPrice,
-    totalCalories: record.totalCalories,
-    totalQuantity: record.totalQuantity,
-    averageRegretScore: record.averageRegretScore,
+    totalPrice: totals.totalPrice,
+    totalCalories: totals.totalCalories,
+    totalQuantity: totals.totalQuantity,
+    averageRegretScore: totals.averageRegretScore,
     badgeIds: normalizeBadgeIds(record.badgeIds),
   };
 }
@@ -281,19 +352,29 @@ function deriveStreakMetadata(completedOrders: CompletedFakeOrderRecord[]) {
   );
   let currentRun = 0;
   let longestStreak = 0;
+  const runByDateKey = new Map<string, number>();
   let previousDateKey: string | null = null;
 
   completedDateKeys.forEach((dateKey) => {
     const gap = previousDateKey ? getCalendarDayGap(previousDateKey, dateKey) : null;
     currentRun = gap === 1 ? currentRun + 1 : 1;
     longestStreak = Math.max(longestStreak, currentRun);
+    runByDateKey.set(dateKey, currentRun);
     previousDateKey = dateKey;
   });
 
+  const lastCompletedLocalDate = completedDateKeys[completedDateKeys.length - 1];
+  const gapFromLastCompletionToToday = getCalendarDayGap(
+    lastCompletedLocalDate,
+    getLocalDateKey(new Date()),
+  );
+  const isActiveStreak =
+    gapFromLastCompletionToToday === 0 || gapFromLastCompletionToToday === 1;
+
   return {
-    lastCompletedLocalDate: completedDateKeys[completedDateKeys.length - 1],
-    currentStreak: currentRun,
-    longestStreak: Math.max(longestStreak, currentRun),
+    lastCompletedLocalDate,
+    currentStreak: isActiveStreak ? runByDateKey.get(lastCompletedLocalDate) ?? 0 : 0,
+    longestStreak,
     totalCompletedFakeOrders: completedOrders.length,
   };
 }
@@ -434,30 +515,35 @@ function getTotalCaloriesAvoided(records: CompletedFakeOrderRecord[]) {
   return records.reduce((total, order) => total + order.totalCalories, 0);
 }
 
-function getBadgeIdsForOrder(
-  order: FakeOrderSnapshot,
-  nextCompletedOrders: CompletedFakeOrderRecord[],
-): ProgressBadgeId[] {
-  return getBadgeIdsForCompletedOrder(order, nextCompletedOrders);
-}
-
 function buildCompletedOrderRecord(
   order: FakeOrderSnapshot,
   badgeIds: ProgressBadgeId[],
-): CompletedFakeOrderRecord {
+): CompletedFakeOrderRecord | null {
+  const items = order.items
+    .map((item) =>
+      normalizeItemSummary({
+        productId: item.productId,
+        name: item.name,
+        categoryId: item.categoryId,
+        categoryName: item.categoryName,
+        quantity: item.quantity,
+      }),
+    )
+    .filter((item): item is CompletedOrderItemSummary => Boolean(item));
+  const totals = getCompletedOrderTotals(items);
+
+  if (totals.totalQuantity <= 0) {
+    return null;
+  }
+
   return {
     id: order.id,
     timestamp: order.timestamp,
-    items: order.items.map((item) => ({
-      name: item.name,
-      categoryId: item.categoryId,
-      categoryName: item.categoryName,
-      quantity: item.quantity,
-    })),
-    totalPrice: order.totalPrice,
-    totalCalories: order.totalCalories,
-    totalQuantity: order.totalQuantity,
-    averageRegretScore: order.averageRegretScore,
+    items,
+    totalPrice: totals.totalPrice,
+    totalCalories: totals.totalCalories,
+    totalQuantity: totals.totalQuantity,
+    averageRegretScore: totals.averageRegretScore,
     badgeIds,
   };
 }
@@ -467,9 +553,16 @@ function addOrderRecord(
   order: FakeOrderSnapshot,
 ) {
   const placeholderRecord = buildCompletedOrderRecord(order, []);
+  if (!placeholderRecord) {
+    return completedOrders;
+  }
+
   const nextCompletedOrders = [...completedOrders, placeholderRecord];
-  const badgeIds = getBadgeIdsForOrder(order, nextCompletedOrders);
-  const orderRecord = buildCompletedOrderRecord(order, badgeIds);
+  const badgeIds = getBadgeIdsForCompletedOrder(placeholderRecord, nextCompletedOrders);
+  const orderRecord = {
+    ...placeholderRecord,
+    badgeIds,
+  };
   return [...completedOrders, orderRecord];
 }
 
