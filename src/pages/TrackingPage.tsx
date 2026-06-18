@@ -130,7 +130,15 @@ function getEtaSupportCopy(stageIndex: number) {
     return "Almost near Your Sofa.";
   }
 
-  return "Route update changed at Self Control Signal.";
+  return "Self Control Signal redirected the bag at the last possible moment.";
+}
+
+function getEtaHeadline(order: OrderSnapshot, stageIndex: number) {
+  if (stageIndex >= trackingStages.length - 1) {
+    return "Route update: order lost near Self Control Signal";
+  }
+
+  return `Your order will arrive in ${order.tracking.etaMinutes} minutes`;
 }
 
 function getEtaMeterProgress(stageIndex: number, mapProgress: number) {
@@ -291,9 +299,7 @@ export function TrackingPage() {
           <section className="eta-arrival-card" aria-labelledby="eta-arrival-title">
             <div>
               <span className="section-kicker">Arrival estimate</span>
-              <h2 id="eta-arrival-title">
-                Your order will arrive in {order.tracking.etaMinutes} minutes
-              </h2>
+              <h2 id="eta-arrival-title">{getEtaHeadline(order, activeStageIndex)}</h2>
               <p>{getEtaSupportCopy(activeStageIndex)}</p>
             </div>
             <div

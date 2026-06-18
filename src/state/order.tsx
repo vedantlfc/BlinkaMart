@@ -116,7 +116,7 @@ const partnerStatuses = [
   "Keeping one eye on Self Control Signal.",
   "Preparing for a graceful wrong turn.",
   "Respectfully questioning the craving.",
-  "Rolling through the imaginary delivery grid.",
+  "Rolling through the late-night delivery grid.",
 ];
 
 const darkStoreNames = [
