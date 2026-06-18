@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { BottomCartBar } from "../components/BottomCartBar";
 import { Button } from "../components/Button";
 import { CategoryChip } from "../components/CategoryChip";
+import { CategoryTile } from "../components/CategoryTile";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { ProductCartCard } from "../components/ProductCartCard";
@@ -58,6 +59,24 @@ export function ProductsPage() {
       return Boolean(matchesCategory) && (!normalizedQuery || searchable.includes(normalizedQuery));
     });
   }, [normalizedQuery, selectedCategoryId]);
+
+  const productCountByCategory = useMemo(() => {
+    return categories.reduce<Record<CategoryId, number>>((counts, category) => {
+      counts[category.id] = products.filter(
+        (product) => product.categoryId === category.id,
+      ).length;
+      return counts;
+    }, {} as Record<CategoryId, number>);
+  }, []);
+
+  const categoryPreviewProducts = useMemo(() => {
+    return categories.reduce<Record<CategoryId, typeof products>>((previewProducts, category) => {
+      previewProducts[category.id] = products
+        .filter((product) => product.categoryId === category.id)
+        .slice(0, 2);
+      return previewProducts;
+    }, {} as Record<CategoryId, typeof products>);
+  }, []);
 
   useEffect(() => {
     if (!toastMessage) {
@@ -133,16 +152,23 @@ export function ProductsPage() {
               : `${filteredProducts.length} products visible.`}
           </p>
         </div>
-        <div className="chip-list" aria-label="Product category filters">
+        <div className="chip-list chip-list--reset" aria-label="Product category reset">
           <CategoryChip
-            label="All"
+            label="All shelves"
             active={Boolean(normalizedQuery) || selectedCategoryId === "all"}
             onClick={() => handleCategorySelect("all")}
           />
+        </div>
+        <div
+          className="category-grid category-grid--browse"
+          aria-label="Product category filters"
+        >
           {categories.map((category) => (
-            <CategoryChip
+            <CategoryTile
               key={category.id}
-              label={category.name}
+              category={category}
+              productCount={productCountByCategory[category.id]}
+              representativeProducts={categoryPreviewProducts[category.id]}
               active={!normalizedQuery && selectedCategoryId === category.id}
               onClick={() => handleCategorySelect(category.id)}
             />

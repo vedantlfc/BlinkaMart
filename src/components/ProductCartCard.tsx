@@ -38,32 +38,24 @@ export function ProductCartCard({
               <span className="product-card__category">{categoryName}</span>
               <h3>{product.name}</h3>
               <span className="product-card__meta">
-                {product.brandName} - {product.subcategory}
+                {product.brandName}
               </span>
             </div>
-            {product.tag ? <span className="product-card__tag">{product.tag}</span> : null}
           </div>
-
-          <p>{product.subtitle}</p>
         </div>
       </div>
 
-      <dl className="product-card__stats" aria-label={`${product.name} stats`}>
-        <div>
-          <dt>Price</dt>
-          <dd>Rs {product.price}</dd>
-        </div>
+      <div className="product-card__price-row">
+        <strong>Rs {product.price}</strong>
+        {product.tag ? <span className="product-card__tag">{product.tag}</span> : null}
+      </div>
+
+      <div className="product-card__stat-strip" aria-label={`${product.name} stats`}>
+        <span>Regret {product.regretScore}</span>
         {showCalories ? (
-          <div>
-            <dt>Calories</dt>
-            <dd>{product.calories}</dd>
-          </div>
+          <span>{product.calories} cal</span>
         ) : null}
-        <div>
-          <dt>Regret</dt>
-          <dd>{product.regretScore}/100</dd>
-        </div>
-      </dl>
+      </div>
 
       {inCart ? (
         <div className="cart-controls" aria-label={`${product.name} quantity controls`}>

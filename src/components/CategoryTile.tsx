@@ -1,16 +1,18 @@
 import type { ButtonHTMLAttributes } from "react";
-import type { Category } from "../data/catalog";
+import type { Category, Product } from "../data/catalog";
 
 export interface CategoryTileProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
   category: Category;
   productCount: number;
+  representativeProducts?: Product[];
   active?: boolean;
 }
 
 export function CategoryTile({
   category,
   productCount,
+  representativeProducts = [],
   active = false,
   className = "",
   type = "button",
@@ -32,15 +34,23 @@ export function CategoryTile({
       type={type}
       {...props}
     >
-      <span className="category-tile__mark" aria-hidden="true">
-        {category.mark}
+      <span className="category-tile__art" aria-hidden="true">
+        {representativeProducts.slice(0, 2).map((product) => (
+          <img
+            alt=""
+            key={product.id}
+            loading="lazy"
+            src={product.imageSrc}
+          />
+        ))}
+        {representativeProducts.length === 0 ? (
+          <span className="category-tile__mark">{category.mark}</span>
+        ) : null}
+        <span className="category-tile__count">{productCount} items</span>
       </span>
       <span className="category-tile__body">
         <span className="category-tile__name">{category.name}</span>
-        <span className="category-tile__description">{category.description}</span>
-        <span className="category-tile__meta">
-          {productCount} items - {category.vibe}
-        </span>
+        <span className="category-tile__meta">{category.vibe}</span>
       </span>
     </button>
   );
