@@ -160,19 +160,26 @@ export function ProductsPage() {
           />
         </div>
         <div
-          className="category-grid category-grid--browse"
-          aria-label="Product category filters"
+          className="category-rail category-rail--browse"
+          aria-label="Scrollable product category filters"
+          role="region"
+          tabIndex={0}
         >
-          {categories.map((category) => (
-            <CategoryTile
-              key={category.id}
-              category={category}
-              productCount={productCountByCategory[category.id]}
-              representativeProducts={categoryPreviewProducts[category.id]}
-              active={!normalizedQuery && selectedCategoryId === category.id}
-              onClick={() => handleCategorySelect(category.id)}
-            />
-          ))}
+          <div
+            className="category-grid category-grid--browse"
+            aria-label="Product category filters"
+          >
+            {categories.map((category) => (
+              <CategoryTile
+                key={category.id}
+                category={category}
+                productCount={productCountByCategory[category.id]}
+                representativeProducts={categoryPreviewProducts[category.id]}
+                active={!normalizedQuery && selectedCategoryId === category.id}
+                onClick={() => handleCategorySelect(category.id)}
+              />
+            ))}
+          </div>
         </div>
       </section>
 

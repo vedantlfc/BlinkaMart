@@ -195,17 +195,24 @@ export function HomePage() {
           <h2 id="category-title">Pick your almost-mistake</h2>
           <p>Tap a shelf. Every craving gets a little stage time.</p>
         </div>
-        <div className="category-grid" aria-label="Product categories">
-          {categories.map((category) => (
-            <CategoryTile
-              key={category.id}
-              category={category}
-              productCount={productCountByCategory[category.id]}
-              representativeProducts={categoryPreviewProducts[category.id]}
-              active={!normalizedQuery && selectedCategoryId === category.id}
-              onClick={() => handleCategorySelect(category.id)}
-            />
-          ))}
+        <div
+          className="category-rail"
+          aria-label="Scrollable product categories"
+          role="region"
+          tabIndex={0}
+        >
+          <div className="category-grid" aria-label="Product categories">
+            {categories.map((category) => (
+              <CategoryTile
+                key={category.id}
+                category={category}
+                productCount={productCountByCategory[category.id]}
+                representativeProducts={categoryPreviewProducts[category.id]}
+                active={!normalizedQuery && selectedCategoryId === category.id}
+                onClick={() => handleCategorySelect(category.id)}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
