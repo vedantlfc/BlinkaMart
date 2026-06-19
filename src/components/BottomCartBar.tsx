@@ -25,28 +25,39 @@ export function BottomCartBar({
 }: BottomCartBarProps) {
   const isEmpty = totalQuantity === 0;
   const itemLabel = totalQuantity === 1 ? "item" : "items";
-  const label = message ?? (isEmpty ? "Cart waiting" : `${totalQuantity} ${itemLabel}`);
-  const caloriesCopy = showCalories ? ` - ${totalCalories} cal kept offstage` : "";
+  const label = message ?? "Cart waiting";
   const note = isEmpty
     ? "Cart is calm. Cravings are rehearsing."
-    : `Rs ${totalPrice} saved-in-progress${caloriesCopy} - regret ${averageRegretScore}/100`;
+    : `${totalQuantity} ${itemLabel} - ${
+        showCalories
+          ? `${totalCalories} cal kept offstage`
+          : `regret ${averageRegretScore}/100`
+      }`;
   const hasAction = !isEmpty && Boolean(actionLabel) && Boolean(onAction);
 
   return (
     <aside
-      className={["bottom-cart-bar", hasAction ? "bottom-cart-bar--active" : ""]
+      className={["bottom-cart-bar", hasAction ? "bottom-cart-bar--active" : "bottom-cart-bar--idle"]
         .filter(Boolean)
         .join(" ")}
       aria-label="Cart status"
     >
-      <div>
-        <span className="cart-label">{label}</span>
+      <div className="bottom-cart-bar__art" aria-hidden="true">
+        <img src="/blinkamart-cart-bag.svg" alt="" />
+        {!isEmpty ? <span>{totalQuantity}</span> : null}
+      </div>
+
+      <div className="bottom-cart-bar__summary">
+        <span className="cart-label">
+          {isEmpty ? label : `Estimated saved Rs ${totalPrice}`}
+        </span>
         <span className="cart-note">{note}</span>
       </div>
-      {!isEmpty && actionLabel ? (
+
+      {hasAction ? (
         <Button
           type="button"
-          variant="secondary"
+          variant="primary"
           size="compact"
           onClick={onAction}
           disabled={actionDisabled}

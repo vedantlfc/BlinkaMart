@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BottomCartBar } from "../components/BottomCartBar";
 import { Button } from "../components/Button";
-import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { Toast } from "../components/Toast";
 import { categories, products, type Product } from "../data/catalog";
@@ -57,6 +55,11 @@ export function CartPage() {
   const cartProducts = useMemo(() => getCartProducts(cart.items), [cart.items]);
   const hasItems = cart.totals.totalQuantity > 0;
   const timeImpactCopy = getTimeImpactCopy(new Date());
+  const cartPageClassName = hasItems
+    ? "cart-page cart-page--with-sticky-checkout"
+    : "cart-page";
+  const itemLabel = cart.totals.totalQuantity === 1 ? "item" : "items";
+  const shelfPickLabel = cart.totals.uniqueItems === 1 ? "shelf pick" : "shelf picks";
 
   useEffect(() => {
     if (!toastMessage) {
@@ -70,7 +73,7 @@ export function CartPage() {
   function handlePlaceOrder() {
     const order = orderState.createOrderFromCart(cart.items, settings.showCalories);
     if (!order) {
-      setToastMessage("Add an item first. Checkout needs something imaginary to process.");
+      setToastMessage("Add an item first. The cart needs something to review.");
       return;
     }
 
@@ -78,56 +81,185 @@ export function CartPage() {
   }
 
   return (
-    <div className="cart-page">
+    <div className={cartPageClassName}>
       <PageHeader
-        title="Review the fictional damage."
-        subtitle="A cart-shaped pause before the craving commits."
+        title="Review your cart"
+        subtitle="Everything here is reversible until you make the ritual official."
         trailing={<span className="status-dot">Cart ritual</span>}
       />
 
       {!hasItems ? (
-        <section className="cart-empty-section" aria-label="Empty cart">
-          <EmptyState
-            title="No damage yet."
-            message="Your cart is emotionally empty. Browse the shelf when the craving starts negotiating."
-          />
+        <section className="cart-empty-panel" aria-label="Empty cart">
+          <div className="cart-empty-panel__art" aria-hidden="true">
+            <img src="/blinkamart-cart-bag.svg" alt="" />
+          </div>
+          <div className="cart-empty-panel__copy">
+            <span className="section-kicker">Cart status</span>
+            <h2>No items waiting.</h2>
+            <p>Browse the shelf, add a few temptations, then come back for the review ritual.</p>
+          </div>
           <Button type="button" onClick={() => navigate("/products")}>
             Browse Shelf
           </Button>
         </section>
       ) : (
         <>
-          <section className="impact-summary" aria-labelledby="impact-title">
+          <section className="cart-assistant-strip" aria-label="Cart assistant">
+            <div className="cart-assistant-strip__icon" aria-hidden="true">
+              <img src="/blinkamart-check-coin.svg" alt="" />
+            </div>
+            <div>
+              <span className="section-kicker">Cart Assistant</span>
+              <p>Review the shelf, tune the quantities, then let the order take a scenic detour.</p>
+            </div>
+          </section>
+
+          <section className="cart-selection-row" aria-label="Cart selection">
+            <div className="cart-selection-row__status">
+              <span aria-hidden="true">
+                <img src="/blinkamart-check-coin.svg" alt="" />
+              </span>
+              <div>
+                <strong>All items included</strong>
+                <small>
+                  {cart.totals.totalQuantity} {itemLabel} across {cart.totals.uniqueItems}{" "}
+                  {shelfPickLabel}
+                </small>
+              </div>
+            </div>
+            <Button type="button" variant="ghost" size="compact" onClick={cart.clearCart}>
+              Clear cart
+            </Button>
+          </section>
+
+          <section className="cart-items" aria-labelledby="cart-items-title">
             <div className="section-heading">
-              <span className="section-kicker">Impact summary</span>
-              <h2 id="impact-title">If this becomes a receipt, you keep the win.</h2>
-              <p>Numbers are estimates for the ritual, not a lecture.</p>
+              <h2 id="cart-items-title">Shelf picks</h2>
+              <p>Compact enough to scan. Serious enough to reconsider.</p>
             </div>
 
-            <div className="impact-grid">
-              <div className="impact-stat">
-                <span>Total avoided</span>
+            <div className="cart-item-list">
+              {cartProducts.map(({ product, quantity }) => (
+                <article className="cart-item-row" key={product.id}>
+                  <div className="cart-item-row__check" aria-hidden="true">
+                    <img src="/blinkamart-check-coin.svg" alt="" />
+                  </div>
+
+                  <div className="cart-item-row__thumb">
+                    <img
+                      src={product.imageSrc}
+                      alt={product.fullName || product.name}
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div className="cart-item-row__body">
+                    <div className="cart-item-row__top">
+                      <div className="cart-item-row__title">
+                        <span>
+                          {product.brandName} - {product.subcategory}
+                        </span>
+                        <h3>{product.name}</h3>
+                      </div>
+                      <strong>Rs {product.price * quantity}</strong>
+                    </div>
+
+                    <div className="cart-item-row__meta">
+                      <span>{categoryNames.get(product.categoryId) ?? "Shelf"}</span>
+                      {product.tag ? <span>{product.tag}</span> : null}
+                      <span>Regret {product.regretScore}/100</span>
+                      {settings.showCalories ? (
+                        <span>{product.calories * quantity} cal</span>
+                      ) : null}
+                    </div>
+
+                    <div className="cart-item-row__controls">
+                      <div className="cart-stepper" aria-label={`${product.name} quantity controls`}>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="compact"
+                          onClick={() => cart.decrementItem(product.id)}
+                          aria-label={`Decrease ${product.name} quantity`}
+                        >
+                          -
+                        </Button>
+                        <span
+                          className="cart-controls__quantity"
+                          aria-label={`${quantity} in cart`}
+                        >
+                          {quantity}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="compact"
+                          onClick={() => cart.incrementItem(product.id)}
+                          aria-label={`Increase ${product.name} quantity`}
+                        >
+                          +
+                        </Button>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="compact"
+                        onClick={() => cart.removeItem(product.id)}
+                        aria-label={`Remove ${product.name} from cart`}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="cart-impact-card" aria-labelledby="cart-impact-title">
+            <div className="cart-impact-card__header">
+              <div className="cart-impact-card__icon" aria-hidden="true">
+                <img src="/blinkamart-coupon-ticket.svg" alt="" />
+              </div>
+              <div>
+                <span className="section-kicker">Review summary</span>
+                <h2 id="cart-impact-title">Estimated win if this order wanders off.</h2>
+                <p>Numbers are estimates for the ritual, not a lecture.</p>
+              </div>
+            </div>
+
+            <div className="cart-impact-grid">
+              <div className="cart-impact-line">
+                <span>Cart total</span>
                 <strong>Rs {cart.totals.totalPrice}</strong>
               </div>
-              <div className="impact-stat">
-                <span>Items</span>
+              <div className="cart-impact-line cart-impact-line--coupon">
+                <span>Restraint coupon</span>
+                <strong>- Rs {cart.totals.totalPrice}</strong>
+              </div>
+              <div className="cart-impact-line cart-impact-line--payable">
+                <span>Estimated payable</span>
+                <strong>Rs 0</strong>
+              </div>
+              <div className="cart-impact-line">
+                <span>Items kept offstage</span>
                 <strong>{cart.totals.totalQuantity}</strong>
               </div>
               {settings.showCalories ? (
-                <div className="impact-stat">
+                <div className="cart-impact-line">
                   <span>Calories avoided</span>
                   <strong>{cart.totals.totalCalories}</strong>
                 </div>
               ) : null}
-              <div className="impact-stat">
-                <span>Average regret score</span>
+              <div className="cart-impact-line">
+                <span>Regret average</span>
                 <strong>{cart.totals.averageRegretScore}/100</strong>
               </div>
             </div>
           </section>
 
-          <section className="settings-panel" aria-label="Calorie visibility">
-            <label className="toggle-row">
+          <section className="cart-settings-card" aria-label="Calorie visibility">
+            <label className="cart-toggle-row">
               <span>
                 <strong>Show calories</strong>
                 <small>For some brains, numbers help. For others, vibes are enough.</small>
@@ -140,126 +272,60 @@ export function CartPage() {
             </label>
           </section>
 
-          <section className="time-impact" aria-label="Time of night note">
+          <section className="cart-time-card" aria-label="Time of night note">
             <span className="section-kicker">Craving weather</span>
             <p>{timeImpactCopy}</p>
           </section>
 
-          <section className="cart-items" aria-labelledby="cart-items-title">
-            <div className="section-heading">
-              <h2 id="cart-items-title">Cart items</h2>
-              <p>Adjust the cart before the checkout ritual starts.</p>
+          <section className="cart-hungry-card" aria-label="Actually hungry guidance">
+            <div>
+              <span className="section-kicker">Real hunger check</span>
+              <h2>Actually hungry?</h2>
+              <p>
+                If your body wants food, feed it. This cart is for impulse loops,
+                not for skipping a meal.
+              </p>
             </div>
 
-            <div className="cart-item-list">
-              {cartProducts.map(({ product, quantity }) => (
-                <article className="cart-item-card" key={product.id}>
-                  <div className="cart-item-card__top">
-                    <div className="cart-item-card__thumb">
-                      <img
-                        src={product.imageSrc}
-                        alt={product.fullName || product.name}
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="cart-item-card__header">
-                      <div>
-                        <span className="product-card__category">
-                          {categoryNames.get(product.categoryId) ?? "Shelf"}
-                        </span>
-                        <h3>{product.name}</h3>
-                      </div>
-                      <strong>Rs {product.price * quantity}</strong>
-                    </div>
-                  </div>
-
-                  <p>{product.subtitle}</p>
-
-                  <div className="cart-item-card__impact">
-                    <span>{quantity} in cart</span>
-                    {settings.showCalories ? (
-                      <span>{product.calories * quantity} cal kept offstage</span>
-                    ) : null}
-                    <span>Regret {product.regretScore}/100</span>
-                  </div>
-
-                  <div className="cart-controls" aria-label={`${product.name} quantity controls`}>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="compact"
-                      onClick={() => cart.decrementItem(product.id)}
-                      aria-label={`Decrease ${product.name} quantity`}
-                    >
-                      -
-                    </Button>
-                    <span
-                      className="cart-controls__quantity"
-                      aria-label={`${quantity} in cart`}
-                    >
-                      {quantity}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="compact"
-                      onClick={() => cart.incrementItem(product.id)}
-                      aria-label={`Increase ${product.name} quantity`}
-                    >
-                      +
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="compact"
-                      onClick={() => cart.removeItem(product.id)}
-                      aria-label={`Remove ${product.name} from cart`}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                </article>
-              ))}
-            </div>
+            {showHungryGuidance ? (
+              <div className="cart-hungry-card__guidance">
+                <p>
+                  Try water, leftovers, fruit, eggs, dal-rice, toast, or anything
+                  simple your future self will not have to litigate.
+                </p>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowHungryGuidance(true)}
+              >
+                I'm Actually Hungry
+              </Button>
+            )}
           </section>
 
-          {showHungryGuidance ? (
-            <section className="hungry-guidance" aria-label="Actually hungry guidance">
-              <h2>Real hunger deserves real food.</h2>
-              <p>
-                If you're genuinely hungry, eat something real and basic. This app is
-                for impulse loops, not ignoring hunger.
-              </p>
-              <p>
-                Try water, leftovers, fruit, eggs, dal-rice, toast, or anything
-                simple your future self will not have to litigate.
-              </p>
-            </section>
-          ) : null}
-
-          <div className="cart-cta-row" aria-label="Cart actions">
+          <aside className="cart-checkout-bar" aria-label="Cart checkout">
+            <div className="cart-checkout-bar__art" aria-hidden="true">
+              <img src="/blinkamart-cart-bag.svg" alt="" />
+            </div>
+            <div className="cart-checkout-bar__summary">
+              <strong>Estimated saved Rs {cart.totals.totalPrice}</strong>
+              <span>
+                {cart.totals.totalQuantity} {itemLabel} -{" "}
+                {settings.showCalories
+                  ? `${cart.totals.totalCalories} cal kept offstage`
+                  : `regret ${cart.totals.averageRegretScore}/100`}
+              </span>
+            </div>
             <Button type="button" onClick={handlePlaceOrder}>
               Place order successfully
             </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setShowHungryGuidance(true)}
-            >
-              I'm Actually Hungry
-            </Button>
-          </div>
+          </aside>
         </>
       )}
 
       <Toast message={toastMessage} visible={Boolean(toastMessage)} />
-      <BottomCartBar
-        totalQuantity={cart.totals.totalQuantity}
-        totalPrice={cart.totals.totalPrice}
-        totalCalories={cart.totals.totalCalories}
-        averageRegretScore={cart.totals.averageRegretScore}
-        showCalories={settings.showCalories}
-      />
     </div>
   );
 }

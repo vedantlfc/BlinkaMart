@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" role="img" aria-labelledby="title desc">
+  <title id="title">BlinkaMart savings ticket</title>
+  <desc id="desc">A pink coupon ticket with perforation dots and a rupee-saving spark.</desc>
+  <defs>
+    <filter id="ticketShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#241C35" flood-opacity=".16" />
+    </filter>
+  </defs>
+  <rect width="160" height="120" rx="24" fill="#FFF8EA" />
+  <g filter="url(#ticketShadow)">
+    <path d="M23 29c0-7 5-12 12-12h90c7 0 12 5 12 12v11c-9 0-16 7-16 16s7 16 16 16v19c0 7-5 12-12 12H35c-7 0-12-5-12-12V72c9 0 16-7 16-16s-7-16-16-16V29Z" fill="#FF5C7A" />
+    <path d="M54 26v68" stroke="#FFFDF7" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 9" opacity=".65" />
+    <path d="M78 43h31" stroke="#FFFDF7" stroke-width="8" stroke-linecap="round" />
+    <path d="M78 63h22" stroke="#FFFDF7" stroke-width="8" stroke-linecap="round" opacity=".8" />
+    <path d="M37 52h15M45 44v31" stroke="#FFFDF7" stroke-width="7" stroke-linecap="round" />
+    <path d="M43 74c9 0 15 5 15 13" stroke="#FFFDF7" stroke-width="7" stroke-linecap="round" fill="none" />
+  </g>
+</svg>

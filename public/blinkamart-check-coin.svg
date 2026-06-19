@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">BlinkaMart selected check</title>
+  <desc id="desc">A yellow circular selected-state check mark for cart rows.</desc>
+  <circle cx="48" cy="48" r="43" fill="#FFD166" />
+  <circle cx="48" cy="48" r="36" fill="#FFE178" stroke="#241C35" stroke-width="4" opacity=".92" />
+  <path d="m30 49 12 12 26-29" fill="none" stroke="#241C35" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

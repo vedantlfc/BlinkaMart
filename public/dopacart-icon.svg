@@ -1,0 +1,46 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tile" x1="128" y1="96" x2="896" y2="928" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset="0.52" stop-color="#05070C"/>
+      <stop offset="1" stop-color="#18231C"/>
+    </linearGradient>
+    <linearGradient id="cart" x1="238" y1="293" x2="784" y2="688" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D9FF57"/>
+      <stop offset="0.5" stop-color="#6CFF72"/>
+      <stop offset="1" stop-color="#11D983"/>
+    </linearGradient>
+    <linearGradient id="spark" x1="601" y1="195" x2="766" y2="371" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#42F7FF"/>
+      <stop offset="1" stop-color="#FF4F7B"/>
+    </linearGradient>
+    <filter id="softShadow" x="66" y="64" width="902" height="900" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="28"/>
+      <feGaussianBlur stdDeviation="36"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.02 0 0 0 0 0.95 0 0 0 0 0.48 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" rx="226" fill="url(#tile)"/>
+  <path d="M178 210C178 164.713 214.713 128 260 128H764C809.287 128 846 164.713 846 210V814C846 859.287 809.287 896 764 896H260C214.713 896 178 859.287 178 814V210Z" fill="white" fill-opacity="0.035"/>
+  <path d="M236 730C345 819 532 841 682 765C787 712 846 622 840 518" stroke="#42F7FF" stroke-opacity="0.18" stroke-width="26" stroke-linecap="round"/>
+  <path d="M265 303C368 205 564 192 704 296C805 371 851 494 815 608" stroke="#FF4F7B" stroke-opacity="0.16" stroke-width="26" stroke-linecap="round"/>
+
+  <g filter="url(#softShadow)">
+    <path d="M302 300H436C573.519 300 685 411.481 685 549C685 686.519 573.519 798 436 798H302V300ZM432 681C505.454 681 565 621.454 565 548C565 474.546 505.454 415 432 415H423V681H432Z" fill="url(#cart)"/>
+    <path d="M242 380H302V501H749C772.012 501 789.126 522.259 784.249 544.749L748.249 710.749C744.774 726.77 730.6 738.2 714.207 738.2H388.244C371.397 738.2 356.966 726.146 353.944 709.572L301.609 422.533H242V380Z" fill="url(#cart)"/>
+    <path d="M429 799C429 834.346 400.346 863 365 863C329.654 863 301 834.346 301 799C301 763.654 329.654 735 365 735C400.346 735 429 763.654 429 799Z" fill="#D9FF57"/>
+    <path d="M744 799C744 834.346 715.346 863 680 863C644.654 863 616 834.346 616 799C616 763.654 644.654 735 680 735C715.346 735 744 763.654 744 799Z" fill="#D9FF57"/>
+  </g>
+
+  <path d="M674 183L702 267L789 247L731 315L771 392L692 353L633 415L643 329L566 286L651 270L674 183Z" fill="url(#spark)"/>
+  <path d="M673 246L696 304L759 294" stroke="#F8FFE7" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="365" cy="799" r="24" fill="#07110A"/>
+  <circle cx="680" cy="799" r="24" fill="#07110A"/>
+  <path d="M365 537H708" stroke="#07110A" stroke-opacity="0.5" stroke-width="34" stroke-linecap="round"/>
+  <path d="M383 621H690" stroke="#07110A" stroke-opacity="0.35" stroke-width="30" stroke-linecap="round"/>
+</svg>
