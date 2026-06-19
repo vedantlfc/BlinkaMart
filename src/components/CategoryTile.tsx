@@ -51,7 +51,6 @@ export function CategoryTile({
       <span className="category-tile__body">
         <span className="category-tile__name">{category.name}</span>
         <span className="visually-hidden">{productCount} items</span>
-        <span className="category-tile__meta">{category.vibe}</span>
       </span>
     </button>
   );

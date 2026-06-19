@@ -192,8 +192,7 @@ export function HomePage() {
 
       <section className="category-section" aria-labelledby="category-title">
         <div className="section-heading">
-          <h2 id="category-title">Pick your almost-mistake</h2>
-          <p>Tap a shelf. Every craving gets a little stage time.</p>
+          <h2 id="category-title">Categories</h2>
         </div>
         <div
           className="category-rail"
@@ -218,22 +217,12 @@ export function HomePage() {
 
       <section
         className="product-shelf"
-        aria-labelledby="shelf-title"
+        aria-label={
+          normalizedQuery
+            ? "Search results"
+            : `${selectedCategory?.name ?? "Selected"} products`
+        }
       >
-        <div className="section-heading">
-          <span className="section-kicker">
-            {normalizedQuery ? "Search mode" : selectedCategory?.vibe}
-          </span>
-          <h2 id="shelf-title">
-            {normalizedQuery ? "Search results" : "Tonight's shelf"}
-          </h2>
-          <p>
-            {normalizedQuery
-              ? `Showing items that match "${searchQuery.trim()}".`
-              : `${selectedCategory?.name} products are ready to be admired, debated, and left onstage.`}
-          </p>
-        </div>
-
         {visibleProducts.length > 0 ? (
           <div className="product-list">
             {visibleProducts.map((product) => (
@@ -259,10 +248,6 @@ export function HomePage() {
                       ? `${product.name} removed from the cart.`
                       : `${product.name} quantity decreased.`,
                   );
-                }}
-                onRemove={() => {
-                  cart.removeItem(product.id);
-                  setToastMessage(`${product.name} removed from the cart.`);
                 }}
               />
             ))}

@@ -105,9 +105,6 @@ export function CartPage() {
       ) : (
         <>
           <section className="cart-assistant-strip" aria-label="Cart assistant">
-            <div className="cart-assistant-strip__icon" aria-hidden="true">
-              <img src="/blinkamart-check-coin.svg" alt="" />
-            </div>
             <div>
               <span className="section-kicker">Cart Assistant</span>
               <p>Review the shelf, tune the quantities, then let the order take a scenic detour.</p>
@@ -116,9 +113,6 @@ export function CartPage() {
 
           <section className="cart-selection-row" aria-label="Cart selection">
             <div className="cart-selection-row__status">
-              <span aria-hidden="true">
-                <img src="/blinkamart-check-coin.svg" alt="" />
-              </span>
               <div>
                 <strong>All items included</strong>
                 <small>
@@ -141,10 +135,6 @@ export function CartPage() {
             <div className="cart-item-list">
               {cartProducts.map(({ product, quantity }) => (
                 <article className="cart-item-row" key={product.id}>
-                  <div className="cart-item-row__check" aria-hidden="true">
-                    <img src="/blinkamart-check-coin.svg" alt="" />
-                  </div>
-
                   <div className="cart-item-row__thumb">
                     <img
                       src={product.imageSrc}

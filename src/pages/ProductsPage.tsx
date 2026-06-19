@@ -143,14 +143,7 @@ export function ProductsPage() {
 
       <section className="filter-panel" aria-labelledby="filter-title">
         <div className="section-heading">
-          <h2 id="filter-title">
-            {normalizedQuery ? "Searching all shelves" : "Choose a shelf"}
-          </h2>
-          <p>
-            {normalizedQuery
-              ? `${filteredProducts.length} results across all shelves.`
-              : `${filteredProducts.length} products visible.`}
-          </p>
+          <h2 id="filter-title">Categories</h2>
         </div>
         <div className="chip-list chip-list--reset" aria-label="Product category reset">
           <CategoryChip
@@ -183,19 +176,10 @@ export function ProductsPage() {
         </div>
       </section>
 
-      <section className="product-shelf" aria-labelledby="products-title">
-        <div className="section-heading">
-          <span className="section-kicker">Dopamine aisle</span>
-          <h2 id="products-title">
-            {normalizedQuery ? "Search results" : "Products currently auditioning"}
-          </h2>
-          <p>
-            {normalizedQuery
-              ? `Showing catalog matches for "${searchQuery.trim()}".`
-              : "Tap Add for the ritual. Future you remains unbothered."}
-          </p>
-        </div>
-
+      <section
+        className="product-shelf"
+        aria-label={normalizedQuery ? "Search results" : "Product grid"}
+      >
         {filteredProducts.length > 0 ? (
           <div className="product-list">
             {filteredProducts.map((product) => {
@@ -223,10 +207,6 @@ export function ProductsPage() {
                         ? `${product.name} removed from the cart.`
                         : `${product.name} quantity decreased.`,
                     );
-                  }}
-                  onRemove={() => {
-                    cart.removeItem(product.id);
-                    showCartToast(`${product.name} removed from the cart.`);
                   }}
                 />
               );

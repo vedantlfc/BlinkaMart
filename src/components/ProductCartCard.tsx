@@ -8,7 +8,6 @@ export interface ProductCartCardProps {
   onAdd: () => void;
   onIncrement: () => void;
   onDecrement: () => void;
-  onRemove: () => void;
   showCalories?: boolean;
 }
 
@@ -19,7 +18,6 @@ export function ProductCartCard({
   onAdd,
   onIncrement,
   onDecrement,
-  onRemove,
   showCalories = true,
 }: ProductCartCardProps) {
   const inCart = quantity > 0;
@@ -79,15 +77,6 @@ export function ProductCartCard({
             aria-label={`Increase ${product.name} quantity`}
           >
             +
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="compact"
-            onClick={onRemove}
-            aria-label={`Remove ${product.name} from cart`}
-          >
-            Remove
           </Button>
         </div>
       ) : (
