@@ -120,10 +120,6 @@ export function HomePage() {
     setToastMessage("Shelf switched. Still safer than checkout.");
   }
 
-  function handleBuildCart() {
-    navigate("/products");
-  }
-
   return (
     <div className={["home-page", cart.totals.totalQuantity > 0 ? "page-with-bottom-cart" : ""].filter(Boolean).join(" ")}>
       <PageHeader
@@ -134,12 +130,7 @@ export function HomePage() {
 
       <section className="hero-panel" aria-labelledby="home-hero-title">
         <div className="hero-copy">
-          <span className="hero-tag">Full drama. Tiny pause.</span>
           <h2 id="home-hero-title">Add to cart. Not to stomach.</h2>
-          <p>
-            Build a cart. Save the money. Skip the regret. Let Self Control take
-            the wheel.
-          </p>
         </div>
 
         <div className="hero-ticket" aria-label="Order preview">
@@ -148,15 +139,6 @@ export function HomePage() {
           <span>ETA: never</span>
         </div>
       </section>
-
-      <div className="cta-row" aria-label="Cart actions">
-        <Button
-          type="button"
-          onClick={handleBuildCart}
-        >
-          Build Cart
-        </Button>
-      </div>
 
       {hasProgress ? (
         <section className="home-progress-panel" aria-labelledby="home-progress-title">

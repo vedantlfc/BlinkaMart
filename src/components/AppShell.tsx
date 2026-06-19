@@ -25,7 +25,7 @@ export function AppShell({ children }: AppShellProps) {
         <main className="app-content">{children}</main>
 
         <footer className="app-footer">
-          Cart rituals, tiny trophies, excellent timing.
+          Tiny trophies, excellent timing.
         </footer>
       </div>
     </div>

@@ -130,7 +130,6 @@ export function ProductsPage() {
       <PageHeader
         title="Browse the shelf."
         subtitle="Add cravings, then let the ritual catch them."
-        trailing={<span className="status-dot">Cart ritual</span>}
       />
 
       <SearchInput

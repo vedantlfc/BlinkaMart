@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { getCravingDeskLabel } from "../utils/cravingDesk";
 
 export interface PageHeaderProps {
   title: string;
@@ -10,7 +11,7 @@ export function PageHeader({ title, subtitle, trailing }: PageHeaderProps) {
   return (
     <div className="page-header">
       <div>
-        <p className="page-eyebrow">Late-night craving desk</p>
+        <p className="page-eyebrow">{getCravingDeskLabel()}</p>
         <h1>{title}</h1>
         {subtitle ? <p>{subtitle}</p> : null}
       </div>

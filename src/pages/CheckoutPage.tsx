@@ -124,8 +124,7 @@ export function CheckoutPage() {
     <div className="checkout-page">
       <PageHeader
         title="Checkout reality check."
-        subtitle="Final pause before Self Control starts doing excellent work."
-        trailing={<span className="status-dot">Final pause</span>}
+        subtitle="One last pause before Self Control starts doing excellent work."
       />
 
       {!summary && hasTrackingOrder ? (
@@ -166,7 +165,7 @@ export function CheckoutPage() {
           <section className="checkout-summary" aria-labelledby="checkout-summary-title">
             <div className="section-heading">
               <span className="section-kicker">{summary.sourceLabel}</span>
-              <h2 id="checkout-summary-title">Cart ritual summary</h2>
+              <h2 id="checkout-summary-title">Cart summary</h2>
               <p>This snapshot carries into tracking and the receipt handoff.</p>
             </div>
 
@@ -234,7 +233,7 @@ export function CheckoutPage() {
 
           <div className="cart-cta-row" aria-label="Checkout actions">
             <Button type="button" onClick={handleConfirmCheckout}>
-              Place order successfully
+              Confirm Order
             </Button>
             <Button type="button" variant="secondary" onClick={() => navigate("/cart")}>
               Back to Cart

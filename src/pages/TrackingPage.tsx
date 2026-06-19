@@ -279,7 +279,7 @@ export function TrackingPage() {
           hasTrackableOrder && order ? (
             <span className="status-dot">ETA {order.tracking.etaMinutes} min</span>
           ) : (
-            <span className="status-dot">Cart ritual</span>
+            <span className="status-dot">Route desk</span>
           )
         }
       />

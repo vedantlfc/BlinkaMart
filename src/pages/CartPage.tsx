@@ -11,24 +11,6 @@ import { useSettings } from "../state/settings";
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
 const productById = new Map(products.map((product) => [product.id, product]));
 
-function getTimeImpactCopy(date: Date) {
-  const hour = date.getHours();
-
-  if (hour >= 23 || hour < 6) {
-    return "Late-night multiplier active: every snack idea sounds 37% more convincing after midnight.";
-  }
-
-  if (hour < 12) {
-    return "Morning clarity mode: last night's cart looks easier to question now.";
-  }
-
-  if (hour < 18) {
-    return "Afternoon snack fog: boredom is doing product research.";
-  }
-
-  return "Evening danger zone: dinner-adjacent decisions are assembling.";
-}
-
 function getCartProducts(items: Record<string, number>) {
   return Object.entries(items).reduce<Array<{ product: Product; quantity: number }>>(
     (cartProducts, [productId, quantity]) => {
@@ -54,7 +36,6 @@ export function CartPage() {
 
   const cartProducts = useMemo(() => getCartProducts(cart.items), [cart.items]);
   const hasItems = cart.totals.totalQuantity > 0;
-  const timeImpactCopy = getTimeImpactCopy(new Date());
   const cartPageClassName = hasItems
     ? "cart-page cart-page--with-sticky-checkout"
     : "cart-page";
@@ -85,7 +66,6 @@ export function CartPage() {
       <PageHeader
         title="Review your cart"
         subtitle="Everything here is reversible until you make the ritual official."
-        trailing={<span className="status-dot">Cart ritual</span>}
       />
 
       {!hasItems ? (
@@ -104,13 +84,6 @@ export function CartPage() {
         </section>
       ) : (
         <>
-          <section className="cart-assistant-strip" aria-label="Cart assistant">
-            <div>
-              <span className="section-kicker">Cart Assistant</span>
-              <p>Review the shelf, tune the quantities, then let the order take a scenic detour.</p>
-            </div>
-          </section>
-
           <section className="cart-selection-row" aria-label="Cart selection">
             <div className="cart-selection-row__status">
               <div>
@@ -129,7 +102,6 @@ export function CartPage() {
           <section className="cart-items" aria-labelledby="cart-items-title">
             <div className="section-heading">
               <h2 id="cart-items-title">Shelf picks</h2>
-              <p>Compact enough to scan. Serious enough to reconsider.</p>
             </div>
 
             <div className="cart-item-list">
@@ -214,7 +186,6 @@ export function CartPage() {
               <div>
                 <span className="section-kicker">Review summary</span>
                 <h2 id="cart-impact-title">Estimated win if this order wanders off.</h2>
-                <p>Numbers are estimates for the ritual, not a lecture.</p>
               </div>
             </div>
 
@@ -262,11 +233,6 @@ export function CartPage() {
             </label>
           </section>
 
-          <section className="cart-time-card" aria-label="Time of night note">
-            <span className="section-kicker">Craving weather</span>
-            <p>{timeImpactCopy}</p>
-          </section>
-
           <section className="cart-hungry-card" aria-label="Actually hungry guidance">
             <div>
               <span className="section-kicker">Real hunger check</span>
@@ -310,7 +276,7 @@ export function CartPage() {
               </span>
             </div>
             <Button type="button" onClick={handlePlaceOrder}>
-              Place order successfully
+              Review Order
             </Button>
           </aside>
         </>
