@@ -1,8 +1,8 @@
-# Design Doc: BlinkaMart — A Fake Quick-Commerce App for Dopamine Release
+﻿# Design Doc: DopeCart — A Parody Ordering App for Dopamine Release
 
 ## 1. Working Title
 
-**BlinkaMart**
+**DopeCart**
 
 Alternative names:
 
@@ -10,19 +10,19 @@ Alternative names:
 * KalOrder
 * RegretCart
 * Dopamine Cart
-* FakeMart
+* ParodyMart
 * Impulse Cart
 * Order Mat Kar
 
 ## 2. One-Line Pitch
 
-A fake quick-commerce app where users can browse late-night snacks, build a cart, and “place” an order that never arrives — giving them the dopamine hit of ordering without spending money, eating junk, or regretting it the next morning.
+A parody ordering app where users can browse late-night snacks, build a cart, and “place” an order that never arrives — giving them the dopamine hit of ordering without spending money, eating junk, or regretting it the next morning.
 
 ## 3. Product Concept
 
-BlinkaMart looks and feels like a fun quick-commerce experience, but it does not deliver anything. Users browse familiar impulse items like chips, Coke Zero, ice cream, chocolates, Maggi, momos, energy drinks, biscuits, and random “why am I buying this?” products.
+DopeCart looks and feels like a fun quick-commerce experience, but it does not deliver anything. Users browse familiar impulse items like chips, Coke Zero, ice cream, chocolates, Maggi, momos, energy drinks, biscuits, and random “why am I buying this?” products.
 
-The user adds items to a cart. At checkout, instead of placing a real order, the app gives a satisfying fake confirmation:
+The user adds items to a cart. At checkout, instead of placing a real order, the app gives a satisfying parody confirmation:
 
 > “Order cancelled successfully. You saved ₹486, 1,240 calories, and tomorrow-morning regret.”
 
@@ -40,7 +40,7 @@ People often do not only want the product. They want the feeling of:
 * feeling in control for a few minutes
 * getting a tiny reward at night
 
-Quick-commerce apps make the path from craving to purchase extremely short. BlinkaMart inserts a fake but satisfying substitute between craving and actual spending.
+Quick-commerce apps make the path from craving to purchase extremely short. DopeCart inserts a playful substitute between craving and actual spending.
 
 The product is not anti-food, anti-shopping, or moralistic. It is a playful intervention for the moment when someone knows they are probably about to make an unnecessary impulse order.
 
@@ -77,7 +77,7 @@ Likely segments:
 
 5. **Meme page audience**
 
-   * Likely to share fake receipts
+   * Likely to share receipts
    * Enjoy Hinglish, self-roast, and relatable urban humor
 
 ## 6. User Problem
@@ -105,17 +105,17 @@ They may order things they did not plan to buy. The next morning, they may regre
 
 Existing solutions like habit trackers, calorie counters, and budgeting apps are too serious. They do not match the emotional state of a person craving chips at 1:30 AM.
 
-BlinkaMart solves this with humor and simulation instead of discipline lectures.
+DopeCart solves this with humor and simulation instead of discipline lectures.
 
 ## 7. Product Goals
 
 ### Functional Goals
 
-* Let users browse fake quick-commerce items.
+* Let users browse parody shelf items.
 * Let users add items to a cart.
-* Let users get a satisfying fake checkout experience.
+* Let users get a satisfying checkout ritual experience.
 * Show money saved, calories avoided, and regret avoided.
-* Create shareable fake receipts.
+* Create shareable receipts.
 * Encourage users to avoid real impulse ordering.
 * Turn resisting cravings into a game.
 
@@ -151,11 +151,11 @@ The MVP should not:
 
 ## 9. Positioning
 
-BlinkaMart is not a delivery app.
+DopeCart is a parody self-control app.
 
 It is:
 
-> A fake ordering app for real cravings.
+> A parody ordering app for real cravings.
 
 Possible tagline options:
 
@@ -183,11 +183,11 @@ Possible tagline options:
    * Momos
    * Biscuits
    * Random Midnight Purchases
-4. User browses fake products.
+4. User browses parody products.
 5. User adds items to cart.
-6. Cart shows fake total, calories, and “regret score.”
-7. User taps “Place Fake Order.”
-8. App shows fake order tracking:
+6. Cart shows cart total, calories, and “regret score.”
+7. User taps “Place order successfully.”
+8. App shows tracking ritual:
 
    * Order received
    * Rider assigned: Self Control
@@ -199,13 +199,13 @@ Possible tagline options:
    * “You saved ₹486.”
    * “You avoided 1,240 calories.”
    * “You protected tomorrow morning.”
-10. User gets a shareable fake receipt.
+10. User gets a shareable receipt.
 
 ### Flow 2: Returning User
 
 1. User opens app during craving.
 2. App says: “Back again? What almost got you today?”
-3. User builds a fake cart.
+3. User builds a cart.
 4. Checkout adds to:
 
    * Total money saved
@@ -220,7 +220,7 @@ Possible tagline options:
 2. App starts a 10-minute craving timer.
 3. During timer, app shows:
 
-   * fake cart
+   * cart
    * memes
    * water reminder
    * “eat something basic if actually hungry”
@@ -258,17 +258,17 @@ Content:
   * Random Stuff
 * CTA:
 
-  * “Build Fake Cart”
+  * “Build Cart”
   * “Emergency Craving Mode”
 
 ### 11.2 Product Listing Page
 
 Purpose: Let users enjoy the browsing dopamine.
 
-Each fake product card includes:
+Each parody product card includes:
 
 * Product name
-* Fake price
+* Displayed price
 * Estimated calories
 * Regret score
 * Add button
@@ -290,23 +290,23 @@ Purpose: Add humor and a stronger parody layer.
 Example sections:
 
 * Product name
-* Fake delivery time
+* Delivery-style ETA
 * “Why you want this”
 * “Why future you disagrees”
 * Add to cart
 * Alternative action:
 
   * “Drink water and pretend”
-  * “Add to fake cart only”
+  * “Add to cart only”
 
 ### 11.4 Cart Page
 
-Purpose: Show the emotional cost before fake checkout.
+Purpose: Show the emotional cost before checkout ritual.
 
 Cart should show:
 
 * Items
-* Fake total
+* Cart total
 * Calories
 * Regret score
 * Time-of-night multiplier
@@ -321,27 +321,27 @@ Morning version of you: disappointed
 
 CTA:
 
-* “Place Fake Order”
+* “Place order successfully”
 * Secondary: “I’m actually hungry”
 
-### 11.5 Fake Checkout Page
+### 11.5 Checkout Page
 
 Purpose: Provide a satisfying climax without real transaction.
 
 No real payment. No address. No UPI.
 
-Fake checkout button examples:
+Checkout ritual button examples:
 
 * “Cancel Order Successfully”
 * “Deliver Dopamine Only”
 * “Send to Imaginary Rider”
 * “Place Emotionally, Not Physically”
 
-### 11.6 Fake Order Tracking Page
+### 11.6 Order Tracking Page
 
 Purpose: Mimic the rewarding delivery-tracking experience.
 
-Fake stages:
+Tracking stages:
 
 1. Craving received
 2. Self-control assigned
@@ -363,7 +363,7 @@ Purpose: Make the experience shareable.
 
 Receipt includes:
 
-* Fake order ID
+* Order ID
 * Time
 * Items avoided
 * Money saved
@@ -373,7 +373,7 @@ Receipt includes:
 
 Example:
 
-BlinkaMart Receipt
+DopeCart Receipt
 Order Status: Successfully Not Ordered
 You saved: ₹486
 Calories avoided: 1,240
@@ -393,7 +393,7 @@ Share CTA:
 Track:
 
 * Nights without late-night ordering
-* Total fake orders placed
+* Total order rituals placed
 * Total money saved
 * Total calories avoided
 * Most avoided category
@@ -431,7 +431,7 @@ Optional later-stage feature:
 Examples:
 
 * Delhi saved ₹12,40,000 this week
-* Bengaluru avoided 48,000 fake Coke Zeros
+* Bengaluru avoided 48,000 Coke Zeros
 * Noida is currently losing to Gurgaon in self-control
 
 ## 13. Tone and Copy Style
@@ -465,13 +465,13 @@ Sample copy:
 ### MVP Must Have
 
 * Landing page
-* Fake product categories
+* Product categories
 * Product listing
 * Add to cart
 * Cart total
 * Calories avoided estimate
-* Fake checkout
-* Fake order tracking
+* Checkout ritual
+* Tracking ritual
 * Final receipt
 * Shareable receipt image/text
 * Basic local streak tracking
@@ -516,15 +516,15 @@ Do not:
 Do:
 
 * Use original branding.
-* Clearly state that this is a fake ordering app.
+* Keep the parody-first stance clear.
 * Use parody-style fictional products.
-* Make the fake nature clear before checkout.
+* Keep the parody nature clear before checkout.
 * Avoid real payment flows.
 * Make the product feel like entertainment/self-control, not deception.
 
 Suggested footer:
 
-> BlinkaMart is a parody self-control app. It does not sell, deliver, or process orders.
+> DopeCart is a parody self-control app for cart rituals and tiny trophies.
 
 ## 16. Ethical Design Principles
 
@@ -542,7 +542,7 @@ Principles:
 
 3. **No manipulative scarcity**
 
-   * Avoid fake countdowns that increase craving.
+   * Avoid pressure countdowns that increase craving.
 
 4. **Encourage actual food when needed**
 
@@ -565,22 +565,22 @@ Principles:
 
 ### Activation Metrics
 
-* Number of users who build first fake cart
-* Percentage who complete fake checkout
+* Number of users who build first cart
+* Percentage who complete checkout ritual
 * Percentage who share receipt
-* Time from landing to first fake order
+* Time from landing to first order ritual
 
 ### Retention Metrics
 
 * Day 1 return rate
 * Day 7 return rate
-* Average fake orders per user
+* Average order rituals per user
 * Streak creation rate
 * Number of emergency craving sessions
 
 ### Behavior Metrics
 
-* Total fake money saved
+* Total money saved
 * Total calories avoided
 * Most common craving categories
 * Peak usage times
@@ -600,7 +600,7 @@ The MVP is successful if:
 
 * Users understand the product within 5 seconds.
 * Users laugh or relate immediately.
-* At least 40% of first-time users complete a fake checkout.
+* At least 40% of first-time users complete a checkout ritual.
 * At least 10–15% share a receipt.
 * Users return during late-night hours.
 * Some users say it actually stopped them from placing a real order.
@@ -626,7 +626,7 @@ Hook examples:
 
 * “Made an app for people who open Blinkit at 1 AM and regret it at 9 AM.”
 * “Add chips to cart. Receive nothing. Save ₹500.”
-* “Fake Blinkit for self-control.”
+* “Parody cart for self-control.”
 * “Your delivery partner is Self Control.”
 
 ### Phase 2: Social Receipts
@@ -636,7 +636,7 @@ Make receipt sharing the growth loop.
 Users should want to post:
 
 * “I avoided ₹642 of late-night damage”
-* “BlinkaMart saved me from Maggi + chips + ice cream”
+* “DopeCart saved me from Maggi + chips + ice cream”
 * “Order successfully not delivered”
 
 ### Phase 3: Habit Layer
@@ -734,7 +734,7 @@ A browser extension or Android overlay that activates when users open quick-comm
 
 Example:
 
-> “Do you want to place this order for real, or try a fake cart first?”
+> “Do you want to place this order for real, or try a cart first?”
 
 ### 21.3 Friend Intervention
 
@@ -776,9 +776,9 @@ Local humor by city:
 
 ### User Stories
 
-1. As a user, I want to browse fake snacks so that I can satisfy the urge to shop/order.
-2. As a user, I want to add items to a fake cart so that I feel the reward of choosing.
-3. As a user, I want a fake checkout so that I can complete the ritual without spending money.
+1. As a user, I want to browse snacks so that I can satisfy the urge to shop/order.
+2. As a user, I want to add items to a cart so that I feel the reward of choosing.
+3. As a user, I want a checkout ritual so that I can complete the ritual without spending money.
 4. As a user, I want to see money saved so that I feel rewarded.
 5. As a user, I want a funny receipt so that I can share it with friends.
 6. As a user, I want streaks so that I can turn self-control into a game.
@@ -788,11 +788,11 @@ Local humor by city:
 
 * User can open the app on mobile.
 * User can browse at least 5 categories.
-* User can add and remove fake items.
-* Cart calculates fake total.
+* User can add and remove items.
+* Cart calculates cart total.
 * Cart estimates calories avoided.
-* User can complete fake checkout.
-* User sees fake order tracking.
+* User can complete checkout ritual.
+* User sees tracking ritual.
 * User receives shareable receipt.
 * User can start a streak without creating an account.
 * App clearly states that no real order will be placed.
@@ -851,7 +851,7 @@ Visual style:
 * Bright but not identical to any real quick-commerce app
 * Playful product cards
 * Large cart CTA
-* Smooth fake checkout animation
+* Smooth checkout ritual animation
 * Receipt-style final screen
 * Meme-friendly screenshots
 
@@ -867,13 +867,13 @@ Design should feel:
 1. Should the app start as a web app or Android app?
 2. Should calories be shown by default or hidden behind a toggle?
 3. Should the tone be mostly English, Hinglish, or city-specific?
-4. Should users be able to create custom fake products?
+4. Should users be able to create custom parody products?
 5. Should receipts be image-based for Instagram sharing?
 6. Should the app allow anonymous city leaderboards?
 7. Should the product be positioned as parody, self-control, fitness, or budgeting?
 8. Should the first version include login, or remain fully anonymous?
 9. Should the app have a “still hungry” flow with real healthy suggestions?
-10. Should it eventually integrate with real spending data, or stay purely fake?
+10. Should it eventually integrate with real spending data, or stay purely local?
 
 ## 26. Recommended First Version
 
@@ -881,12 +881,13 @@ The first version should be a mobile web app with no login.
 
 Core flow:
 
-Home → Browse Products → Add to Cart → Fake Checkout → Fake Tracking → Receipt → Share
+Home → Browse Products → Add to Cart → Checkout → Tracking → Receipt → Share
 
 The product should be funny within the first 10 seconds.
 
 The main success moment should be:
 
-> “I built a fake cart, laughed, did not order, and shared the receipt.”
+> “I built a cart, laughed, did not order, and shared the receipt.”
 
 If the MVP can create that moment reliably, the idea is worth expanding.
+
