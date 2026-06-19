@@ -131,7 +131,7 @@ export function FictionalDeliveryMap({
         role="img"
         aria-labelledby="fictional-map-title fictional-map-description"
       >
-        <title id="fictional-map-title">BlinkaMart fictional delivery route</title>
+        <title id="fictional-map-title">DopeCart fictional delivery route</title>
         <desc id="fictional-map-description">
           A playful map showing the delivery partner moving from {darkStoreName} toward Your Sofa.
         </desc>

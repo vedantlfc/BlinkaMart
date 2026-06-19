@@ -12,7 +12,7 @@ import "./styles/global.css";
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
-  throw new Error("BlinkaMart root element was not found.");
+  throw new Error("DopeCart root element was not found.");
 }
 
 createRoot(rootElement).render(

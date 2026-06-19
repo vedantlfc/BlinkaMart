@@ -8,7 +8,7 @@ unless the repo grows into clearly separate packages.
 
 ## Project Shape
 
-- BlinkaMart is a frontend-only Vite + React + TypeScript mobile web app.
+- DopeCart is a frontend-only Vite + React + TypeScript mobile web app.
 - The core routes live in `src/App.tsx`: `/`, `/products`, `/cart`, `/checkout`,
   `/tracking`, `/receipt`, and `/progress`.
 - State is local and anonymous. Cart, settings, current order, and progress are

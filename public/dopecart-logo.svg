@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">DopeCart logo</title>
+  <desc id="desc">A neon shopping cart carrying a dopamine-inspired molecule above the DopeCart wordmark and Delivering Dopamine tagline.</desc>
+  <defs>
+    <linearGradient id="cartStroke" x1="270" y1="178" x2="1096" y2="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2F8CFF" />
+      <stop offset="0.48" stop-color="#596CFF" />
+      <stop offset="1" stop-color="#8D41FF" />
+    </linearGradient>
+    <linearGradient id="wordmarkGradient" x1="660" y1="680" x2="1130" y2="680" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2F8CFF" />
+      <stop offset="0.58" stop-color="#596CFF" />
+      <stop offset="1" stop-color="#8D41FF" />
+    </linearGradient>
+    <linearGradient id="taglineGradient" x1="470" y1="790" x2="940" y2="790" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2F8CFF" />
+      <stop offset="1" stop-color="#8D41FF" />
+    </linearGradient>
+    <radialGradient id="glowWash" cx="50%" cy="46%" r="52%">
+      <stop offset="0" stop-color="#193067" stop-opacity="0.32" />
+      <stop offset="0.48" stop-color="#160E45" stop-opacity="0.16" />
+      <stop offset="1" stop-color="#030407" stop-opacity="0" />
+    </radialGradient>
+    <filter id="neonGlow" x="-18%" y="-22%" width="136%" height="148%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.18 0 0 0 0 0.38 0 0 0 0 1 0 0 0 0.75 0" result="blueGlow" />
+      <feMerge>
+        <feMergeNode in="blueGlow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="softTextGlow" x="-12%" y="-24%" width="124%" height="150%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
+      <feFlood flood-color="#4568FF" flood-opacity="0.35" result="color" />
+      <feComposite in="color" in2="blur" operator="in" result="glow" />
+      <feMerge>
+        <feMergeNode in="glow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="900" fill="#030407" />
+  <rect width="1400" height="900" fill="url(#glowWash)" />
+
+  <g filter="url(#neonGlow)" fill="none" stroke="url(#cartStroke)" stroke-width="25" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M293 183h103c23 0 44 15 51 37l38 112" />
+    <path d="M485 332h586c34 0 59 32 51 65l-65 252c-7 28-33 48-62 48H583c-31 0-58-21-66-51L447 389" />
+    <path d="M542 697h472" />
+    <path d="M534 697c-34 0-61 27-61 61s27 61 61 61 61-27 61-61-27-61-61-61Z" />
+    <path d="M933 697c-34 0-61 27-61 61s27 61 61 61 61-27 61-61-27-61-61-61Z" />
+  </g>
+
+  <g fill="none" stroke="#F7F9FF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M636 442v-93l81-47 82 47v94l-82 47-81-48Z" />
+    <path d="M655 363v68" />
+    <path d="M736 329l45 26" />
+    <path d="M781 436l-45 26" />
+    <path d="M636 349l-54-33" />
+    <path d="M636 442l-42 42" />
+    <path d="M799 443l75 44 64-38 25-55" />
+    <path d="M963 394l46 26" />
+  </g>
+
+  <g font-family="Inter, Rajdhani, Eurostile, Arial, sans-serif" font-weight="800" fill="#F7F9FF">
+    <text x="512" y="328" font-size="44" text-anchor="end">HO</text>
+    <text x="552" y="505" font-size="44" text-anchor="end">HO</text>
+    <text x="1032" y="399" font-size="46">NH<tspan dy="14" font-size="27">2</tspan></text>
+  </g>
+
+  <g filter="url(#softTextGlow)" font-family="Rajdhani, Eurostile, Orbitron, Inter, Arial, sans-serif" font-weight="500">
+    <text x="270" y="742" fill="#F7F9FF" font-size="128" letter-spacing="3">Dope</text>
+    <text x="760" y="742" fill="url(#wordmarkGradient)" font-size="128" letter-spacing="3">Cart</text>
+  </g>
+
+  <text x="700" y="827" fill="url(#taglineGradient)" font-family="Inter, Arial, sans-serif" font-size="33" font-weight="700" letter-spacing="24" text-anchor="middle">DELIVERING DOPAMINE</text>
+</svg>

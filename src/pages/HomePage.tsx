@@ -260,7 +260,7 @@ export function HomePage() {
         )}
       </section>
 
-      <section className="proof-grid" aria-label="BlinkaMart reminders">
+      <section className="proof-grid" aria-label="DopeCart reminders">
         <Card>
           <span className="card-kicker">Reminder</span>
           <h3>Your delivery partner is Self Control.</h3>

@@ -58,7 +58,7 @@ function buildShareText(
   progress: ReceiptProgressState,
 ) {
   const lines = [
-    "Successfully Not Ordered on BlinkaMart.",
+    "Successfully Not Ordered on DopeCart.",
     `Badge unlocked: ${badge}.`,
     `Saved Rs ${order.totalPrice} by avoiding ${getItemCountLabel(order.totalQuantity)}.`,
     `Delivery outcome: ${getDeliveryOutcomeCopy(order)}.`,
@@ -190,7 +190,7 @@ export function ReceiptPage() {
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
         await navigator.share({
-          title: "BlinkaMart receipt",
+          title: "DopeCart receipt",
           text: shareText,
         });
         showToast("Share sheet opened.", "success");
@@ -245,7 +245,7 @@ export function ReceiptPage() {
         <>
           <section className="receipt-card receipt-card--poster" aria-labelledby="receipt-status-title">
             <div className="receipt-status-band">
-              <span className="section-kicker">BlinkaMart receipt</span>
+              <span className="section-kicker">DopeCart receipt</span>
               <h2 id="receipt-status-title">Successfully Not Ordered</h2>
               <span className="receipt-badge">Badge unlocked: {badge}</span>
               <p>
