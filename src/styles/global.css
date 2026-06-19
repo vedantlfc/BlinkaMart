@@ -1615,6 +1615,7 @@ p {
 }
 
 .cart-checkout-bar__art {
+  position: relative;
   width: 3.5rem;
   height: 3.5rem;
   border: 1px solid rgb(36 28 53 / 0.12);
@@ -2674,6 +2675,7 @@ p {
   height: 2.75rem;
 }
 
+.cart-checkout-bar__art span,
 .bottom-cart-bar__art span {
   position: absolute;
   top: -0.35rem;

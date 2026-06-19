@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
   <title id="title">BlinkaMart cart bag</title>
-  <desc id="desc">A yellow shopping bag with a lightning mark and a small pink item badge.</desc>
+  <desc id="desc">A yellow shopping bag with a lightning mark.</desc>
   <defs>
     <linearGradient id="bagFill" x1="36" x2="124" y1="34" y2="146" gradientUnits="userSpaceOnUse">
       <stop stop-color="#FFE178" />
@@ -17,6 +17,4 @@
     <path d="M70 71h36" stroke="#241C35" stroke-width="7" stroke-linecap="round" opacity=".16" />
     <path d="M84 75 61 111h21l-8 27 27-41H80l4-22Z" fill="#241C35" />
   </g>
-  <circle cx="117" cy="43" r="23" fill="#FF5C7A" stroke="#FFFDF7" stroke-width="6" />
-  <text x="117" y="51" fill="#FFFDF7" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">4</text>
 </svg>

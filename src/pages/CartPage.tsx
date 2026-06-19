@@ -308,6 +308,7 @@ export function CartPage() {
           <aside className="cart-checkout-bar" aria-label="Cart checkout">
             <div className="cart-checkout-bar__art" aria-hidden="true">
               <img src="/blinkamart-cart-bag.svg" alt="" />
+              <span>{cart.totals.totalQuantity}</span>
             </div>
             <div className="cart-checkout-bar__summary">
               <strong>Estimated saved Rs {cart.totals.totalPrice}</strong>
