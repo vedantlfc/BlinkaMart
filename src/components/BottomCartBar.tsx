@@ -43,7 +43,7 @@ export function BottomCartBar({
       aria-label="Cart status"
     >
       <div className="bottom-cart-bar__art" aria-hidden="true">
-        <img src="/blinkamart-cart-bag.svg" alt="" />
+        <img src="/dopecart-cart-bag.svg" alt="" />
         {!isEmpty ? <span>{totalQuantity}</span> : null}
       </div>
 

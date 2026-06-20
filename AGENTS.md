@@ -18,9 +18,9 @@ unless the repo grows into clearly separate packages.
 - The visible product stance is parody-first. Keep the top-right `Parody app`
   badge as the primary signal, and do not reintroduce visible `fake/Fake`,
   repeated "no real order", "no payment", or "no delivery" disclaimer copy.
-- The legacy localStorage key `blinkamart.currentFakeOrder.v1` is intentionally
-  preserved for compatibility. Do not rename it unless you also write and verify
-  a migration.
+- The legacy localStorage keys under the `blinkamart.*` namespace are
+  intentionally preserved for compatibility. Do not rename them unless you also
+  write and verify a migration.
 
 ## Commands
 
@@ -54,7 +54,7 @@ unless the repo grows into clearly separate packages.
 - Keep the style playful and original. Do not clone Blinkit, Zepto, Instamart,
   or any real quick-commerce brand.
 - Current browse layout expectations:
-  - Categories use a horizontally scrollable rail with 3 tiles per row.
+  - Categories use a compact single-row horizontal icon rail.
   - Products use a 2-column mobile grid.
   - Product images are first-class and should remain visible in browse, cart,
     checkout, tracking previews, and receipts where appropriate.

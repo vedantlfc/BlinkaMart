@@ -71,7 +71,7 @@ export function CartPage() {
       {!hasItems ? (
         <section className="cart-empty-panel" aria-label="Empty cart">
           <div className="cart-empty-panel__art" aria-hidden="true">
-            <img src="/blinkamart-cart-bag.svg" alt="" />
+            <img src="/dopecart-cart-bag.svg" alt="" />
           </div>
           <div className="cart-empty-panel__copy">
             <span className="section-kicker">Cart status</span>
@@ -181,7 +181,7 @@ export function CartPage() {
           <section className="cart-impact-card" aria-labelledby="cart-impact-title">
             <div className="cart-impact-card__header">
               <div className="cart-impact-card__icon" aria-hidden="true">
-                <img src="/blinkamart-coupon-ticket.svg" alt="" />
+                <img src="/dopecart-coupon-ticket.svg" alt="" />
               </div>
               <div>
                 <span className="section-kicker">Review summary</span>
@@ -263,7 +263,7 @@ export function CartPage() {
 
           <aside className="cart-checkout-bar" aria-label="Cart checkout">
             <div className="cart-checkout-bar__art" aria-hidden="true">
-              <img src="/blinkamart-cart-bag.svg" alt="" />
+              <img src="/dopecart-cart-bag.svg" alt="" />
               <span>{cart.totals.totalQuantity}</span>
             </div>
             <div className="cart-checkout-bar__summary">
