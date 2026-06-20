@@ -11,7 +11,6 @@ import {
   getPrimaryBadgeNameForOrder,
   getProjectedReceiptProgress,
   useReceiptProgress,
-  type ReceiptProgressState,
 } from "../state/receiptProgress";
 import { getPublicAppUrl } from "../utils/publicAppUrl";
 
@@ -66,25 +65,22 @@ function getDeliveryOutcomeCopy(order: OrderSnapshot) {
     : "Arrived at character development";
 }
 
-function buildShareText(
-  order: OrderSnapshot,
-  progress: ReceiptProgressState,
-  publicAppUrl: string,
-) {
+function buildShareText(order: OrderSnapshot, publicAppUrl: string, includeUrl: boolean) {
   const lines = [
     `I successfully did not order on DopeCart.`,
     `Rs ${order.totalPrice} saved by avoiding ${getItemCountLabel(order.totalQuantity)}.`,
     "Regret avoided.",
     "Dopamine delivered anyway.",
-    `Outcome: ${getDeliveryOutcomeCopy(order)}.`,
-    `Streak: ${getStreakCopy(progress.currentStreak)}.`,
   ];
 
   if (order.showCalories) {
     lines.push(`Calories avoided: ${order.totalCalories}.`);
   }
 
-  lines.push(`Try it: ${publicAppUrl}`);
+  if (includeUrl) {
+    lines.push(`Try it: ${publicAppUrl}`);
+  }
+
   return lines.join(" ");
 }
 
@@ -186,18 +182,6 @@ function canSharePosterFile(file: File) {
   );
 }
 
-function downloadPosterFile(file: File) {
-  const objectUrl = URL.createObjectURL(file);
-  const link = document.createElement("a");
-
-  link.href = objectUrl;
-  link.download = file.name;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-}
-
 function isShareAbortError(error: unknown) {
   if (
     typeof DOMException !== "undefined" &&
@@ -241,9 +225,13 @@ export function ReceiptPage() {
     () => (order ? getPrimaryBadgeNameForOrder(displayedProgress, order.id) : ""),
     [displayedProgress, order],
   );
-  const shareText = useMemo(
-    () => (order ? buildShareText(order, displayedProgress, publicAppUrl) : ""),
-    [displayedProgress, order, publicAppUrl],
+  const nativeShareText = useMemo(
+    () => (order ? buildShareText(order, publicAppUrl, false) : ""),
+    [order, publicAppUrl],
+  );
+  const fallbackShareText = useMemo(
+    () => (order ? buildShareText(order, publicAppUrl, true) : ""),
+    [order, publicAppUrl],
   );
   const avoidedItemSummary = useMemo(
     () => (order ? getAvoidedItemSummary(order.items) : ""),
@@ -305,7 +293,7 @@ export function ReceiptPage() {
   }
 
   async function copyShareTextToClipboard() {
-    if (!shareText) {
+    if (!fallbackShareText) {
       return;
     }
 
@@ -315,7 +303,7 @@ export function ReceiptPage() {
       typeof navigator.clipboard.writeText === "function"
     ) {
       try {
-        await navigator.clipboard.writeText(shareText);
+        await navigator.clipboard.writeText(fallbackShareText);
         showToast("Receipt link copied. Go cause mild confusion.", "success");
         return;
       } catch {
@@ -328,7 +316,7 @@ export function ReceiptPage() {
   }
 
   async function shareLinkOrCopy() {
-    if (!shareText) {
+    if (!nativeShareText) {
       return;
     }
 
@@ -336,7 +324,7 @@ export function ReceiptPage() {
       try {
         await navigator.share({
           title: "DopeCart receipt",
-          text: shareText,
+          text: nativeShareText,
           url: publicAppUrl,
         });
         showToast("Share sheet opened.", "success");
@@ -355,7 +343,7 @@ export function ReceiptPage() {
   }
 
   async function handleSharePoster() {
-    if (!shareText || !order) {
+    if (!nativeShareText || !order) {
       return;
     }
 
@@ -383,7 +371,7 @@ export function ReceiptPage() {
         try {
           await navigator.share({
             title: "DopeCart receipt",
-            text: shareText,
+            text: nativeShareText,
             url: publicAppUrl,
             files: [posterFile],
           });
@@ -405,36 +393,6 @@ export function ReceiptPage() {
     }
 
     await shareLinkOrCopy();
-  }
-
-  async function handleSavePoster() {
-    if (!order || !posterRef.current) {
-      return;
-    }
-
-    setShowShareFallback(false);
-    setIsPosterBusy(true);
-    showToast("Preparing poster...");
-
-    try {
-      const posterFile = await createPosterFileWithTimeout(posterRef.current, order.id);
-      downloadPosterFile(posterFile);
-      showToast("Poster saved. Trophy secured.", "success");
-    } catch {
-      setShowShareFallback(true);
-      showToast("Poster could not render, but the share text is ready.");
-    } finally {
-      setIsPosterBusy(false);
-    }
-  }
-
-  async function handleCopyShareText() {
-    if (!shareText) {
-      return;
-    }
-
-    setShowShareFallback(false);
-    await copyShareTextToClipboard();
   }
 
   return (
@@ -562,7 +520,6 @@ export function ReceiptPage() {
                 badge={badge}
                 order={order}
                 progress={displayedProgress}
-                publicAppUrl={publicAppUrl}
                 ref={posterRef}
               />
             </div>
@@ -570,17 +527,6 @@ export function ReceiptPage() {
             <div className="receipt-share-actions" aria-label="Share poster actions">
               <Button type="button" onClick={handleSharePoster} disabled={isPosterBusy}>
                 Share Poster
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleSavePoster}
-                disabled={isPosterBusy}
-              >
-                Save Poster
-              </Button>
-              <Button type="button" variant="ghost" onClick={handleCopyShareText}>
-                Copy Text
               </Button>
             </div>
 
@@ -591,7 +537,7 @@ export function ReceiptPage() {
                 aria-readonly="true"
                 tabIndex={0}
               >
-                {shareText}
+                {fallbackShareText}
               </p>
             ) : null}
           </section>

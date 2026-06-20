@@ -1,29 +1,15 @@
 import { forwardRef } from "react";
 import { products } from "../data/catalog";
-import { getOrderCompletionTimestamp, type OrderSnapshot } from "../state/order";
+import type { OrderSnapshot } from "../state/order";
 import type { ReceiptProgressState } from "../state/receiptProgress";
 
 export interface ShareReceiptPosterProps {
   order: OrderSnapshot;
   badge: string;
   progress: ReceiptProgressState;
-  publicAppUrl: string;
 }
 
 const productById = new Map(products.map((product) => [product.id, product]));
-
-function formatPosterTime(timestamp: string) {
-  const date = new Date(timestamp);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Just now";
-  }
-
-  return date.toLocaleString([], {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
 
 function getStreakLabel(streak: number) {
   return streak === 1 ? "1 day" : `${streak} days`;
@@ -34,10 +20,9 @@ function getItemLabel(totalQuantity: number) {
 }
 
 export const ShareReceiptPoster = forwardRef<HTMLDivElement, ShareReceiptPosterProps>(
-  function ShareReceiptPoster({ order, badge, progress, publicAppUrl }, ref) {
+  function ShareReceiptPoster({ order, badge, progress }, ref) {
     const visibleItems = order.items.slice(0, 3);
     const extraItemCount = Math.max(0, order.items.length - visibleItems.length);
-    const completedAt = formatPosterTime(getOrderCompletionTimestamp(order));
 
     return (
       <div className="share-poster" ref={ref} aria-label="Shareable DopeCart receipt poster">
@@ -53,7 +38,6 @@ export const ShareReceiptPoster = forwardRef<HTMLDivElement, ShareReceiptPosterP
               <small>We deliver Dopamine</small>
             </span>
           </div>
-          <span className="share-poster__pill">Parody app</span>
         </header>
 
         <section className="share-poster__hero" aria-label="Receipt headline">
@@ -110,14 +94,6 @@ export const ShareReceiptPoster = forwardRef<HTMLDivElement, ShareReceiptPosterP
           ) : null}
         </section>
 
-        <footer className="share-poster__footer">
-          <div>
-            <span>Order {order.id}</span>
-            <strong>{completedAt}</strong>
-          </div>
-          <p>Make your own not-order receipt</p>
-          <a href={publicAppUrl}>{publicAppUrl}</a>
-        </footer>
       </div>
     );
   },
