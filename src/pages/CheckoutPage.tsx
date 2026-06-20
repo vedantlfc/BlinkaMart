@@ -5,11 +5,18 @@ import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { categories, products, type Product } from "../data/catalog";
 import { useCart } from "../state/cart";
-import { useOrder, type OrderItem, type OrderSnapshot } from "../state/order";
+import {
+  ORDER_TRACKING_DURATION_MS,
+  useOrder,
+  type OrderItem,
+  type OrderSnapshot,
+} from "../state/order";
 import { useSettings } from "../state/settings";
 
 const productById = new Map(products.map((product) => [product.id, product]));
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
+const TRACKING_DURATION_OVERRIDE_PARAM = "trackingDurationMs";
+const MIN_TRACKING_DURATION_OVERRIDE_MS = 1000;
 
 interface CheckoutSummary {
   items: OrderItem[];
@@ -93,6 +100,40 @@ function getOrderSummary(order: OrderSnapshot): CheckoutSummary {
   };
 }
 
+function getTrackingDurationOverrideMs() {
+  if (typeof window === "undefined" || !import.meta.env.DEV) {
+    return undefined;
+  }
+
+  const isLocalHost =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "::1";
+
+  if (!isLocalHost) {
+    return undefined;
+  }
+
+  const rawDuration = new URLSearchParams(window.location.search).get(
+    TRACKING_DURATION_OVERRIDE_PARAM,
+  );
+
+  if (!rawDuration?.trim()) {
+    return undefined;
+  }
+
+  const durationMs = Number(rawDuration);
+
+  if (!Number.isFinite(durationMs)) {
+    return undefined;
+  }
+
+  return Math.min(
+    ORDER_TRACKING_DURATION_MS,
+    Math.max(MIN_TRACKING_DURATION_OVERRIDE_MS, Math.round(durationMs)),
+  );
+}
+
 export function CheckoutPage() {
   const cart = useCart();
   const orderState = useOrder();
@@ -109,10 +150,16 @@ export function CheckoutPage() {
   const summary = cartSummary ?? (savedDraftOrder ? getOrderSummary(savedDraftOrder) : null);
 
   function handleConfirmCheckout() {
+    const trackingDurationMs = getTrackingDurationOverrideMs();
     const nextOrder = cartSummary
-      ? orderState.createOrderFromCart(cart.items, settings.showCalories, "tracking")
+      ? orderState.createOrderFromCart(
+          cart.items,
+          settings.showCalories,
+          "tracking",
+          trackingDurationMs,
+        )
       : savedDraftOrder
-        ? orderState.beginTracking()
+        ? orderState.beginTracking(trackingDurationMs)
         : null;
 
     if (nextOrder) {
@@ -193,7 +240,7 @@ export function CheckoutPage() {
 
           <section className="checkout-items" aria-labelledby="checkout-items-title">
             <div className="section-heading">
-              <h2 id="checkout-items-title">Imaginary bag contents</h2>
+              <h2 id="checkout-items-title">Bag contents</h2>
               <p>A compact cast list for the cart that gets the spotlight.</p>
             </div>
 

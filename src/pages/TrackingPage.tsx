@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
@@ -6,24 +6,28 @@ import { FictionalDeliveryMap } from "../components/FictionalDeliveryMap";
 import { PageHeader } from "../components/PageHeader";
 import { products } from "../data/catalog";
 import { useCart } from "../state/cart";
-import { useOrder, type OrderSnapshot } from "../state/order";
+import {
+  ORDER_TRACKING_DURATION_MS,
+  useOrder,
+  type OrderSnapshot,
+} from "../state/order";
 
-const TRACKING_STAGE_MS = 2200;
-const REDUCED_MOTION_STAGE_MS = 1100;
+const ROUTE_WOBBLE_START_RATIO = 290 / 300;
+const FINAL_STAGE_INDEX = 6;
 
 const trackingStages = [
   {
-    title: "Order received",
-    copy: "Your order reached the Late-Night Craving Desk and got a tiny clipboard.",
-    mapLabel: "Desk check-in",
+    title: "Order confirmed",
+    copy: "The Late-Night Craving Desk woke up and stamped the order with dramatic urgency.",
+    mapLabel: "Order confirmed",
   },
   {
     title: "Packing your order",
-    copy: "The bag is being filled with snacks, suspense, and one dramatic pause.",
-    mapLabel: "Bag getting serious",
+    copy: "The bag is being filled with snacks, suspense, and unusually steady hands.",
+    mapLabel: "Packing started",
   },
   {
-    title: "Delivery partner assigned",
+    title: "Delivery partner selected",
     copy: "A delivery partner has accepted the ritual and is checking the route.",
     mapLabel: "Partner assigned",
   },
@@ -34,8 +38,13 @@ const trackingStages = [
   },
   {
     title: "Almost there",
-    copy: "The marker is near your sofa. The craving is leaning forward.",
-    mapLabel: "Almost there",
+    copy: "The marker is near Self Control Signal. The craving is leaning forward.",
+    mapLabel: "Near Self Control Signal",
+  },
+  {
+    title: "Route wobble",
+    copy: "The route is doing one last suspicious little wiggle near Self Control Signal.",
+    mapLabel: "Route wobble",
   },
   {
     title: "Order lost",
@@ -46,67 +55,97 @@ const trackingStages = [
 
 const productById = new Map(products.map((product) => [product.id, product]));
 
-function getPrefersReducedMotion() {
-  if (typeof window === "undefined" || !window.matchMedia) {
-    return false;
-  }
-
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-function getStartedAtMs(order: OrderSnapshot | null) {
-  if (!order?.tracking.trackingStartedAt) {
-    return null;
-  }
-
-  const startedAtMs = new Date(order.tracking.trackingStartedAt).getTime();
-  return Number.isNaN(startedAtMs) ? null : startedAtMs;
-}
-
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function getActiveStageIndex(startedAtMs: number | null, now: number, stageMs: number) {
-  if (!startedAtMs) {
+function getTimestampMs(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  const timestampMs = new Date(value).getTime();
+  return Number.isNaN(timestampMs) ? null : timestampMs;
+}
+
+function getTrackingStartedAtMs(order: OrderSnapshot | null) {
+  return getTimestampMs(order?.tracking.trackingStartedAt);
+}
+
+function getTrackingEndsAtMs(order: OrderSnapshot | null) {
+  const storedEndsAtMs = getTimestampMs(order?.tracking.trackingEndsAt);
+
+  if (storedEndsAtMs !== null) {
+    return storedEndsAtMs;
+  }
+
+  const startedAtMs = getTrackingStartedAtMs(order);
+  return startedAtMs === null ? null : startedAtMs + ORDER_TRACKING_DURATION_MS;
+}
+
+function getTrackingDurationMs(startedAtMs: number | null, endsAtMs: number | null) {
+  if (startedAtMs === null || endsAtMs === null || endsAtMs <= startedAtMs) {
+    return ORDER_TRACKING_DURATION_MS;
+  }
+
+  return Math.max(1000, endsAtMs - startedAtMs);
+}
+
+function getElapsedMs(
+  startedAtMs: number | null,
+  now: number,
+  durationMs: number,
+  forceComplete: boolean,
+) {
+  if (forceComplete) {
+    return durationMs;
+  }
+
+  if (startedAtMs === null) {
     return 0;
   }
 
-  const elapsed = Math.max(0, now - startedAtMs);
-  return clamp(Math.floor(elapsed / stageMs), 0, trackingStages.length - 1);
+  return clamp(now - startedAtMs, 0, durationMs);
 }
 
-function getStageFraction(startedAtMs: number | null, now: number, stageMs: number) {
-  if (!startedAtMs) {
-    return 0;
-  }
-
-  const elapsed = Math.max(0, now - startedAtMs);
-  return clamp((elapsed % stageMs) / stageMs, 0, 1);
+function getTimelineProgress(elapsedMs: number, durationMs: number) {
+  return durationMs > 0 ? clamp(elapsedMs / durationMs, 0, 1) : 0;
 }
 
-function getMapProgress(stageIndex: number, stageFraction: number) {
-  if (stageIndex <= 0) {
-    return 0.04;
+function getActiveStageIndex(timelineProgress: number, forceComplete: boolean) {
+  if (forceComplete || timelineProgress >= 1) {
+    return FINAL_STAGE_INDEX;
   }
 
-  if (stageIndex === 1) {
-    return 0.1;
+  if (timelineProgress >= ROUTE_WOBBLE_START_RATIO) {
+    return 5;
   }
 
-  if (stageIndex === 2) {
-    return 0.18 + stageFraction * 0.08;
+  if (timelineProgress >= 0.85) {
+    return 4;
   }
 
-  if (stageIndex === 3) {
-    return 0.28 + stageFraction * 0.38;
+  if (timelineProgress >= 0.45) {
+    return 3;
   }
 
-  if (stageIndex === 4) {
-    return 0.72 + stageFraction * 0.24;
+  if (timelineProgress >= 0.3) {
+    return 2;
   }
 
-  return 0.86;
+  if (timelineProgress >= 0.1) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function getMapProgress(timelineProgress: number, isLost: boolean) {
+  if (isLost) {
+    return 0.86;
+  }
+
+  return clamp(0.04 + timelineProgress * 0.82, 0.04, 0.85);
 }
 
 function getItemLabel(quantity: number) {
@@ -133,20 +172,50 @@ function getEtaSupportCopy(stageIndex: number) {
   return "Self Control Signal redirected the bag at the last possible moment.";
 }
 
-function getEtaHeadline(order: OrderSnapshot, stageIndex: number) {
-  if (stageIndex >= trackingStages.length - 1) {
+function formatRemainingTime(remainingMs: number) {
+  const totalSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+function getEtaHeadline(
+  order: OrderSnapshot,
+  elapsedMs: number,
+  remainingMs: number,
+  durationMs: number,
+  isLostStage: boolean,
+) {
+  if (isLostStage) {
     return "Route update: order lost near Self Control Signal";
   }
 
-  return `Your order will arrive in ${order.tracking.etaMinutes} minutes`;
-}
-
-function getEtaMeterProgress(stageIndex: number, mapProgress: number) {
-  if (stageIndex >= trackingStages.length - 1) {
-    return 100;
+  if (durationMs === ORDER_TRACKING_DURATION_MS && elapsedMs < 1000) {
+    return `Your order will arrive in ${order.tracking.etaMinutes} minutes`;
   }
 
-  return Math.round(clamp(mapProgress, 0, 1) * 100);
+  return `Arriving in ${formatRemainingTime(remainingMs)}`;
+}
+
+function getEtaSummary(remainingMs: number, isLostStage: boolean) {
+  if (isLostStage) {
+    return "Lost near signal";
+  }
+
+  return formatRemainingTime(remainingMs);
+}
+
+function getEtaTrailingLabel(remainingMs: number, isLostStage: boolean) {
+  if (isLostStage) {
+    return "Signal update";
+  }
+
+  return `ETA ${formatRemainingTime(remainingMs)}`;
+}
+
+function getEtaMeterProgress(timelineProgress: number) {
+  return Math.round(clamp(timelineProgress, 0, 1) * 100);
 }
 
 function renderPackingPreview(order: OrderSnapshot) {
@@ -212,24 +281,32 @@ export function TrackingPage() {
   const hasStartedRef = useRef(false);
   const hasCompletedRef = useRef(false);
   const order = orderState.currentOrder;
-  const hasTrackableOrder = order?.status === "tracking";
-  const prefersReducedMotion = useMemo(() => getPrefersReducedMotion(), []);
-  const stageDuration = prefersReducedMotion ? REDUCED_MOTION_STAGE_MS : TRACKING_STAGE_MS;
-  const startedAtMs = getStartedAtMs(order);
-  const activeStageIndex = getActiveStageIndex(startedAtMs, now, stageDuration);
+  const hasTrackableOrder =
+    order?.status === "tracking" ||
+    (order?.status === "completed" && order.tracking.trackingOutcome === "lost");
+  const isCompletedOrder = order?.status === "completed";
+  const startedAtMs = getTrackingStartedAtMs(order);
+  const trackingEndsAtMs = getTrackingEndsAtMs(order);
+  const durationMs = getTrackingDurationMs(startedAtMs, trackingEndsAtMs);
+  const shouldShowFinalOutcome =
+    Boolean(isCompletedOrder) ||
+    (trackingEndsAtMs !== null && now >= trackingEndsAtMs);
+  const elapsedMs = getElapsedMs(startedAtMs, now, durationMs, shouldShowFinalOutcome);
+  const remainingMs = shouldShowFinalOutcome ? 0 : Math.max(0, durationMs - elapsedMs);
+  const timelineProgress = getTimelineProgress(elapsedMs, durationMs);
+  const activeStageIndex = getActiveStageIndex(timelineProgress, shouldShowFinalOutcome);
   const activeStage = trackingStages[activeStageIndex];
-  const stageFraction = getStageFraction(startedAtMs, now, stageDuration);
-  const mapProgress = getMapProgress(activeStageIndex, stageFraction);
-  const etaMeterProgress = getEtaMeterProgress(activeStageIndex, mapProgress);
-  const isLostStage = activeStage.title === "Order lost";
+  const isLostStage = activeStageIndex === FINAL_STAGE_INDEX;
+  const mapProgress = getMapProgress(timelineProgress, isLostStage);
+  const etaMeterProgress = getEtaMeterProgress(timelineProgress);
   const showPackingPreview = activeStageIndex >= 1;
   const showPartnerCard = activeStageIndex >= 2;
-  const showMapBeforeSummary = activeStageIndex >= 3 && !isLostStage;
+  const showMapBeforeSummary = activeStageIndex >= 3 && activeStageIndex < FINAL_STAGE_INDEX;
   const showLostMessageBeforeSummary = isLostStage;
 
   useEffect(() => {
     if (
-      !hasTrackableOrder ||
+      order?.status !== "tracking" ||
       order?.tracking.trackingStartedAt ||
       hasStartedRef.current
     ) {
@@ -238,21 +315,52 @@ export function TrackingPage() {
 
     hasStartedRef.current = true;
     orderState.beginTracking();
-  }, [hasTrackableOrder, order?.tracking.trackingStartedAt, orderState]);
+  }, [order?.status, order?.tracking.trackingStartedAt, orderState]);
 
   useEffect(() => {
-    if (!hasTrackableOrder || !order?.tracking.trackingStartedAt) {
+    if (order?.status !== "tracking" || !order.tracking.trackingStartedAt) {
       return undefined;
     }
 
-    const intervalId = window.setInterval(() => setNow(Date.now()), 250);
+    const intervalId = window.setInterval(() => setNow(Date.now()), 500);
     setNow(Date.now());
 
     return () => window.clearInterval(intervalId);
-  }, [hasTrackableOrder, order?.tracking.trackingStartedAt]);
+  }, [order?.status, order?.tracking.trackingStartedAt]);
+
+  useEffect(() => {
+    if (
+      order?.status !== "tracking" ||
+      trackingEndsAtMs === null ||
+      now < trackingEndsAtMs ||
+      hasCompletedRef.current
+    ) {
+      return;
+    }
+
+    hasCompletedRef.current = true;
+    const completedOrder = orderState.completeTracking("lost");
+
+    if (completedOrder) {
+      clearCart();
+      setIsCompleting(false);
+      return;
+    }
+
+    hasCompletedRef.current = false;
+  }, [clearCart, now, order?.status, orderState, trackingEndsAtMs]);
 
   function handleViewReceipt() {
-    if (!hasTrackableOrder || !order || hasCompletedRef.current) {
+    if (!hasTrackableOrder || !order) {
+      return;
+    }
+
+    if (order.status === "completed") {
+      navigate("/receipt", { replace: true });
+      return;
+    }
+
+    if (hasCompletedRef.current) {
       return;
     }
 
@@ -277,7 +385,7 @@ export function TrackingPage() {
         subtitle="Your cart is moving through the late-night delivery grid."
         trailing={
           hasTrackableOrder && order ? (
-            <span className="status-dot">ETA {order.tracking.etaMinutes} min</span>
+            <span className="status-dot">{getEtaTrailingLabel(remainingMs, isLostStage)}</span>
           ) : (
             <span className="status-dot">Route desk</span>
           )
@@ -288,7 +396,7 @@ export function TrackingPage() {
         <section className="tracking-empty-section" aria-label="No order tracking">
           <EmptyState
             title="No order is currently being tracked."
-            message="Build a cart first, then the route theatre can begin."
+            message="Build a cart first, then the route can begin."
           />
           <Button type="button" onClick={() => navigate("/products")}>
             Browse Shelf
@@ -299,7 +407,15 @@ export function TrackingPage() {
           <section className="eta-arrival-card" aria-labelledby="eta-arrival-title">
             <div>
               <span className="section-kicker">Arrival estimate</span>
-              <h2 id="eta-arrival-title">{getEtaHeadline(order, activeStageIndex)}</h2>
+              <h2 id="eta-arrival-title">
+                {getEtaHeadline(
+                  order,
+                  elapsedMs,
+                  remainingMs,
+                  durationMs,
+                  isLostStage,
+                )}
+              </h2>
               <p>{getEtaSupportCopy(activeStageIndex)}</p>
             </div>
             <div
@@ -348,7 +464,7 @@ export function TrackingPage() {
               </div>
               <div>
                 <dt>ETA</dt>
-                <dd>{order.tracking.etaMinutes} min</dd>
+                <dd>{getEtaSummary(remainingMs, isLostStage)}</dd>
               </div>
               <div>
                 <dt>Status</dt>

@@ -12,7 +12,10 @@ import type { CartItems } from "./cart";
 
 // Keep legacy storage key for existing browsers.
 const ORDER_STORAGE_KEY = "blinkamart.currentFakeOrder.v1";
+export const ORDER_TRACKING_DURATION_MS = 5 * 60 * 1000;
 const MAX_ORDER_ITEM_QUANTITY = 99;
+const MIN_TRACKING_DURATION_MS = 1000;
+const ORDER_ETA_MINUTES = 5;
 const productById = new Map(products.map((product) => [product.id, product]));
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
 const validCategoryIds = new Set(categories.map((category) => category.id));
@@ -32,6 +35,7 @@ export interface OrderTrackingMetadata {
   deliveryPartner: DeliveryPartner;
   routeSeed: number;
   trackingStartedAt: string | null;
+  trackingEndsAt: string | null;
   completedAt: string | null;
   trackingOutcome: TrackingOutcome;
   darkStoreName: string;
@@ -68,9 +72,10 @@ export interface OrderContextValue {
     items: CartItems,
     showCalories: boolean,
     status?: OrderStatus,
+    trackingDurationMs?: number,
   ) => OrderSnapshot | null;
   updateOrderStatus: (status: OrderStatus) => OrderSnapshot | null;
-  beginTracking: () => OrderSnapshot | null;
+  beginTracking: (trackingDurationMs?: number) => OrderSnapshot | null;
   completeTracking: (outcome: "lost") => OrderSnapshot | null;
   clearOrder: () => void;
 }
@@ -143,15 +148,51 @@ function pickStableValue<T>(values: T[], seed: number, offset: number) {
   return values[(seed + offset) % values.length];
 }
 
+function normalizeTrackingDurationMs(value?: number) {
+  if (!Number.isFinite(value)) {
+    return ORDER_TRACKING_DURATION_MS;
+  }
+
+  return Math.min(
+    ORDER_TRACKING_DURATION_MS,
+    Math.max(MIN_TRACKING_DURATION_MS, Math.round(value ?? ORDER_TRACKING_DURATION_MS)),
+  );
+}
+
+function getTimestampMs(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  const timestampMs = new Date(value).getTime();
+  return Number.isNaN(timestampMs) ? null : timestampMs;
+}
+
+function getTrackingEndsAt(
+  trackingStartedAt: string | null,
+  trackingDurationMs?: number,
+) {
+  const startedAtMs = getTimestampMs(trackingStartedAt);
+
+  if (startedAtMs === null) {
+    return null;
+  }
+
+  return new Date(
+    startedAtMs + normalizeTrackingDurationMs(trackingDurationMs),
+  ).toISOString();
+}
+
 function buildTrackingMetadata(
   orderId: string,
   status: OrderStatus,
   trackingStartedAt: string | null,
+  trackingDurationMs?: number,
 ): OrderTrackingMetadata {
   const seed = hashOrderId(orderId);
 
   return {
-    etaMinutes: 8 + (seed % 13),
+    etaMinutes: ORDER_ETA_MINUTES,
     deliveryPartner: {
       name: pickStableValue(deliveryPartnerNames, seed, 1),
       vehicle: pickStableValue(deliveryVehicles, seed, 3),
@@ -160,6 +201,7 @@ function buildTrackingMetadata(
     },
     routeSeed: seed,
     trackingStartedAt,
+    trackingEndsAt: getTrackingEndsAt(trackingStartedAt, trackingDurationMs),
     completedAt: null,
     trackingOutcome: status === "completed" ? "lost" : "pending",
     darkStoreName: pickStableValue(darkStoreNames, seed, 9),
@@ -198,13 +240,24 @@ function normalizeTrackingMetadata(
     isValidIsoTimestamp(tracking.completedAt)
       ? tracking.completedAt
       : null;
+  const storedEndsAt =
+    typeof tracking.trackingEndsAt === "string" &&
+    isValidIsoTimestamp(tracking.trackingEndsAt)
+      ? tracking.trackingEndsAt
+      : null;
+  const derivedTrackingEndsAt =
+    status === "tracking"
+      ? getTrackingEndsAt(storedStartedAt, ORDER_TRACKING_DURATION_MS)
+      : null;
+  const trackingEndsAt = storedEndsAt ?? derivedTrackingEndsAt;
 
   return {
     etaMinutes: fallback.etaMinutes,
     deliveryPartner: fallback.deliveryPartner,
     routeSeed: fallback.routeSeed,
     trackingStartedAt: storedStartedAt,
-    completedAt: status === "completed" ? storedCompletedAt : null,
+    trackingEndsAt,
+    completedAt: status === "completed" ? storedCompletedAt ?? storedEndsAt : null,
     trackingOutcome: status === "completed" ? "lost" : "pending",
     darkStoreName: fallback.darkStoreName,
   };
@@ -221,6 +274,7 @@ function buildOrderSnapshot(
   items: CartItems,
   showCalories: boolean,
   status: OrderStatus = "draft",
+  trackingDurationMs?: number,
 ): OrderSnapshot | null {
   const id = createOrderId();
   const timestamp = new Date().toISOString();
@@ -283,6 +337,7 @@ function buildOrderSnapshot(
       id,
       status,
       status === "tracking" ? timestamp : null,
+      trackingDurationMs,
     ),
   };
 }
@@ -442,23 +497,32 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     items: CartItems,
     showCalories: boolean,
     status: OrderStatus = "draft",
+    trackingDurationMs?: number,
   ) => {
-    const nextOrder = buildOrderSnapshot(items, showCalories, status);
+    const nextOrder = buildOrderSnapshot(items, showCalories, status, trackingDurationMs);
     setCurrentOrder(nextOrder);
     return nextOrder;
   }, []);
 
   const updateOrderStatus = useCallback((status: OrderStatus) => {
+    const startedAt =
+      currentOrder?.tracking.trackingStartedAt ??
+      (status === "tracking" || status === "completed" ? new Date().toISOString() : null);
+    const trackingEndsAt =
+      currentOrder?.tracking.trackingEndsAt ??
+      getTrackingEndsAt(startedAt, ORDER_TRACKING_DURATION_MS);
     const nextOrder = currentOrder
       ? ensureTrackingMetadata({
           ...currentOrder,
           status,
           tracking: {
             ...currentOrder.tracking,
+            trackingStartedAt: status === "draft" ? null : startedAt,
+            trackingEndsAt: status === "draft" ? null : trackingEndsAt,
             trackingOutcome: status === "completed" ? "lost" : currentOrder.tracking.trackingOutcome,
             completedAt:
               status === "completed"
-                ? currentOrder.tracking.completedAt ?? new Date().toISOString()
+                ? currentOrder.tracking.completedAt ?? trackingEndsAt ?? new Date().toISOString()
                 : null,
           },
         })
@@ -467,14 +531,20 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     return nextOrder;
   }, [currentOrder]);
 
-  const beginTracking = useCallback(() => {
+  const beginTracking = useCallback((trackingDurationMs?: number) => {
+    const startedAt =
+      currentOrder?.tracking.trackingStartedAt ?? new Date().toISOString();
+    const trackingEndsAt =
+      currentOrder?.tracking.trackingEndsAt ??
+      getTrackingEndsAt(startedAt, trackingDurationMs);
     const nextOrder = currentOrder
       ? ensureTrackingMetadata({
           ...currentOrder,
           status: "tracking",
           tracking: {
             ...currentOrder.tracking,
-            trackingStartedAt: currentOrder.tracking.trackingStartedAt ?? new Date().toISOString(),
+            trackingStartedAt: startedAt,
+            trackingEndsAt,
             completedAt: null,
             trackingOutcome: "pending",
           },
@@ -486,13 +556,20 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   }, [currentOrder]);
 
   const completeTracking = useCallback((outcome: "lost") => {
+    const trackingEndsAt =
+      currentOrder?.tracking.trackingEndsAt ??
+      getTrackingEndsAt(currentOrder?.tracking.trackingStartedAt ?? null, ORDER_TRACKING_DURATION_MS);
     const nextOrder = currentOrder
       ? ensureTrackingMetadata({
           ...currentOrder,
           status: "completed",
           tracking: {
             ...currentOrder.tracking,
-            completedAt: currentOrder.tracking.completedAt ?? new Date().toISOString(),
+            trackingEndsAt,
+            completedAt:
+              currentOrder.tracking.completedAt ??
+              trackingEndsAt ??
+              new Date().toISOString(),
             trackingOutcome: outcome,
           },
         })

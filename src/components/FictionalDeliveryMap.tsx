@@ -108,12 +108,15 @@ export function FictionalDeliveryMap({
 }: FictionalDeliveryMapProps) {
   const route = getRouteVariant(routeSeed);
   const markerProgress = isLost ? Math.min(0.86, clampProgress(progress)) : progress;
-  const marker = getPointAtProgress(route.points, markerProgress);
   const storePoint = route.points[0];
   const homePoint = route.points[route.points.length - 1];
   const selfControlLabel = route.labels.find((label) =>
     label.text.includes("Self Control"),
   );
+  const marker =
+    isLost && selfControlLabel
+      ? { x: selfControlLabel.x + 18, y: selfControlLabel.y + 10 }
+      : getPointAtProgress(route.points, markerProgress);
 
   return (
     <section className="fictional-map" aria-label="Fictional delivery route">
