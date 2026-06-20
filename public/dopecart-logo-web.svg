@@ -1,0 +1,64 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">DopeCart Web Logo</title>
+  <desc id="desc">A light web version of the DopeCart shopping cart logo using the app's cream, ink, pink, yellow, and teal palette.</desc>
+  <defs>
+    <linearGradient id="paper" x1="122" y1="80" x2="880" y2="944" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFDF7"/>
+      <stop offset="0.58" stop-color="#FFF8EA"/>
+      <stop offset="1" stop-color="#FFF0BF"/>
+    </linearGradient>
+    <linearGradient id="yellow" x1="154" y1="318" x2="430" y2="758" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE178"/>
+      <stop offset="1" stop-color="#FFD166"/>
+    </linearGradient>
+    <linearGradient id="pink" x1="404" y1="326" x2="798" y2="592" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF7A91"/>
+      <stop offset="1" stop-color="#FF5C7A"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="341" y1="612" x2="717" y2="802" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3F8B86"/>
+      <stop offset="1" stop-color="#2F6F73"/>
+    </linearGradient>
+    <filter id="softShadow" x="104" y="203" width="761" height="620" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="16"/>
+      <feGaussianBlur stdDeviation="18"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.141 0 0 0 0 0.110 0 0 0 0 0.208 0 0 0 0.24 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="shadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="shadow" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#paper)"/>
+  <path d="M145 186C187 136 249 108 319 108H716C830 108 916 194 916 308V709C916 780 887 841 838 882" stroke="#241C35" stroke-opacity="0.1" stroke-width="32" stroke-linecap="round"/>
+  <path d="M114 753C131 852 207 916 313 916H724" stroke="#FF5C7A" stroke-opacity="0.13" stroke-width="32" stroke-linecap="round"/>
+
+  <g filter="url(#softShadow)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M178 350H253C287 350 313 372 323 404L360 523" stroke="#241C35" stroke-width="82"/>
+    <path d="M178 350H253C287 350 313 372 323 404L360 523" stroke="url(#yellow)" stroke-width="58"/>
+
+    <path d="M184 472H296" stroke="#241C35" stroke-width="69"/>
+    <path d="M184 472H296" stroke="url(#yellow)" stroke-width="45"/>
+    <path d="M154 562H310" stroke="#241C35" stroke-width="69"/>
+    <path d="M154 562H310" stroke="url(#yellow)" stroke-width="45"/>
+    <circle cx="136" cy="472" r="39" fill="#241C35"/>
+    <circle cx="136" cy="472" r="24" fill="url(#yellow)"/>
+
+    <path d="M424 350H780L719 577H345" stroke="#241C35" stroke-width="82"/>
+    <path d="M424 350H780L719 577H345" stroke="url(#pink)" stroke-width="56"/>
+
+    <path d="M350 577L389 686H697" stroke="#241C35" stroke-width="80"/>
+    <path d="M350 577L389 686H697" stroke="url(#teal)" stroke-width="54"/>
+    <path d="M390 686H697" stroke="#241C35" stroke-width="80"/>
+    <path d="M390 686H697" stroke="url(#teal)" stroke-width="54"/>
+
+    <circle cx="365" cy="716" r="76" fill="#241C35"/>
+    <circle cx="365" cy="716" r="56" fill="url(#yellow)"/>
+    <circle cx="365" cy="716" r="18" fill="#241C35"/>
+
+    <circle cx="665" cy="716" r="76" fill="#241C35"/>
+    <circle cx="665" cy="716" r="56" fill="url(#teal)"/>
+    <circle cx="665" cy="716" r="18" fill="#241C35"/>
+  </g>
+</svg>

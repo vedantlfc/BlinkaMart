@@ -12,7 +12,7 @@ export function AppShell({ children }: AppShellProps) {
         <header className="app-topbar" aria-label="DopeCart app header">
           <Link className="brand-lockup" to="/" aria-label="DopeCart home">
             <span className="brand-logo" aria-hidden="true">
-              <img src="/dopecart-logo.jpg" alt="" />
+              <img src="/dopecart-logo-web.svg" alt="" />
             </span>
             <span className="brand-copy">
               <span className="brand-name">DopeCart</span>

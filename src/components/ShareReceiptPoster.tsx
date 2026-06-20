@@ -31,7 +31,7 @@ export const ShareReceiptPoster = forwardRef<HTMLDivElement, ShareReceiptPosterP
         <header className="share-poster__header">
           <div className="share-poster__brand">
             <span className="share-poster__logo" aria-hidden="true">
-              <img src="/dopecart-logo.jpg" alt="" />
+              <img src="/dopecart-logo-web.svg" alt="" />
             </span>
             <span>
               <strong>DopeCart</strong>

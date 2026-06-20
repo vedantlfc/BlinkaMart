@@ -1,0 +1,47 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">DopeCart Logo</title>
+  <desc id="desc">A fast rounded shopping cart icon with lime motion lines and a coral basket on a dark rounded square.</desc>
+  <defs>
+    <linearGradient id="background" x1="152" y1="84" x2="878" y2="940" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#17202A"/>
+      <stop offset="0.55" stop-color="#070B11"/>
+      <stop offset="1" stop-color="#111B19"/>
+    </linearGradient>
+    <linearGradient id="lime" x1="140" y1="214" x2="473" y2="792" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D4DA53"/>
+      <stop offset="0.48" stop-color="#BBD447"/>
+      <stop offset="1" stop-color="#82BE45"/>
+    </linearGradient>
+    <linearGradient id="coral" x1="437" y1="310" x2="799" y2="544" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F18966"/>
+      <stop offset="1" stop-color="#D55E52"/>
+    </linearGradient>
+    <filter id="markShadow" x="69" y="137" width="812" height="732" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="18"/>
+      <feGaussianBlur stdDeviation="18"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.01 0 0 0 0 0.03 0 0 0 0 0.04 0 0 0 0.5 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="shadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="shadow" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" rx="196" fill="url(#background)"/>
+  <path d="M131 131C159 104 199 88 244 88H769C860 88 936 164 936 255V780C936 825 919 866 891 895" stroke="white" stroke-opacity="0.06" stroke-width="34" stroke-linecap="round"/>
+  <path d="M102 794C103 869 160 929 236 929H762" stroke="#C9D24D" stroke-opacity="0.08" stroke-width="34" stroke-linecap="round"/>
+
+  <g filter="url(#markShadow)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M152 318H254C278 318 298 333 306 356L334 436" stroke="url(#lime)" stroke-width="58"/>
+    <path d="M188 510H317" stroke="url(#lime)" stroke-width="50"/>
+    <path d="M136 598H316" stroke="url(#lime)" stroke-width="50"/>
+    <path d="M189 421H282" stroke="url(#lime)" stroke-width="50"/>
+    <circle cx="132" cy="510" r="28" fill="url(#lime)"/>
+    <path d="M427 333H787L730 567H338" stroke="url(#coral)" stroke-width="58"/>
+    <path d="M337 567L383 701H709" stroke="url(#lime)" stroke-width="58"/>
+    <path d="M423 702C423 751.706 382.706 792 333 792C283.294 792 243 751.706 243 702C243 652.294 283.294 612 333 612C382.706 612 423 652.294 423 702Z" fill="url(#lime)"/>
+    <path d="M759 702C759 751.706 718.706 792 669 792C619.294 792 579 751.706 579 702C579 652.294 619.294 612 669 612C718.706 612 759 652.294 759 702Z" fill="url(#lime)"/>
+    <circle cx="333" cy="702" r="24" fill="#071015"/>
+    <circle cx="669" cy="702" r="24" fill="#071015"/>
+  </g>
+</svg>
