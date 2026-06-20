@@ -119,8 +119,8 @@ p {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 34%;
+  object-fit: contain;
+  object-position: center;
 }
 
 .brand-copy {
@@ -2257,14 +2257,15 @@ p {
   overflow: hidden;
   border: 1px solid rgb(255 253 247 / 0.72);
   border-radius: var(--radius-md);
-  background: #05070c;
+  background: rgb(255 253 247 / 0.94);
 }
 
 .share-poster__logo img {
   display: block;
-  width: 86%;
-  height: 86%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  object-position: center;
 }
 
 .share-poster__brand strong,
