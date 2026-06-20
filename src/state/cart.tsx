@@ -5,7 +5,7 @@ import {
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
+  type ReactNode,//reactNode
 } from "react";
 import { products } from "../data/catalog";
 
