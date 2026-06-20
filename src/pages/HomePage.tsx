@@ -96,24 +96,6 @@ export function HomePage() {
     return () => window.clearTimeout(timeoutId);
   }, [toastMessage]);
 
-  const productCountByCategory = useMemo(() => {
-    return categories.reduce<Record<CategoryId, number>>((counts, category) => {
-      counts[category.id] = products.filter(
-        (product) => product.categoryId === category.id,
-      ).length;
-      return counts;
-    }, {} as Record<CategoryId, number>);
-  }, []);
-
-  const categoryPreviewProducts = useMemo(() => {
-    return categories.reduce<Record<CategoryId, typeof products>>((previewProducts, category) => {
-      previewProducts[category.id] = products
-        .filter((product) => product.categoryId === category.id)
-        .slice(0, 2);
-      return previewProducts;
-    }, {} as Record<CategoryId, typeof products>);
-  }, []);
-
   function handleCategorySelect(categoryId: CategoryId) {
     setSelectedCategoryId(categoryId);
     setSearchQuery("");
@@ -187,8 +169,6 @@ export function HomePage() {
               <CategoryTile
                 key={category.id}
                 category={category}
-                productCount={productCountByCategory[category.id]}
-                representativeProducts={categoryPreviewProducts[category.id]}
                 active={!normalizedQuery && selectedCategoryId === category.id}
                 onClick={() => handleCategorySelect(category.id)}
               />
