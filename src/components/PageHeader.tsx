@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { getCravingDeskLabel } from "../utils/cravingDesk";
 
 export interface PageHeaderProps {
@@ -8,10 +8,20 @@ export interface PageHeaderProps {
 }
 
 export function PageHeader({ title, subtitle, trailing }: PageHeaderProps) {
+  const [deskLabel, setDeskLabel] = useState(() => getCravingDeskLabel());
+
+  useEffect(() => {
+    const updateDeskLabel = () => setDeskLabel(getCravingDeskLabel());
+    const intervalId = window.setInterval(updateDeskLabel, 60_000);
+
+    updateDeskLabel();
+    return () => window.clearInterval(intervalId);
+  }, []);
+
   return (
     <div className="page-header">
       <div>
-        <p className="page-eyebrow">{getCravingDeskLabel()}</p>
+        <p className="page-eyebrow">{deskLabel}</p>
         <h1>{title}</h1>
         {subtitle ? <p>{subtitle}</p> : null}
       </div>
