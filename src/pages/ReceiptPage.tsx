@@ -1,8 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { toBlob } from "html-to-image";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
+import { ShareReceiptPoster } from "../components/ShareReceiptPoster";
 import { Toast } from "../components/Toast";
 import { getOrderCompletionTimestamp, useOrder, type OrderSnapshot } from "../state/order";
 import {
@@ -11,6 +13,18 @@ import {
   useReceiptProgress,
   type ReceiptProgressState,
 } from "../state/receiptProgress";
+import { getPublicAppUrl } from "../utils/publicAppUrl";
+
+const POSTER_BACKGROUND_COLOR = "#130f22";
+const POSTER_EXPORT_WIDTH = 1080;
+const POSTER_EXPORT_HEIGHT = 1350;
+const POSTER_SOURCE_WIDTH = 360;
+const POSTER_SOURCE_HEIGHT = 450;
+const POSTER_EXPORT_SCALE = 3;
+const POSTER_GENERATION_TIMEOUT_MS = 4500;
+const POSTER_IMAGE_WAIT_MS = 1200;
+const TRANSPARENT_IMAGE_PLACEHOLDER =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
 function formatOrderTime(timestamp: string) {
   const date = new Date(timestamp);
@@ -54,14 +68,15 @@ function getDeliveryOutcomeCopy(order: OrderSnapshot) {
 
 function buildShareText(
   order: OrderSnapshot,
-  badge: string,
   progress: ReceiptProgressState,
+  publicAppUrl: string,
 ) {
   const lines = [
-    "Successfully Not Ordered on DopeCart.",
-    `Badge unlocked: ${badge}.`,
-    `Saved Rs ${order.totalPrice} by avoiding ${getItemCountLabel(order.totalQuantity)}.`,
-    `Delivery outcome: ${getDeliveryOutcomeCopy(order)}.`,
+    `I successfully did not order on DopeCart.`,
+    `Rs ${order.totalPrice} saved by avoiding ${getItemCountLabel(order.totalQuantity)}.`,
+    "Regret avoided.",
+    "Dopamine delivered anyway.",
+    `Outcome: ${getDeliveryOutcomeCopy(order)}.`,
     `Streak: ${getStreakCopy(progress.currentStreak)}.`,
   ];
 
@@ -69,8 +84,118 @@ function buildShareText(
     lines.push(`Calories avoided: ${order.totalCalories}.`);
   }
 
-  lines.push("The receipt ceremony remains delightfully private.");
+  lines.push(`Try it: ${publicAppUrl}`);
   return lines.join(" ");
+}
+
+function getPosterFileName(orderId: string) {
+  return `dopecart-receipt-${orderId.replace(/[^a-z0-9-]/gi, "-").toLowerCase()}.png`;
+}
+
+async function createPosterFile(node: HTMLElement, orderId: string) {
+  await waitForPosterImages(node);
+
+  const blob = await toBlob(node, {
+    backgroundColor: POSTER_BACKGROUND_COLOR,
+    cacheBust: false,
+    height: POSTER_SOURCE_HEIGHT,
+    imagePlaceholder: TRANSPARENT_IMAGE_PLACEHOLDER,
+    pixelRatio: POSTER_EXPORT_SCALE,
+    skipFonts: true,
+    style: {
+      height: `${POSTER_SOURCE_HEIGHT}px`,
+      maxWidth: "none",
+      width: `${POSTER_SOURCE_WIDTH}px`,
+    },
+    width: POSTER_SOURCE_WIDTH,
+  });
+
+  if (!blob) {
+    throw new Error("Poster image was empty.");
+  }
+
+  return new File([blob], getPosterFileName(orderId), { type: "image/png" });
+}
+
+function delay(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
+async function withTimeout<T>(promise: Promise<T>, ms: number, message: string) {
+  let timeoutId = 0;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = window.setTimeout(() => reject(new Error(message)), ms);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+async function waitForPosterImages(node: HTMLElement) {
+  const images = Array.from(node.querySelectorAll("img"));
+
+  if (images.length === 0) {
+    return;
+  }
+
+  const imagePromises = images.map(
+    (image) =>
+      new Promise<void>((resolve) => {
+        if (image.complete && image.naturalWidth > 0) {
+          resolve();
+          return;
+        }
+
+        if (typeof image.decode === "function") {
+          image.decode().then(resolve).catch(resolve);
+          return;
+        }
+
+        const finish = () => resolve();
+        image.addEventListener("load", finish, { once: true });
+        image.addEventListener("error", finish, { once: true });
+      }),
+  );
+
+  await Promise.race([Promise.all(imagePromises), delay(POSTER_IMAGE_WAIT_MS)]);
+}
+
+async function createPosterFileWithTimeout(node: HTMLElement, orderId: string) {
+  return withTimeout(
+    createPosterFile(node, orderId),
+    POSTER_GENERATION_TIMEOUT_MS,
+    "Poster generation timed out.",
+  );
+}
+
+function canUseNativeShare() {
+  return typeof navigator !== "undefined" && typeof navigator.share === "function";
+}
+
+function canSharePosterFile(file: File) {
+  return (
+    canUseNativeShare() &&
+    typeof navigator.canShare === "function" &&
+    navigator.canShare({ files: [file] })
+  );
+}
+
+function downloadPosterFile(file: File) {
+  const objectUrl = URL.createObjectURL(file);
+  const link = document.createElement("a");
+
+  link.href = objectUrl;
+  link.download = file.name;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
 
 function isShareAbortError(error: unknown) {
@@ -99,9 +224,12 @@ export function ReceiptPage() {
     tone: "info",
   });
   const [showShareFallback, setShowShareFallback] = useState(false);
+  const [isPosterBusy, setIsPosterBusy] = useState(false);
   const recordedOrderIdRef = useRef<string | null>(null);
+  const posterRef = useRef<HTMLDivElement | null>(null);
   const order =
     orderState.currentOrder?.status === "completed" ? orderState.currentOrder : null;
+  const publicAppUrl = useMemo(() => getPublicAppUrl(), []);
   const displayedProgress = useMemo(
     () =>
       order
@@ -114,8 +242,8 @@ export function ReceiptPage() {
     [displayedProgress, order],
   );
   const shareText = useMemo(
-    () => (order ? buildShareText(order, badge, displayedProgress) : ""),
-    [badge, displayedProgress, order],
+    () => (order ? buildShareText(order, displayedProgress, publicAppUrl) : ""),
+    [displayedProgress, order, publicAppUrl],
   );
   const avoidedItemSummary = useMemo(
     () => (order ? getAvoidedItemSummary(order.items) : ""),
@@ -129,10 +257,6 @@ export function ReceiptPage() {
     () => (order ? getOrderCompletionTimestamp(order) : ""),
     [order],
   );
-  const shareButtonLabel =
-    typeof navigator !== "undefined" && typeof navigator.share === "function"
-      ? "Share Receipt"
-      : "Copy Receipt";
 
   useLayoutEffect(() => {
     if (order) {
@@ -180,18 +304,40 @@ export function ReceiptPage() {
     setToast({ message, tone });
   }
 
-  async function handleShareReceipt() {
+  async function copyShareTextToClipboard() {
     if (!shareText) {
       return;
     }
 
-    setShowShareFallback(false);
+    if (
+      typeof navigator !== "undefined" &&
+      navigator.clipboard &&
+      typeof navigator.clipboard.writeText === "function"
+    ) {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        showToast("Receipt link copied. Go cause mild confusion.", "success");
+        return;
+      } catch {
+        // Fall through to the visible text fallback.
+      }
+    }
 
-    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+    setShowShareFallback(true);
+    showToast("Could not copy, but the receipt is still yours.");
+  }
+
+  async function shareLinkOrCopy() {
+    if (!shareText) {
+      return;
+    }
+
+    if (canUseNativeShare()) {
       try {
         await navigator.share({
           title: "DopeCart receipt",
           text: shareText,
+          url: publicAppUrl,
         });
         showToast("Share sheet opened.", "success");
         return;
@@ -205,22 +351,90 @@ export function ReceiptPage() {
       }
     }
 
-    if (
-      typeof navigator !== "undefined" &&
-      navigator.clipboard &&
-      typeof navigator.clipboard.writeText === "function"
-    ) {
-      try {
-        await navigator.clipboard.writeText(shareText);
-        showToast("Receipt copied. Go cause mild confusion.", "success");
-        return;
-      } catch {
-        // Fall through to the visible text fallback.
-      }
+    await copyShareTextToClipboard();
+  }
+
+  async function handleSharePoster() {
+    if (!shareText || !order) {
+      return;
     }
 
-    setShowShareFallback(true);
-    showToast("Could not copy, but the receipt is still yours.");
+    setShowShareFallback(false);
+
+    if (!canUseNativeShare()) {
+      await copyShareTextToClipboard();
+      return;
+    }
+
+    if (typeof navigator.canShare !== "function") {
+      await shareLinkOrCopy();
+      return;
+    }
+
+    setIsPosterBusy(true);
+    showToast("Preparing poster...");
+
+    try {
+      const posterFile = posterRef.current
+        ? await createPosterFileWithTimeout(posterRef.current, order.id)
+        : null;
+
+      if (posterFile && canSharePosterFile(posterFile)) {
+        try {
+          await navigator.share({
+            title: "DopeCart receipt",
+            text: shareText,
+            url: publicAppUrl,
+            files: [posterFile],
+          });
+          showToast("Poster share sheet opened.", "success");
+          return;
+        } catch (error) {
+          if (isShareAbortError(error)) {
+            setShowShareFallback(false);
+            showToast("Share cancelled. Receipt stayed yours.");
+            return;
+          }
+          // Non-cancel file-share failures fall through to link/text support.
+        }
+      }
+    } catch {
+      showToast("Poster took too long. Sharing the link instead.");
+    } finally {
+      setIsPosterBusy(false);
+    }
+
+    await shareLinkOrCopy();
+  }
+
+  async function handleSavePoster() {
+    if (!order || !posterRef.current) {
+      return;
+    }
+
+    setShowShareFallback(false);
+    setIsPosterBusy(true);
+    showToast("Preparing poster...");
+
+    try {
+      const posterFile = await createPosterFileWithTimeout(posterRef.current, order.id);
+      downloadPosterFile(posterFile);
+      showToast("Poster saved. Trophy secured.", "success");
+    } catch {
+      setShowShareFallback(true);
+      showToast("Poster could not render, but the share text is ready.");
+    } finally {
+      setIsPosterBusy(false);
+    }
+  }
+
+  async function handleCopyShareText() {
+    if (!shareText) {
+      return;
+    }
+
+    setShowShareFallback(false);
+    await copyShareTextToClipboard();
   }
 
   return (
@@ -337,15 +551,38 @@ export function ReceiptPage() {
           <section className="receipt-share-panel" aria-labelledby="receipt-share-title">
             <div className="section-heading">
               <span className="section-kicker">Share</span>
-              <h2 id="receipt-share-title">Cause mild confusion responsibly</h2>
+              <h2 id="receipt-share-title">Share the poster</h2>
               <p>
-                Share text stays short, odd, and free of private details.
+                A tiny achievement card with the link baked in.
               </p>
             </div>
 
-            <Button type="button" onClick={handleShareReceipt}>
-              {shareButtonLabel}
-            </Button>
+            <div className="receipt-share-preview" aria-label="Share poster preview">
+              <ShareReceiptPoster
+                badge={badge}
+                order={order}
+                progress={displayedProgress}
+                publicAppUrl={publicAppUrl}
+                ref={posterRef}
+              />
+            </div>
+
+            <div className="receipt-share-actions" aria-label="Share poster actions">
+              <Button type="button" onClick={handleSharePoster} disabled={isPosterBusy}>
+                Share Poster
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleSavePoster}
+                disabled={isPosterBusy}
+              >
+                Save Poster
+              </Button>
+              <Button type="button" variant="ghost" onClick={handleCopyShareText}>
+                Copy Text
+              </Button>
+            </div>
 
             {showShareFallback ? (
               <p
