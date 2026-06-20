@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
-import { FictionalDeliveryMap } from "../components/FictionalDeliveryMap";
+import { DeliveryRouteMap } from "../components/DeliveryRouteMap";
 import { PageHeader } from "../components/PageHeader";
 import { products } from "../data/catalog";
 import { useCart } from "../state/cart";
@@ -410,7 +410,7 @@ export function TrackingPage() {
         <>
           <section className="eta-arrival-card" aria-labelledby="eta-arrival-title">
             <div>
-              <span className="section-kicker">Route status</span>
+              <span className="section-kicker">Order update</span>
               <h2 id="eta-arrival-title">
                 {getStatusHeadline(activeStage, isLostStage)}
               </h2>
@@ -440,7 +440,7 @@ export function TrackingPage() {
           ) : null}
 
           {showMap ? (
-            <FictionalDeliveryMap
+            <DeliveryRouteMap
               routeSeed={order.tracking.routeSeed}
               progress={mapProgress}
               darkStoreName={order.tracking.darkStoreName}
@@ -461,7 +461,7 @@ export function TrackingPage() {
                 <dd>{order.id}</dd>
               </div>
               <div>
-                <dt>Route status</dt>
+                <dt>Delivery update</dt>
                 <dd>{isLostStage ? "Lost near signal" : statusLabel}</dd>
               </div>
               <div>
@@ -478,42 +478,6 @@ export function TrackingPage() {
           {showPartnerCard && showMap ? renderPartnerCard(order) : null}
 
           {showPackingPreview && showMap ? renderPackingPreview(order) : null}
-
-          <section className="tracking-progress" aria-labelledby="tracking-progress-title">
-            <div className="section-heading">
-              <h2 id="tracking-progress-title">Tracking timeline</h2>
-              <p>Status updates appear as the route changes.</p>
-            </div>
-
-            <ol className="tracking-stage-list">
-              {trackingStages.map((stage, index) => {
-                const isComplete = index < activeStageIndex;
-                const isActive = index === activeStageIndex;
-
-                return (
-                  <li
-                    className={[
-                      "tracking-stage",
-                      isComplete ? "tracking-stage--complete" : "",
-                      isActive ? "tracking-stage--active" : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                    key={stage.title}
-                    aria-current={isActive ? "step" : undefined}
-                  >
-                    <span className="tracking-stage__marker" aria-hidden="true">
-                      {isComplete ? "OK" : index + 1}
-                    </span>
-                    <div>
-                      <h3>{stage.title}</h3>
-                      <p>{stage.copy}</p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
         </>
       )}
     </div>

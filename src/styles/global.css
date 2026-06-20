@@ -939,8 +939,7 @@ p {
 .packing-preview,
 .delivery-partner-card,
 .rider-panel,
-.fictional-map,
-.tracking-progress,
+.delivery-route-map,
 .lost-order-panel,
 .receipt-card,
 .receipt-handoff,
@@ -970,8 +969,7 @@ p {
 .packing-preview,
 .delivery-partner-card,
 .rider-panel,
-.fictional-map,
-.tracking-progress,
+.delivery-route-map,
 .lost-order-panel,
 .receipt-card,
 .receipt-handoff,
@@ -1595,8 +1593,7 @@ p {
 .packing-preview p,
 .delivery-partner-card p,
 .rider-panel p,
-.fictional-map p,
-.tracking-progress p,
+.delivery-route-map p,
 .lost-order-panel p,
 .home-progress-panel p,
 .receipt-card p,
@@ -1708,7 +1705,7 @@ p {
 .delivery-partner-card h2,
 .packing-preview h2,
 .lost-order-panel h2,
-.fictional-map h2 {
+.delivery-route-map h2 {
   font-size: var(--font-size-lg);
   line-height: 1.2;
 }
@@ -1812,7 +1809,7 @@ p {
   gap: var(--space-2);
 }
 
-.fictional-map {
+.delivery-route-map {
   overflow: hidden;
   border-color: rgb(36 28 53 / 0.24);
   background:
@@ -1820,32 +1817,20 @@ p {
     var(--color-surface);
 }
 
-.fictional-map__header {
+.delivery-route-map__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-3);
 }
 
-.fictional-map__header > div {
+.delivery-route-map__header > div {
   display: grid;
   min-width: 0;
   gap: var(--space-1);
 }
 
-.fictional-map__badge {
-  display: inline-flex;
-  flex: 0 0 auto;
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid rgb(36 28 53 / 0.16);
-  border-radius: var(--radius-sm);
-  background: var(--color-lilac);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
-}
-
-.fictional-map__canvas {
+.delivery-route-map__canvas {
   display: block;
   width: 100%;
   height: auto;
@@ -1859,89 +1844,89 @@ p {
   background-size: 28px 28px;
 }
 
-.fictional-map__block {
+.delivery-route-map__block {
   fill: rgb(222 212 255 / 0.42);
   stroke: rgb(36 28 53 / 0.1);
 }
 
-.fictional-map__block--two {
+.delivery-route-map__block--two {
   fill: rgb(223 242 238 / 0.58);
 }
 
-.fictional-map__block--three {
+.delivery-route-map__block--three {
   fill: rgb(255 209 102 / 0.22);
 }
 
-.fictional-map__route-shadow,
-.fictional-map__route {
+.delivery-route-map__route-shadow,
+.delivery-route-map__route {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.fictional-map__route-shadow {
+.delivery-route-map__route-shadow {
   stroke: rgb(36 28 53 / 0.16);
   stroke-width: 12;
 }
 
-.fictional-map__route {
+.delivery-route-map__route {
   stroke: var(--color-secondary);
   stroke-dasharray: 8 8;
   stroke-width: 5;
 }
 
-.fictional-map__label rect {
+.delivery-route-map__label rect {
   fill: rgb(255 253 247 / 0.86);
   stroke: rgb(36 28 53 / 0.08);
 }
 
-.fictional-map__label text {
+.delivery-route-map__label text {
   fill: var(--color-text);
   font-size: 7px;
   font-weight: 800;
 }
 
-.fictional-map__pin circle {
+.delivery-route-map__pin circle {
   fill: var(--color-accent);
   stroke: var(--color-text);
   stroke-width: 2;
 }
 
-.fictional-map__pin--home circle {
+.delivery-route-map__pin--home circle {
   fill: var(--color-lilac);
 }
 
-.fictional-map__pin text {
+.delivery-route-map__pin text {
   fill: var(--color-text);
   font-size: 10px;
   font-weight: 800;
   text-anchor: middle;
 }
 
-.fictional-map__signal {
+.delivery-route-map__signal {
   fill: rgb(255 92 122 / 0.24);
   stroke: var(--color-primary-strong);
   stroke-dasharray: 3 3;
   stroke-width: 2;
 }
 
-.fictional-map__marker {
+.delivery-route-map__marker {
   transition: transform 260ms ease;
 }
 
-.fictional-map__marker circle {
+.delivery-route-map__marker circle {
   fill: var(--color-primary);
   stroke: var(--color-text);
   stroke-width: 2;
 }
 
-.fictional-map__marker path {
+.delivery-route-map__marker path {
   fill: white;
   stroke: var(--color-text);
   stroke-width: 1;
 }
 
-.fictional-map__marker--lost circle {
+.delivery-route-map__marker--lost circle {
   fill: var(--color-accent);
 }
 
@@ -1978,64 +1963,6 @@ p {
 .rider-grid strong {
   overflow-wrap: anywhere;
   font-size: var(--font-size-sm);
-}
-
-.tracking-stage-list {
-  display: grid;
-  gap: var(--space-3);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.tracking-stage {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--space-3);
-  align-items: start;
-  opacity: 0.56;
-  transition:
-    opacity 180ms ease,
-    transform 180ms ease;
-}
-
-.tracking-stage--active,
-.tracking-stage--complete {
-  opacity: 1;
-}
-
-.tracking-stage--active {
-  transform: translateX(0.15rem);
-}
-
-.tracking-stage__marker {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border: 1px solid rgb(36 28 53 / 0.18);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-muted);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-}
-
-.tracking-stage--active .tracking-stage__marker {
-  border-color: var(--color-text);
-  background: var(--color-accent);
-  color: var(--color-text);
-  box-shadow: 0.12rem 0.12rem 0 var(--color-text);
-}
-
-.tracking-stage--complete .tracking-stage__marker {
-  background: var(--color-secondary);
-  color: white;
-}
-
-.tracking-stage h3 {
-  font-size: var(--font-size-md);
-  line-height: 1.2;
 }
 
 .receipt-card {
