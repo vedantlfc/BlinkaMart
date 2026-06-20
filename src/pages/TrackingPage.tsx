@@ -12,8 +12,13 @@ import {
   type OrderSnapshot,
 } from "../state/order";
 
+const CONFIRMED_END_RATIO = 5 / 300;
+const PACKING_END_RATIO = 30 / 300;
+const PARTNER_SEARCH_END_RATIO = 55 / 300;
+const TRAVEL_START_RATIO = 60 / 300;
+const ALMOST_THERE_START_RATIO = 255 / 300;
 const ROUTE_WOBBLE_START_RATIO = 290 / 300;
-const FINAL_STAGE_INDEX = 6;
+const FINAL_STAGE_INDEX = 7;
 
 const trackingStages = [
   {
@@ -27,12 +32,17 @@ const trackingStages = [
     mapLabel: "Packing started",
   },
   {
-    title: "Delivery partner selected",
+    title: "Finding a delivery partner",
+    copy: "The route desk is matching the bag with someone calm enough for Snack Flyover.",
+    mapLabel: "Partner search",
+  },
+  {
+    title: "Delivery partner assigned",
     copy: "A delivery partner has accepted the ritual and is checking the route.",
     mapLabel: "Partner assigned",
   },
   {
-    title: "On the way",
+    title: "Partner is on the way",
     copy: "Your order is moving through Snack Flyover with concerning confidence.",
     mapLabel: "On the way",
   },
@@ -118,34 +128,41 @@ function getActiveStageIndex(timelineProgress: number, forceComplete: boolean) {
   }
 
   if (timelineProgress >= ROUTE_WOBBLE_START_RATIO) {
+    return 6;
+  }
+
+  if (timelineProgress >= ALMOST_THERE_START_RATIO) {
     return 5;
   }
 
-  if (timelineProgress >= 0.85) {
+  if (timelineProgress >= TRAVEL_START_RATIO) {
     return 4;
   }
 
-  if (timelineProgress >= 0.45) {
+  if (timelineProgress >= PARTNER_SEARCH_END_RATIO) {
     return 3;
   }
 
-  if (timelineProgress >= 0.3) {
+  if (timelineProgress >= PACKING_END_RATIO) {
     return 2;
   }
 
-  if (timelineProgress >= 0.1) {
+  if (timelineProgress >= CONFIRMED_END_RATIO) {
     return 1;
   }
 
   return 0;
 }
 
-function getMapProgress(timelineProgress: number, isLost: boolean) {
+function getMapProgress(elapsedMs: number, durationMs: number, isLost: boolean) {
   if (isLost) {
     return 0.86;
   }
 
-  return clamp(0.04 + timelineProgress * 0.82, 0.04, 0.85);
+  const travelStartMs = durationMs * TRAVEL_START_RATIO;
+  const travelProgress = (elapsedMs - travelStartMs) / Math.max(1, durationMs - travelStartMs);
+
+  return clamp(0.04 + clamp(travelProgress, 0, 1) * 0.81, 0.04, 0.85);
 }
 
 function getItemLabel(quantity: number) {
@@ -153,68 +170,55 @@ function getItemLabel(quantity: number) {
 }
 
 function getEtaSupportCopy(stageIndex: number) {
-  if (stageIndex <= 1) {
-    return "Packing is underway.";
+  switch (stageIndex) {
+    case 0:
+      return "Order is in. The bag team is waking up.";
+    case 1:
+      return "Packing now.";
+    case 2:
+      return "Finding delivery partner.";
+    case 3:
+      return "Delivery partner assigned and getting ready.";
+    case 4:
+      return "Partner on the way through Snack Flyover.";
+    case 5:
+      return "Nearby, somewhere around Your Sofa energy.";
+    case 6:
+      return "Self Control Signal is causing a tiny route wobble.";
+    default:
+      return "Self Control Signal redirected the bag at the last possible moment.";
   }
-
-  if (stageIndex === 2) {
-    return "Delivery partner is getting ready.";
-  }
-
-  if (stageIndex === 3) {
-    return "Moving through Snack Flyover.";
-  }
-
-  if (stageIndex === 4) {
-    return "Almost near Your Sofa.";
-  }
-
-  return "Self Control Signal redirected the bag at the last possible moment.";
 }
 
-function formatRemainingTime(remainingMs: number) {
-  const totalSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
-}
-
-function getEtaHeadline(
-  order: OrderSnapshot,
-  elapsedMs: number,
-  remainingMs: number,
-  durationMs: number,
-  isLostStage: boolean,
-) {
+function getStatusHeadline(activeStage: (typeof trackingStages)[number], isLostStage: boolean) {
   if (isLostStage) {
     return "Route update: order lost near Self Control Signal";
   }
 
-  if (durationMs === ORDER_TRACKING_DURATION_MS && elapsedMs < 1000) {
-    return `Your order will arrive in ${order.tracking.etaMinutes} minutes`;
-  }
-
-  return `Arriving in ${formatRemainingTime(remainingMs)}`;
+  return activeStage.title;
 }
 
-function getEtaSummary(remainingMs: number, isLostStage: boolean) {
-  if (isLostStage) {
-    return "Lost near signal";
+function getStatusLabel(stageIndex: number) {
+  switch (stageIndex) {
+    case 0:
+    case 1:
+      return "Preparing";
+    case 2:
+      return "Partner search";
+    case 3:
+      return "Partner assigned";
+    case 4:
+      return "On the way";
+    case 5:
+      return "Nearby";
+    case 6:
+      return "Route update";
+    default:
+      return "Final update";
   }
-
-  return formatRemainingTime(remainingMs);
 }
 
-function getEtaTrailingLabel(remainingMs: number, isLostStage: boolean) {
-  if (isLostStage) {
-    return "Signal update";
-  }
-
-  return `ETA ${formatRemainingTime(remainingMs)}`;
-}
-
-function getEtaMeterProgress(timelineProgress: number) {
+function getStatusMeterProgress(timelineProgress: number) {
   return Math.round(clamp(timelineProgress, 0, 1) * 100);
 }
 
@@ -292,16 +296,16 @@ export function TrackingPage() {
     Boolean(isCompletedOrder) ||
     (trackingEndsAtMs !== null && now >= trackingEndsAtMs);
   const elapsedMs = getElapsedMs(startedAtMs, now, durationMs, shouldShowFinalOutcome);
-  const remainingMs = shouldShowFinalOutcome ? 0 : Math.max(0, durationMs - elapsedMs);
   const timelineProgress = getTimelineProgress(elapsedMs, durationMs);
   const activeStageIndex = getActiveStageIndex(timelineProgress, shouldShowFinalOutcome);
   const activeStage = trackingStages[activeStageIndex];
   const isLostStage = activeStageIndex === FINAL_STAGE_INDEX;
-  const mapProgress = getMapProgress(timelineProgress, isLostStage);
-  const etaMeterProgress = getEtaMeterProgress(timelineProgress);
+  const mapProgress = getMapProgress(elapsedMs, durationMs, isLostStage);
+  const statusMeterProgress = getStatusMeterProgress(timelineProgress);
+  const statusLabel = getStatusLabel(activeStageIndex);
   const showPackingPreview = activeStageIndex >= 1;
-  const showPartnerCard = activeStageIndex >= 2;
-  const showMapBeforeSummary = activeStageIndex >= 3 && activeStageIndex < FINAL_STAGE_INDEX;
+  const showPartnerCard = activeStageIndex >= 3;
+  const showMap = activeStageIndex >= 4;
   const showLostMessageBeforeSummary = isLostStage;
 
   useEffect(() => {
@@ -385,7 +389,7 @@ export function TrackingPage() {
         subtitle="Your cart is moving through the late-night delivery grid."
         trailing={
           hasTrackableOrder && order ? (
-            <span className="status-dot">{getEtaTrailingLabel(remainingMs, isLostStage)}</span>
+            <span className="status-dot">{statusLabel}</span>
           ) : (
             <span className="status-dot">Route desk</span>
           )
@@ -406,15 +410,9 @@ export function TrackingPage() {
         <>
           <section className="eta-arrival-card" aria-labelledby="eta-arrival-title">
             <div>
-              <span className="section-kicker">Arrival estimate</span>
+              <span className="section-kicker">Route status</span>
               <h2 id="eta-arrival-title">
-                {getEtaHeadline(
-                  order,
-                  elapsedMs,
-                  remainingMs,
-                  durationMs,
-                  isLostStage,
-                )}
+                {getStatusHeadline(activeStage, isLostStage)}
               </h2>
               <p>{getEtaSupportCopy(activeStageIndex)}</p>
             </div>
@@ -424,9 +422,9 @@ export function TrackingPage() {
               aria-label="Route progress"
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-valuenow={etaMeterProgress}
+              aria-valuenow={statusMeterProgress}
             >
-              <span style={{ width: `${etaMeterProgress}%` }} />
+              <span style={{ width: `${statusMeterProgress}%` }} />
             </div>
           </section>
 
@@ -441,7 +439,7 @@ export function TrackingPage() {
             </section>
           ) : null}
 
-          {showMapBeforeSummary ? (
+          {showMap ? (
             <FictionalDeliveryMap
               routeSeed={order.tracking.routeSeed}
               progress={mapProgress}
@@ -463,8 +461,8 @@ export function TrackingPage() {
                 <dd>{order.id}</dd>
               </div>
               <div>
-                <dt>ETA</dt>
-                <dd>{getEtaSummary(remainingMs, isLostStage)}</dd>
+                <dt>Route status</dt>
+                <dd>{isLostStage ? "Lost near signal" : statusLabel}</dd>
               </div>
               <div>
                 <dt>Status</dt>
@@ -473,23 +471,13 @@ export function TrackingPage() {
             </dl>
           </section>
 
-          {showPackingPreview && !showMapBeforeSummary ? renderPackingPreview(order) : null}
+          {showPackingPreview && !showMap ? renderPackingPreview(order) : null}
 
-          {showPartnerCard && !showMapBeforeSummary ? renderPartnerCard(order) : null}
+          {showPartnerCard && !showMap ? renderPartnerCard(order) : null}
 
-          {!showMapBeforeSummary ? (
-            <FictionalDeliveryMap
-              routeSeed={order.tracking.routeSeed}
-              progress={mapProgress}
-              darkStoreName={order.tracking.darkStoreName}
-              stage={activeStage.mapLabel}
-              isLost={isLostStage}
-            />
-          ) : null}
+          {showPartnerCard && showMap ? renderPartnerCard(order) : null}
 
-          {showPartnerCard && showMapBeforeSummary ? renderPartnerCard(order) : null}
-
-          {showPackingPreview && showMapBeforeSummary ? renderPackingPreview(order) : null}
+          {showPackingPreview && showMap ? renderPackingPreview(order) : null}
 
           <section className="tracking-progress" aria-labelledby="tracking-progress-title">
             <div className="section-heading">
