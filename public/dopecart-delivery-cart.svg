@@ -1,0 +1,45 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">DopeCart delivery cart marker</title>
+  <desc id="desc">A compact DopeCart shopping cart icon for the delivery route map.</desc>
+  <defs>
+    <linearGradient id="tile" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFDF7"/>
+      <stop offset="1" stop-color="#FFF0BF"/>
+    </linearGradient>
+    <linearGradient id="basket" x1="26" y1="18" x2="53" y2="35" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF7A91"/>
+      <stop offset="1" stop-color="#FF5C7A"/>
+    </linearGradient>
+    <linearGradient id="rail" x1="15" y1="24" x2="45" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE178"/>
+      <stop offset="1" stop-color="#FFD166"/>
+    </linearGradient>
+    <filter id="drop" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#241C35" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <rect x="5" y="5" width="54" height="54" rx="15" fill="url(#tile)" stroke="#241C35" stroke-width="4"/>
+  <g filter="url(#drop)" stroke="#241C35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22H19C22.2 22 24.5 24.1 25.2 27.2L27.6 37.8" stroke="#241C35" stroke-width="7"/>
+    <path d="M12 22H19C22.2 22 24.5 24.1 25.2 27.2L27.6 37.8" stroke="url(#rail)" stroke-width="4.5"/>
+
+    <path d="M13 29H24" stroke="#241C35" stroke-width="6"/>
+    <path d="M13 29H24" stroke="url(#rail)" stroke-width="3.5"/>
+    <path d="M10 36H26" stroke="#241C35" stroke-width="6"/>
+    <path d="M10 36H26" stroke="url(#rail)" stroke-width="3.5"/>
+
+    <path d="M29 22H52L47.8 37.5H25.8" fill="none" stroke="#241C35" stroke-width="7"/>
+    <path d="M29 22H52L47.8 37.5H25.8" fill="none" stroke="url(#basket)" stroke-width="4.8"/>
+
+    <path d="M26.2 38L29.3 46H47.2" stroke="#241C35" stroke-width="7"/>
+    <path d="M26.2 38L29.3 46H47.2" stroke="#3F8B86" stroke-width="4.6"/>
+    <path d="M29.3 46H47.2" stroke="#241C35" stroke-width="7"/>
+    <path d="M29.3 46H47.2" stroke="#2F6F73" stroke-width="4.6"/>
+  </g>
+
+  <circle cx="28.5" cy="48" r="6.5" fill="#241C35"/>
+  <circle cx="28.5" cy="48" r="4.2" fill="#FFD166"/>
+  <circle cx="45" cy="48" r="6.5" fill="#241C35"/>
+  <circle cx="45" cy="48" r="4.2" fill="#2F6F73"/>
+</svg>
