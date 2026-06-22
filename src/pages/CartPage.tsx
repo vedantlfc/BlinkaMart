@@ -9,7 +9,7 @@ import {
   productAnalyticsProperties,
   trackEvent,
 } from "../lib/analytics";
-import { useCart } from "../state/cart";
+import { getCartTotals, getCartUpdatePreview, useCart } from "../state/cart";
 import { useOrder } from "../state/order";
 import { useSettings } from "../state/settings";
 
@@ -100,6 +100,7 @@ export function CartPage() {
           </div>
           <Button
             type="button"
+            analyticsName="products_browse"
             onClick={() => {
               trackEvent("products browsed", {
                 location: "cart_empty",
@@ -124,12 +125,13 @@ export function CartPage() {
             </div>
             <Button
               type="button"
+              analyticsName="cart_clear"
               variant="ghost"
               size="compact"
               onClick={() => {
                 trackEvent("cart cleared", {
                   location: "cart_selection_row",
-                  ...cartTotalsAnalyticsProperties(cart.totals),
+                  ...cartTotalsAnalyticsProperties(getCartTotals({})),
                 });
                 cart.clearCart();
               }}
@@ -178,18 +180,24 @@ export function CartPage() {
                       <div className="cart-stepper" aria-label={`${product.name} quantity controls`}>
                         <Button
                           type="button"
+                          analyticsName="product_decrement"
                           variant="secondary"
                           size="compact"
                           onClick={() => {
+                            const nextCart = getCartUpdatePreview(
+                              cart.items,
+                              product.id,
+                              (currentQuantity) => currentQuantity - 1,
+                            );
                             cart.decrementItem(product.id);
                             trackEvent(
                               quantity === 1 ? "product removed" : "product quantity decreased",
                               {
                                 location: "cart",
                                 quantity_before: quantity,
-                                quantity_after: Math.max(0, quantity - 1),
+                                quantity_after: nextCart.quantity,
                                 ...productAnalyticsProperties(product),
-                                ...cartTotalsAnalyticsProperties(cart.totals),
+                                ...cartTotalsAnalyticsProperties(nextCart.totals),
                               },
                             );
                           }}
@@ -205,16 +213,22 @@ export function CartPage() {
                         </span>
                         <Button
                           type="button"
+                          analyticsName="product_increment"
                           variant="secondary"
                           size="compact"
                           onClick={() => {
+                            const nextCart = getCartUpdatePreview(
+                              cart.items,
+                              product.id,
+                              (currentQuantity) => currentQuantity + 1,
+                            );
                             cart.incrementItem(product.id);
                             trackEvent("product quantity increased", {
                               location: "cart",
                               quantity_before: quantity,
-                              quantity_after: quantity + 1,
+                              quantity_after: nextCart.quantity,
                               ...productAnalyticsProperties(product),
-                              ...cartTotalsAnalyticsProperties(cart.totals),
+                              ...cartTotalsAnalyticsProperties(nextCart.totals),
                             });
                           }}
                           aria-label={`Increase ${product.name} quantity`}
@@ -224,16 +238,22 @@ export function CartPage() {
                       </div>
                       <Button
                         type="button"
+                        analyticsName="product_remove"
                         variant="ghost"
                         size="compact"
                         onClick={() => {
+                          const nextCart = getCartUpdatePreview(
+                            cart.items,
+                            product.id,
+                            () => 0,
+                          );
                           cart.removeItem(product.id);
                           trackEvent("product removed", {
                             location: "cart",
                             quantity_before: quantity,
                             quantity_after: 0,
                             ...productAnalyticsProperties(product),
-                            ...cartTotalsAnalyticsProperties(cart.totals),
+                            ...cartTotalsAnalyticsProperties(nextCart.totals),
                           });
                         }}
                         aria-label={`Remove ${product.name} from cart`}
@@ -328,6 +348,7 @@ export function CartPage() {
             ) : (
               <Button
                 type="button"
+                analyticsName="hunger_guidance_open"
                 variant="secondary"
                 onClick={() => {
                   setShowHungryGuidance(true);
@@ -356,7 +377,11 @@ export function CartPage() {
                   : `regret ${cart.totals.averageRegretScore}/100`}
               </span>
             </div>
-            <Button type="button" onClick={handlePlaceOrder}>
+            <Button
+              type="button"
+              analyticsName="cart_review_order"
+              onClick={handlePlaceOrder}
+            >
               Review Order
             </Button>
           </aside>

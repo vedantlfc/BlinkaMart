@@ -88,7 +88,11 @@ export function ProgressPage() {
             title="No wins logged yet."
             message="Complete a checkout ritual and this dashboard will start keeping score locally."
           />
-          <Button type="button" onClick={() => navigate("/products")}>
+          <Button
+            type="button"
+            analyticsName="products_browse"
+            onClick={() => navigate("/products")}
+          >
             Browse Shelf
           </Button>
         </section>
@@ -209,10 +213,19 @@ export function ProgressPage() {
           </section>
 
           <div className="cart-cta-row" aria-label="Progress actions">
-            <Button type="button" onClick={() => navigate("/products")}>
+            <Button
+              type="button"
+              analyticsName="products_browse"
+              onClick={() => navigate("/products")}
+            >
               Build Another Cart
             </Button>
-            <Button type="button" variant="secondary" onClick={() => navigate("/")}>
+            <Button
+              type="button"
+              analyticsName="home_open"
+              variant="secondary"
+              onClick={() => navigate("/")}
+            >
               Home
             </Button>
           </div>

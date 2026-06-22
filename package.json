@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "html-to-image": "^1.11.13",
+    "posthog-js": "^1.391.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2"

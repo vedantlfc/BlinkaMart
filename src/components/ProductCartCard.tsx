@@ -59,6 +59,7 @@ export function ProductCartCard({
         <div className="cart-controls" aria-label={`${product.name} quantity controls`}>
           <Button
             type="button"
+            analyticsName="product_decrement"
             variant="secondary"
             size="compact"
             onClick={onDecrement}
@@ -71,6 +72,7 @@ export function ProductCartCard({
           </span>
           <Button
             type="button"
+            analyticsName="product_increment"
             variant="secondary"
             size="compact"
             onClick={onIncrement}
@@ -82,6 +84,7 @@ export function ProductCartCard({
       ) : (
         <Button
           type="button"
+          analyticsName="product_add"
           variant="primary"
           size="compact"
           onClick={onAdd}

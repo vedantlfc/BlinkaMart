@@ -480,6 +480,7 @@ export function ReceiptPage() {
           />
           <Button
             type="button"
+            analyticsName="products_browse"
             onClick={() => {
               trackEvent("products browsed", {
                 location: "receipt_empty",
@@ -602,7 +603,12 @@ export function ReceiptPage() {
             </div>
 
             <div className="receipt-share-actions" aria-label="Share poster actions">
-              <Button type="button" onClick={handleSharePoster} disabled={isPosterBusy}>
+              <Button
+                type="button"
+                analyticsName="receipt_share_poster"
+                onClick={handleSharePoster}
+                disabled={isPosterBusy}
+              >
                 Share Poster
               </Button>
             </div>
@@ -622,6 +628,7 @@ export function ReceiptPage() {
           <div className="cart-cta-row" aria-label="Receipt actions">
             <Button
               type="button"
+              analyticsName="receipt_back_to_products"
               onClick={() => {
                 trackEvent("products browsed", {
                   location: "receipt_actions",
@@ -634,6 +641,7 @@ export function ReceiptPage() {
             </Button>
             <Button
               type="button"
+              analyticsName="progress_open"
               variant="secondary"
               onClick={() => {
                 trackEvent("progress opened", {
@@ -649,6 +657,7 @@ export function ReceiptPage() {
             </Button>
             <Button
               type="button"
+              analyticsName="cart_open"
               variant="ghost"
               onClick={() => {
                 trackEvent("cart opened", {

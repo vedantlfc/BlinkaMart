@@ -188,6 +188,7 @@ export function CheckoutPage() {
           />
           <Button
             type="button"
+            analyticsName="tracking_resume"
             onClick={() => {
               trackEvent("tracking resumed", {
                 location: "checkout_existing_tracking",
@@ -206,6 +207,7 @@ export function CheckoutPage() {
           />
           <Button
             type="button"
+            analyticsName="products_browse"
             onClick={() => {
               trackEvent("products browsed", {
                 location: "checkout_empty",
@@ -301,11 +303,16 @@ export function CheckoutPage() {
           </section>
 
           <div className="cart-cta-row" aria-label="Checkout actions">
-            <Button type="button" onClick={handleConfirmCheckout}>
+            <Button
+              type="button"
+              analyticsName="checkout_confirm_order"
+              onClick={handleConfirmCheckout}
+            >
               Confirm Order
             </Button>
             <Button
               type="button"
+              analyticsName="cart_open"
               variant="secondary"
               onClick={() => {
                 trackEvent("cart opened", {

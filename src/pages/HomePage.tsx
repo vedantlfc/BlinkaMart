@@ -15,7 +15,7 @@ import {
   productAnalyticsProperties,
   trackEvent,
 } from "../lib/analytics";
-import { useCart } from "../state/cart";
+import { getCartUpdatePreview, useCart } from "../state/cart";
 import { getReceiptProgressSummary, useReceiptProgress } from "../state/receiptProgress";
 import { useSettings } from "../state/settings";
 
@@ -146,6 +146,7 @@ export function HomePage() {
           </div>
           <Button
             type="button"
+            analyticsName="progress_open"
             variant="secondary"
             size="compact"
             onClick={() => {
@@ -212,29 +213,44 @@ export function HomePage() {
                 quantity={cart.getQuantity(product.id)}
                 showCalories={settings.showCalories}
                 onAdd={() => {
+                  const nextCart = getCartUpdatePreview(
+                    cart.items,
+                    product.id,
+                    (currentQuantity) => currentQuantity + 1,
+                  );
                   cart.addItem(product.id);
                   setToastMessage(`${product.name} joined the cart.`);
                   trackEvent("product added", {
                     location: "home",
-                    quantity_after: 1,
+                    quantity_after: nextCart.quantity,
                     ...productAnalyticsProperties(product),
-                    ...cartTotalsAnalyticsProperties(cart.totals),
+                    ...cartTotalsAnalyticsProperties(nextCart.totals),
                   });
                 }}
                 onIncrement={() => {
                   const quantity = cart.getQuantity(product.id);
+                  const nextCart = getCartUpdatePreview(
+                    cart.items,
+                    product.id,
+                    (currentQuantity) => currentQuantity + 1,
+                  );
                   cart.incrementItem(product.id);
                   setToastMessage(`${product.name} quantity increased.`);
                   trackEvent("product quantity increased", {
                     location: "home",
                     quantity_before: quantity,
-                    quantity_after: quantity + 1,
+                    quantity_after: nextCart.quantity,
                     ...productAnalyticsProperties(product),
-                    ...cartTotalsAnalyticsProperties(cart.totals),
+                    ...cartTotalsAnalyticsProperties(nextCart.totals),
                   });
                 }}
                 onDecrement={() => {
                   const quantity = cart.getQuantity(product.id);
+                  const nextCart = getCartUpdatePreview(
+                    cart.items,
+                    product.id,
+                    (currentQuantity) => currentQuantity - 1,
+                  );
                   cart.decrementItem(product.id);
                   setToastMessage(
                     quantity === 1
@@ -244,9 +260,9 @@ export function HomePage() {
                   trackEvent(quantity === 1 ? "product removed" : "product quantity decreased", {
                     location: "home",
                     quantity_before: quantity,
-                    quantity_after: Math.max(0, quantity - 1),
+                    quantity_after: nextCart.quantity,
                     ...productAnalyticsProperties(product),
-                    ...cartTotalsAnalyticsProperties(cart.totals),
+                    ...cartTotalsAnalyticsProperties(nextCart.totals),
                   });
                 }}
               />
@@ -281,6 +297,7 @@ export function HomePage() {
         averageRegretScore={cart.totals.averageRegretScore}
         showCalories={settings.showCalories}
         actionLabel="Review Cart"
+        actionAnalyticsName="cart_open"
         onAction={() => {
           trackEvent("cart opened", {
             location: "home_bottom_bar",

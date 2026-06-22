@@ -421,6 +421,7 @@ export function TrackingPage() {
           />
           <Button
             type="button"
+            analyticsName="products_browse"
             onClick={() => {
               trackEvent("products browsed", {
                 location: "tracking_empty",
@@ -458,7 +459,12 @@ export function TrackingPage() {
               <span className="section-kicker">Final update</span>
               <h2 id="lost-order-title">Sorry, your order is lost.</h2>
               <p>The order got lost. You did not. Self Control Signal reports excellent timing.</p>
-              <Button type="button" onClick={handleViewReceipt} disabled={isCompleting}>
+              <Button
+                type="button"
+                analyticsName="tracking_view_receipt"
+                onClick={handleViewReceipt}
+                disabled={isCompleting}
+              >
                 View Receipt
               </Button>
             </section>

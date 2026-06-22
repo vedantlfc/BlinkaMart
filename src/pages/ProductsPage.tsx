@@ -15,7 +15,7 @@ import {
   productAnalyticsProperties,
   trackEvent,
 } from "../lib/analytics";
-import { useCart } from "../state/cart";
+import { getCartTotals, getCartUpdatePreview, useCart } from "../state/cart";
 import { useSettings } from "../state/settings";
 
 const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
@@ -188,32 +188,47 @@ export function ProductsPage() {
                   quantity={quantity}
                   showCalories={settings.showCalories}
                   onAdd={() => {
+                    const nextCart = getCartUpdatePreview(
+                      cart.items,
+                      product.id,
+                      (currentQuantity) => currentQuantity + 1,
+                    );
                     cart.addItem(product.id);
                     showCartToast(`${product.name} joined the cart.`);
                     trackEvent("product added", {
                       location: "products",
-                      quantity_after: 1,
+                      quantity_after: nextCart.quantity,
                       selected_category_id: selectedCategoryId,
                       search_active: Boolean(normalizedQuery),
                       ...productAnalyticsProperties(product),
-                      ...cartTotalsAnalyticsProperties(cart.totals),
+                      ...cartTotalsAnalyticsProperties(nextCart.totals),
                     });
                   }}
                   onIncrement={() => {
                     const quantity = cart.getQuantity(product.id);
+                    const nextCart = getCartUpdatePreview(
+                      cart.items,
+                      product.id,
+                      (currentQuantity) => currentQuantity + 1,
+                    );
                     cart.incrementItem(product.id);
                     showCartToast(`${product.name} quantity increased.`);
                     trackEvent("product quantity increased", {
                       location: "products",
                       quantity_before: quantity,
-                      quantity_after: quantity + 1,
+                      quantity_after: nextCart.quantity,
                       selected_category_id: selectedCategoryId,
                       search_active: Boolean(normalizedQuery),
                       ...productAnalyticsProperties(product),
-                      ...cartTotalsAnalyticsProperties(cart.totals),
+                      ...cartTotalsAnalyticsProperties(nextCart.totals),
                     });
                   }}
                   onDecrement={() => {
+                    const nextCart = getCartUpdatePreview(
+                      cart.items,
+                      product.id,
+                      (currentQuantity) => currentQuantity - 1,
+                    );
                     cart.decrementItem(product.id);
                     showCartToast(
                       quantity === 1
@@ -223,11 +238,11 @@ export function ProductsPage() {
                     trackEvent(quantity === 1 ? "product removed" : "product quantity decreased", {
                       location: "products",
                       quantity_before: quantity,
-                      quantity_after: Math.max(0, quantity - 1),
+                      quantity_after: nextCart.quantity,
                       selected_category_id: selectedCategoryId,
                       search_active: Boolean(normalizedQuery),
                       ...productAnalyticsProperties(product),
-                      ...cartTotalsAnalyticsProperties(cart.totals),
+                      ...cartTotalsAnalyticsProperties(nextCart.totals),
                     });
                   }}
                 />
@@ -245,6 +260,7 @@ export function ProductsPage() {
       {cart.totals.totalQuantity > 0 ? (
         <Button
           type="button"
+          analyticsName="cart_clear"
           variant="ghost"
           size="compact"
           onClick={() => {
@@ -252,7 +268,7 @@ export function ProductsPage() {
             showCartToast("Cart cleared. Character development added.");
             trackEvent("cart cleared", {
               location: "products",
-              ...cartTotalsAnalyticsProperties(cart.totals),
+              ...cartTotalsAnalyticsProperties(getCartTotals({})),
             });
           }}
         >
@@ -269,6 +285,7 @@ export function ProductsPage() {
         showCalories={settings.showCalories}
         onAction={handleCartAction}
         actionLabel="Review Cart"
+        actionAnalyticsName="cart_open"
       />
     </div>
   );

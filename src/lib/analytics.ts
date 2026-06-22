@@ -1,3 +1,4 @@
+import posthog from "posthog-js";
 import type { Product } from "../data/catalog";
 import type { CartTotals } from "../state/cart";
 import type { OrderSnapshot } from "../state/order";
@@ -6,74 +7,11 @@ type AnalyticsPrimitive = string | number | boolean | null | undefined;
 type AnalyticsValue = AnalyticsPrimitive | AnalyticsPrimitive[];
 export type AnalyticsProperties = Record<string, AnalyticsValue>;
 
-type PostHogQueue = unknown[] & {
-  __SV?: number;
-  capture?: (eventName: string, properties?: AnalyticsProperties) => void;
-  init?: (token: string, config?: Record<string, unknown>) => void;
-  register?: (properties: AnalyticsProperties) => void;
-};
-
-declare global {
-  interface Window {
-    posthog?: PostHogQueue;
-  }
-}
-
 const ANALYTICS_SCHEMA_VERSION = "2026-06-22";
 const POSTHOG_DEFAULT_HOST = "https://us.i.posthog.com";
 const POSTHOG_DEFAULTS_VERSION = "2026-01-30";
-const POSTHOG_METHODS = [
-  "init",
-  "capture",
-  "register",
-  "register_once",
-  "register_for_session",
-  "unregister",
-  "unregister_for_session",
-  "getFeatureFlag",
-  "getFeatureFlagPayload",
-  "isFeatureEnabled",
-  "reloadFeatureFlags",
-  "updateEarlyAccessFeatureEnrollment",
-  "getEarlyAccessFeatures",
-  "on",
-  "onFeatureFlags",
-  "onSessionId",
-  "getSurveys",
-  "getActiveMatchingSurveys",
-  "renderSurvey",
-  "canRenderSurvey",
-  "getNextSurveyStep",
-  "identify",
-  "setPersonProperties",
-  "group",
-  "resetGroups",
-  "setPersonPropertiesForFlags",
-  "resetPersonPropertiesForFlags",
-  "setGroupPropertiesForFlags",
-  "resetGroupPropertiesForFlags",
-  "reset",
-  "get_distinct_id",
-  "getGroups",
-  "get_session_id",
-  "get_session_replay_url",
-  "alias",
-  "set_config",
-  "startSessionRecording",
-  "stopSessionRecording",
-  "sessionRecordingStarted",
-  "captureException",
-  "loadToolbar",
-  "get_property",
-  "getSessionProperty",
-  "createPersonProfile",
-  "opt_in_capturing",
-  "opt_out_capturing",
-  "has_opted_in_capturing",
-  "has_opted_out_capturing",
-  "clear_opt_in_out_capturing",
-  "debug",
-];
+
+let analyticsInitialized = false;
 
 function getPostHogProjectToken() {
   return (
@@ -107,41 +45,6 @@ function shouldEnableSessionReplay() {
   return getBooleanEnv(import.meta.env.VITE_POSTHOG_SESSION_REPLAY);
 }
 
-function normalizePostHogAssetHost(apiHost: string) {
-  return apiHost.replace(".i.posthog.com", "-assets.i.posthog.com");
-}
-
-function createPostHogStub(apiHost: string) {
-  if (typeof window === "undefined" || typeof document === "undefined") {
-    return undefined;
-  }
-
-  const existingPostHog = window.posthog;
-  if (existingPostHog?.__SV) {
-    return existingPostHog;
-  }
-
-  const posthog = (existingPostHog ?? []) as PostHogQueue;
-  window.posthog = posthog;
-
-  for (const methodName of POSTHOG_METHODS) {
-    (posthog as unknown as Record<string, unknown>)[methodName] = (...args: unknown[]) => {
-      posthog.push([methodName, ...args]);
-    };
-  }
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.crossOrigin = "anonymous";
-  script.src = `${normalizePostHogAssetHost(apiHost)}/static/array.js`;
-
-  const firstScript = document.getElementsByTagName("script")[0];
-  firstScript?.parentNode?.insertBefore(script, firstScript);
-
-  posthog.__SV = 1;
-  return posthog;
-}
-
 function cleanProperties(properties: AnalyticsProperties = {}) {
   return Object.entries(properties).reduce<AnalyticsProperties>(
     (cleanedProperties, [key, value]) => {
@@ -169,6 +72,10 @@ function getCurrentPageProperties() {
 }
 
 export function initAnalytics() {
+  if (analyticsInitialized || typeof window === "undefined") {
+    return;
+  }
+
   const projectToken = getPostHogProjectToken();
   if (!projectToken) {
     if (shouldDebugAnalytics()) {
@@ -177,14 +84,8 @@ export function initAnalytics() {
     return;
   }
 
-  const apiHost = getPostHogHost();
-  const posthog = createPostHogStub(apiHost);
-  if (!posthog?.init) {
-    return;
-  }
-
   posthog.init(projectToken, {
-    api_host: apiHost,
+    api_host: getPostHogHost(),
     autocapture: true,
     capture_pageview: false,
     defaults: POSTHOG_DEFAULTS_VERSION,
@@ -192,7 +93,7 @@ export function initAnalytics() {
     person_profiles: "identified_only",
     session_recording: {
       maskAllInputs: true,
-      maskCapturedNetworkRequestFn: (request: { name?: string }) => {
+      maskCapturedNetworkRequestFn: (request) => {
         if (request.name) {
           request.name = request.name.replace(
             /([?&](token|auth|email)=)[^&]+/gi,
@@ -204,10 +105,11 @@ export function initAnalytics() {
     },
   });
 
-  posthog.register?.({
+  posthog.register({
     app_name: "DopeCart",
     app_surface: "mobile_web",
   });
+  analyticsInitialized = true;
 }
 
 export function trackEvent(eventName: string, properties: AnalyticsProperties = {}) {
@@ -216,7 +118,9 @@ export function trackEvent(eventName: string, properties: AnalyticsProperties = 
     ...properties,
   });
 
-  window.posthog?.capture?.(eventName, eventProperties);
+  if (analyticsInitialized) {
+    posthog.capture(eventName, eventProperties);
+  }
 
   if (shouldDebugAnalytics()) {
     console.debug("[analytics]", eventName, eventProperties);

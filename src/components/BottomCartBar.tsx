@@ -9,6 +9,7 @@ export interface BottomCartBarProps {
   showCalories?: boolean;
   actionLabel?: string;
   actionDisabled?: boolean;
+  actionAnalyticsName?: string;
   onAction?: () => void;
 }
 
@@ -21,6 +22,7 @@ export function BottomCartBar({
   showCalories = true,
   actionLabel,
   actionDisabled = false,
+  actionAnalyticsName,
   onAction,
 }: BottomCartBarProps) {
   const isEmpty = totalQuantity === 0;
@@ -57,6 +59,7 @@ export function BottomCartBar({
       {hasAction ? (
         <Button
           type="button"
+          analyticsName={actionAnalyticsName}
           variant="primary"
           size="compact"
           onClick={onAction}

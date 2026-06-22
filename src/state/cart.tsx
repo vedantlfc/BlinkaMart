@@ -35,6 +35,12 @@ export interface CartContextValue {
   getQuantity: (productId: string) => number;
 }
 
+export interface CartUpdatePreview {
+  items: CartItems;
+  quantity: number;
+  totals: CartTotals;
+}
+
 const emptyTotals: CartTotals = {
   uniqueItems: 0,
   totalQuantity: 0,
@@ -95,7 +101,7 @@ function writeStoredCart(items: CartItems) {
   }
 }
 
-function updateQuantity(
+export function getUpdatedCartItems(
   items: CartItems,
   productId: string,
   updater: (currentQuantity: number) => number,
@@ -119,7 +125,7 @@ function updateQuantity(
   return nextItems;
 }
 
-function getTotals(items: CartItems): CartTotals {
+export function getCartTotals(items: CartItems): CartTotals {
   const totals = Object.entries(items).reduce(
     (runningTotals, [productId, quantity]) => {
       const product = productById.get(productId);
@@ -152,6 +158,20 @@ function getTotals(items: CartItems): CartTotals {
   };
 }
 
+export function getCartUpdatePreview(
+  items: CartItems,
+  productId: string,
+  updater: (currentQuantity: number) => number,
+): CartUpdatePreview {
+  const nextItems = getUpdatedCartItems(items, productId, updater);
+
+  return {
+    items: nextItems,
+    quantity: nextItems[productId] ?? 0,
+    totals: getCartTotals(nextItems),
+  };
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItems>(() => readStoredCart());
 
@@ -161,19 +181,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback((productId: string) => {
     setItems((currentItems) =>
-      updateQuantity(currentItems, productId, (currentQuantity) => currentQuantity + 1),
+      getUpdatedCartItems(currentItems, productId, (currentQuantity) => currentQuantity + 1),
     );
   }, []);
 
   const incrementItem = useCallback((productId: string) => {
     setItems((currentItems) =>
-      updateQuantity(currentItems, productId, (currentQuantity) => currentQuantity + 1),
+      getUpdatedCartItems(currentItems, productId, (currentQuantity) => currentQuantity + 1),
     );
   }, []);
 
   const decrementItem = useCallback((productId: string) => {
     setItems((currentItems) =>
-      updateQuantity(currentItems, productId, (currentQuantity) => currentQuantity - 1),
+      getUpdatedCartItems(currentItems, productId, (currentQuantity) => currentQuantity - 1),
     );
   }, []);
 
@@ -194,7 +214,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getQuantity = useCallback((productId: string) => items[productId] ?? 0, [items]);
-  const totals = useMemo(() => getTotals(items), [items]);
+  const totals = useMemo(() => getCartTotals(items), [items]);
 
   const value = useMemo<CartContextValue>(
     () => ({
