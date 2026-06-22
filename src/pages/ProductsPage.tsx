@@ -10,6 +10,11 @@ import { ProductCartCard } from "../components/ProductCartCard";
 import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
 import { categories, products, type CategoryId } from "../data/catalog";
+import {
+  cartTotalsAnalyticsProperties,
+  productAnalyticsProperties,
+  trackEvent,
+} from "../lib/analytics";
 import { useCart } from "../state/cart";
 import { useSettings } from "../state/settings";
 
@@ -93,6 +98,10 @@ export function ProductsPage() {
 
   function handleCategorySelect(categoryId: CategoryId | "all") {
     updateParams(categoryId, "");
+    trackEvent("category selected", {
+      category_id: categoryId,
+      location: "products",
+    });
   }
 
   function handleSearchChange(value: string) {
@@ -104,6 +113,13 @@ export function ProductsPage() {
   }
 
   function handleCartAction() {
+    trackEvent("cart opened", {
+      location: "products_bottom_bar",
+      selected_category_id: selectedCategoryId,
+      search_active: Boolean(normalizedQuery),
+      visible_product_count: filteredProducts.length,
+      ...cartTotalsAnalyticsProperties(cart.totals),
+    });
     navigate("/cart");
   }
 
@@ -174,10 +190,28 @@ export function ProductsPage() {
                   onAdd={() => {
                     cart.addItem(product.id);
                     showCartToast(`${product.name} joined the cart.`);
+                    trackEvent("product added", {
+                      location: "products",
+                      quantity_after: 1,
+                      selected_category_id: selectedCategoryId,
+                      search_active: Boolean(normalizedQuery),
+                      ...productAnalyticsProperties(product),
+                      ...cartTotalsAnalyticsProperties(cart.totals),
+                    });
                   }}
                   onIncrement={() => {
+                    const quantity = cart.getQuantity(product.id);
                     cart.incrementItem(product.id);
                     showCartToast(`${product.name} quantity increased.`);
+                    trackEvent("product quantity increased", {
+                      location: "products",
+                      quantity_before: quantity,
+                      quantity_after: quantity + 1,
+                      selected_category_id: selectedCategoryId,
+                      search_active: Boolean(normalizedQuery),
+                      ...productAnalyticsProperties(product),
+                      ...cartTotalsAnalyticsProperties(cart.totals),
+                    });
                   }}
                   onDecrement={() => {
                     cart.decrementItem(product.id);
@@ -186,6 +220,15 @@ export function ProductsPage() {
                         ? `${product.name} removed from the cart.`
                         : `${product.name} quantity decreased.`,
                     );
+                    trackEvent(quantity === 1 ? "product removed" : "product quantity decreased", {
+                      location: "products",
+                      quantity_before: quantity,
+                      quantity_after: Math.max(0, quantity - 1),
+                      selected_category_id: selectedCategoryId,
+                      search_active: Boolean(normalizedQuery),
+                      ...productAnalyticsProperties(product),
+                      ...cartTotalsAnalyticsProperties(cart.totals),
+                    });
                   }}
                 />
               );
@@ -207,6 +250,10 @@ export function ProductsPage() {
           onClick={() => {
             cart.clearCart();
             showCartToast("Cart cleared. Character development added.");
+            trackEvent("cart cleared", {
+              location: "products",
+              ...cartTotalsAnalyticsProperties(cart.totals),
+            });
           }}
         >
           Clear Cart

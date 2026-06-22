@@ -6,6 +6,7 @@ import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { ShareReceiptPoster } from "../components/ShareReceiptPoster";
 import { Toast } from "../components/Toast";
+import { orderAnalyticsProperties, trackEvent } from "../lib/analytics";
 import { getOrderCompletionTimestamp, useOrder, type OrderSnapshot } from "../state/order";
 import {
   getPrimaryBadgeNameForOrder,
@@ -210,6 +211,7 @@ export function ReceiptPage() {
   const [showShareFallback, setShowShareFallback] = useState(false);
   const [isPosterBusy, setIsPosterBusy] = useState(false);
   const recordedOrderIdRef = useRef<string | null>(null);
+  const trackedReceiptOrderIdRef = useRef<string | null>(null);
   const posterRef = useRef<HTMLDivElement | null>(null);
   const order =
     orderState.currentOrder?.status === "completed" ? orderState.currentOrder : null;
@@ -277,6 +279,18 @@ export function ReceiptPage() {
   }, [order, receiptProgress.recordCompletedOrder]);
 
   useEffect(() => {
+    if (order && trackedReceiptOrderIdRef.current !== order.id) {
+      trackedReceiptOrderIdRef.current = order.id;
+      trackEvent("receipt viewed", {
+        badge,
+        current_streak: displayedProgress.currentStreak,
+        total_completed_orders: displayedProgress.totalCompletedOrders,
+        ...orderAnalyticsProperties(order),
+      });
+    }
+  }, [badge, displayedProgress.currentStreak, displayedProgress.totalCompletedOrders, order]);
+
+  useEffect(() => {
     if (!toast.message) {
       return undefined;
     }
@@ -305,14 +319,26 @@ export function ReceiptPage() {
       try {
         await navigator.clipboard.writeText(fallbackShareText);
         showToast("Receipt link copied. Go cause mild confusion.", "success");
+        trackEvent("share fallback copied", {
+          share_type: "text_link",
+          ...(order ? orderAnalyticsProperties(order) : {}),
+        });
         return;
       } catch {
+        trackEvent("share fallback copy failed", {
+          share_type: "text_link",
+          ...(order ? orderAnalyticsProperties(order) : {}),
+        });
         // Fall through to the visible text fallback.
       }
     }
 
     setShowShareFallback(true);
     showToast("Could not copy, but the receipt is still yours.");
+    trackEvent("share fallback shown", {
+      share_type: "text_link",
+      ...(order ? orderAnalyticsProperties(order) : {}),
+    });
   }
 
   async function shareLinkOrCopy() {
@@ -328,13 +354,25 @@ export function ReceiptPage() {
           url: publicAppUrl,
         });
         showToast("Share sheet opened.", "success");
+        trackEvent("share sheet opened", {
+          share_type: "link",
+          ...(order ? orderAnalyticsProperties(order) : {}),
+        });
         return;
       } catch (error) {
         if (isShareAbortError(error)) {
           setShowShareFallback(false);
           showToast("Share cancelled. Receipt stayed yours.");
+          trackEvent("share cancelled", {
+            share_type: "link",
+            ...(order ? orderAnalyticsProperties(order) : {}),
+          });
           return;
         }
+        trackEvent("share failed", {
+          share_type: "link",
+          ...(order ? orderAnalyticsProperties(order) : {}),
+        });
         // Non-cancel share failures fall through to copy support.
       }
     }
@@ -347,6 +385,11 @@ export function ReceiptPage() {
       return;
     }
 
+    trackEvent("share poster clicked", {
+      native_share_available: canUseNativeShare(),
+      can_share_files_available: typeof navigator.canShare === "function",
+      ...orderAnalyticsProperties(order),
+    });
     setShowShareFallback(false);
 
     if (!canUseNativeShare()) {
@@ -361,6 +404,9 @@ export function ReceiptPage() {
 
     setIsPosterBusy(true);
     showToast("Preparing poster...");
+    trackEvent("poster generation started", {
+      ...orderAnalyticsProperties(order),
+    });
 
     try {
       const posterFile = posterRef.current
@@ -368,6 +414,10 @@ export function ReceiptPage() {
         : null;
 
       if (posterFile && canSharePosterFile(posterFile)) {
+        trackEvent("poster generated", {
+          poster_file_size: posterFile.size,
+          ...orderAnalyticsProperties(order),
+        });
         try {
           await navigator.share({
             title: "DopeCart receipt",
@@ -376,18 +426,37 @@ export function ReceiptPage() {
             files: [posterFile],
           });
           showToast("Poster share sheet opened.", "success");
+          trackEvent("share sheet opened", {
+            share_type: "poster_file",
+            poster_file_size: posterFile.size,
+            ...orderAnalyticsProperties(order),
+          });
           return;
         } catch (error) {
           if (isShareAbortError(error)) {
             setShowShareFallback(false);
             showToast("Share cancelled. Receipt stayed yours.");
+            trackEvent("share cancelled", {
+              share_type: "poster_file",
+              poster_file_size: posterFile.size,
+              ...orderAnalyticsProperties(order),
+            });
             return;
           }
+          trackEvent("share failed", {
+            share_type: "poster_file",
+            poster_file_size: posterFile.size,
+            ...orderAnalyticsProperties(order),
+          });
           // Non-cancel file-share failures fall through to link/text support.
         }
       }
     } catch {
       showToast("Poster took too long. Sharing the link instead.");
+      trackEvent("poster generation failed", {
+        failure_reason: "timeout_or_render_error",
+        ...orderAnalyticsProperties(order),
+      });
     } finally {
       setIsPosterBusy(false);
     }
@@ -409,7 +478,15 @@ export function ReceiptPage() {
             title="No receipt yet."
             message="There is no completed tracking flow to summarize right now."
           />
-          <Button type="button" onClick={() => navigate("/products")}>
+          <Button
+            type="button"
+            onClick={() => {
+              trackEvent("products browsed", {
+                location: "receipt_empty",
+              });
+              navigate("/products");
+            }}
+          >
             Browse Shelf
           </Button>
         </section>
@@ -543,13 +620,44 @@ export function ReceiptPage() {
           </section>
 
           <div className="cart-cta-row" aria-label="Receipt actions">
-            <Button type="button" onClick={() => navigate("/products")}>
+            <Button
+              type="button"
+              onClick={() => {
+                trackEvent("products browsed", {
+                  location: "receipt_actions",
+                  ...(order ? orderAnalyticsProperties(order) : {}),
+                });
+                navigate("/products");
+              }}
+            >
               Browse Shelf
             </Button>
-            <Button type="button" variant="secondary" onClick={() => navigate("/progress")}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                trackEvent("progress opened", {
+                  location: "receipt_actions",
+                  current_streak: displayedProgress.currentStreak,
+                  total_completed_orders: displayedProgress.totalCompletedOrders,
+                  ...(order ? orderAnalyticsProperties(order) : {}),
+                });
+                navigate("/progress");
+              }}
+            >
               View Progress
             </Button>
-            <Button type="button" variant="ghost" onClick={() => navigate("/cart")}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                trackEvent("cart opened", {
+                  location: "receipt_actions",
+                  ...(order ? orderAnalyticsProperties(order) : {}),
+                });
+                navigate("/cart");
+              }}
+            >
               Back to Cart
             </Button>
           </div>

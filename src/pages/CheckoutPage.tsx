@@ -4,6 +4,7 @@ import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { categories, products, type Product } from "../data/catalog";
+import { orderAnalyticsProperties, trackEvent } from "../lib/analytics";
 import { useCart } from "../state/cart";
 import {
   ORDER_TRACKING_DURATION_MS,
@@ -163,6 +164,11 @@ export function CheckoutPage() {
         : null;
 
     if (nextOrder) {
+      trackEvent("tracking started", {
+        source: cartSummary ? "current_cart" : "saved_draft",
+        tracking_duration_ms: getTrackingDurationOverrideMs(),
+        ...orderAnalyticsProperties(nextOrder),
+      });
       navigate("/tracking");
     }
   }
@@ -180,7 +186,15 @@ export function CheckoutPage() {
             title="This order is already being tracked."
             message="It is past checkout and already in the tracking ritual."
           />
-          <Button type="button" onClick={() => navigate("/tracking")}>
+          <Button
+            type="button"
+            onClick={() => {
+              trackEvent("tracking resumed", {
+                location: "checkout_existing_tracking",
+              });
+              navigate("/tracking");
+            }}
+          >
             Resume Tracking
           </Button>
         </section>
@@ -190,7 +204,15 @@ export function CheckoutPage() {
             title="No order to review."
             message="There is no cart or saved order draft ready for checkout."
           />
-          <Button type="button" onClick={() => navigate("/products")}>
+          <Button
+            type="button"
+            onClick={() => {
+              trackEvent("products browsed", {
+                location: "checkout_empty",
+              });
+              navigate("/products");
+            }}
+          >
             Browse Shelf
           </Button>
         </section>
@@ -282,7 +304,16 @@ export function CheckoutPage() {
             <Button type="button" onClick={handleConfirmCheckout}>
               Confirm Order
             </Button>
-            <Button type="button" variant="secondary" onClick={() => navigate("/cart")}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                trackEvent("cart opened", {
+                  location: "checkout_back_button",
+                });
+                navigate("/cart");
+              }}
+            >
               Back to Cart
             </Button>
           </div>

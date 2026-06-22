@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { AnalyticsRouteTracker } from "./components/AnalyticsRouteTracker";
 import { AppShell } from "./components/AppShell";
 import { RouteScrollReset } from "./components/RouteScrollReset";
 import { CartPage } from "./pages/CartPage";
@@ -12,6 +13,7 @@ import { TrackingPage } from "./pages/TrackingPage";
 export default function App() {
   return (
     <AppShell>
+      <AnalyticsRouteTracker />
       <RouteScrollReset />
       <Routes>
         <Route path="/" element={<HomePage />} />

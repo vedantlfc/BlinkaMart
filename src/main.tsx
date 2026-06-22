@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import { initAnalytics } from "./lib/analytics";
 import { CartProvider } from "./state/cart";
 import { OrderProvider } from "./state/order";
 import { ReceiptProgressProvider } from "./state/receiptProgress";
@@ -14,6 +15,8 @@ const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("DopeCart root element was not found.");
 }
+
+initAnalytics();
 
 createRoot(rootElement).render(
   <StrictMode>

@@ -10,6 +10,11 @@ import { ProductCartCard } from "../components/ProductCartCard";
 import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
 import { categories, products, type CategoryId } from "../data/catalog";
+import {
+  cartTotalsAnalyticsProperties,
+  productAnalyticsProperties,
+  trackEvent,
+} from "../lib/analytics";
 import { useCart } from "../state/cart";
 import { getReceiptProgressSummary, useReceiptProgress } from "../state/receiptProgress";
 import { useSettings } from "../state/settings";
@@ -100,6 +105,10 @@ export function HomePage() {
     setSelectedCategoryId(categoryId);
     setSearchQuery("");
     setToastMessage("Shelf switched. Still safer than checkout.");
+    trackEvent("category selected", {
+      category_id: categoryId,
+      location: "home",
+    });
   }
 
   return (
@@ -139,7 +148,15 @@ export function HomePage() {
             type="button"
             variant="secondary"
             size="compact"
-            onClick={() => navigate("/progress")}
+            onClick={() => {
+              trackEvent("progress opened", {
+                location: "home_progress_panel",
+                total_orders: progressSummary.totalOrders,
+                current_streak: progressSummary.currentStreak,
+                total_money_saved: progressSummary.totalMoneySaved,
+              });
+              navigate("/progress");
+            }}
           >
             View
           </Button>
@@ -197,10 +214,24 @@ export function HomePage() {
                 onAdd={() => {
                   cart.addItem(product.id);
                   setToastMessage(`${product.name} joined the cart.`);
+                  trackEvent("product added", {
+                    location: "home",
+                    quantity_after: 1,
+                    ...productAnalyticsProperties(product),
+                    ...cartTotalsAnalyticsProperties(cart.totals),
+                  });
                 }}
                 onIncrement={() => {
+                  const quantity = cart.getQuantity(product.id);
                   cart.incrementItem(product.id);
                   setToastMessage(`${product.name} quantity increased.`);
+                  trackEvent("product quantity increased", {
+                    location: "home",
+                    quantity_before: quantity,
+                    quantity_after: quantity + 1,
+                    ...productAnalyticsProperties(product),
+                    ...cartTotalsAnalyticsProperties(cart.totals),
+                  });
                 }}
                 onDecrement={() => {
                   const quantity = cart.getQuantity(product.id);
@@ -210,6 +241,13 @@ export function HomePage() {
                       ? `${product.name} removed from the cart.`
                       : `${product.name} quantity decreased.`,
                   );
+                  trackEvent(quantity === 1 ? "product removed" : "product quantity decreased", {
+                    location: "home",
+                    quantity_before: quantity,
+                    quantity_after: Math.max(0, quantity - 1),
+                    ...productAnalyticsProperties(product),
+                    ...cartTotalsAnalyticsProperties(cart.totals),
+                  });
                 }}
               />
             ))}
@@ -243,7 +281,13 @@ export function HomePage() {
         averageRegretScore={cart.totals.averageRegretScore}
         showCalories={settings.showCalories}
         actionLabel="Review Cart"
-        onAction={() => navigate("/cart")}
+        onAction={() => {
+          trackEvent("cart opened", {
+            location: "home_bottom_bar",
+            ...cartTotalsAnalyticsProperties(cart.totals),
+          });
+          navigate("/cart");
+        }}
       />
     </div>
   );

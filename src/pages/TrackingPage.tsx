@@ -5,6 +5,7 @@ import { EmptyState } from "../components/EmptyState";
 import { DeliveryRouteMap } from "../components/DeliveryRouteMap";
 import { PageHeader } from "../components/PageHeader";
 import { products } from "../data/catalog";
+import { orderAnalyticsProperties, trackEvent } from "../lib/analytics";
 import { useCart } from "../state/cart";
 import {
   ORDER_TRACKING_DURATION_MS,
@@ -348,6 +349,10 @@ export function TrackingPage() {
     if (completedOrder) {
       clearCart();
       setIsCompleting(false);
+      trackEvent("tracking completed", {
+        completion_mode: "auto",
+        ...orderAnalyticsProperties(completedOrder),
+      });
       return;
     }
 
@@ -360,6 +365,10 @@ export function TrackingPage() {
     }
 
     if (order.status === "completed") {
+      trackEvent("receipt opened", {
+        location: "tracking_completed_order",
+        ...orderAnalyticsProperties(order),
+      });
       navigate("/receipt", { replace: true });
       return;
     }
@@ -374,6 +383,14 @@ export function TrackingPage() {
 
     if (completedOrder) {
       clearCart();
+      trackEvent("tracking completed", {
+        completion_mode: "manual_receipt_button",
+        ...orderAnalyticsProperties(completedOrder),
+      });
+      trackEvent("receipt opened", {
+        location: "tracking_view_receipt_button",
+        ...orderAnalyticsProperties(completedOrder),
+      });
       navigate("/receipt", { replace: true });
       return;
     }
@@ -402,7 +419,15 @@ export function TrackingPage() {
             title="No order is currently being tracked."
             message="Build a cart first, then the route can begin."
           />
-          <Button type="button" onClick={() => navigate("/products")}>
+          <Button
+            type="button"
+            onClick={() => {
+              trackEvent("products browsed", {
+                location: "tracking_empty",
+              });
+              navigate("/products");
+            }}
+          >
             Browse Shelf
           </Button>
         </section>

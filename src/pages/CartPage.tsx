@@ -4,6 +4,11 @@ import { Button } from "../components/Button";
 import { PageHeader } from "../components/PageHeader";
 import { Toast } from "../components/Toast";
 import { categories, products, type Product } from "../data/catalog";
+import {
+  cartTotalsAnalyticsProperties,
+  productAnalyticsProperties,
+  trackEvent,
+} from "../lib/analytics";
 import { useCart } from "../state/cart";
 import { useOrder } from "../state/order";
 import { useSettings } from "../state/settings";
@@ -55,9 +60,24 @@ export function CartPage() {
     const order = orderState.createOrderFromCart(cart.items, settings.showCalories);
     if (!order) {
       setToastMessage("Add an item first. The cart needs something to review.");
+      trackEvent("checkout blocked", {
+        reason: "empty_cart",
+        location: "cart",
+        ...cartTotalsAnalyticsProperties(cart.totals),
+      });
       return;
     }
 
+    trackEvent("checkout draft created", {
+      order_id: order.id,
+      order_total_price: order.totalPrice,
+      order_total_quantity: order.totalQuantity,
+      order_total_calories: order.totalCalories,
+      order_average_regret_score: order.averageRegretScore,
+      order_show_calories: order.showCalories,
+      order_item_count: order.items.length,
+      ...cartTotalsAnalyticsProperties(cart.totals),
+    });
     navigate("/checkout");
   }
 
@@ -78,7 +98,15 @@ export function CartPage() {
             <h2>No items waiting.</h2>
             <p>Browse the shelf, add a few temptations, then come back for the review ritual.</p>
           </div>
-          <Button type="button" onClick={() => navigate("/products")}>
+          <Button
+            type="button"
+            onClick={() => {
+              trackEvent("products browsed", {
+                location: "cart_empty",
+              });
+              navigate("/products");
+            }}
+          >
             Browse Shelf
           </Button>
         </section>
@@ -94,7 +122,18 @@ export function CartPage() {
                 </small>
               </div>
             </div>
-            <Button type="button" variant="ghost" size="compact" onClick={cart.clearCart}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="compact"
+              onClick={() => {
+                trackEvent("cart cleared", {
+                  location: "cart_selection_row",
+                  ...cartTotalsAnalyticsProperties(cart.totals),
+                });
+                cart.clearCart();
+              }}
+            >
               Clear cart
             </Button>
           </section>
@@ -141,7 +180,19 @@ export function CartPage() {
                           type="button"
                           variant="secondary"
                           size="compact"
-                          onClick={() => cart.decrementItem(product.id)}
+                          onClick={() => {
+                            cart.decrementItem(product.id);
+                            trackEvent(
+                              quantity === 1 ? "product removed" : "product quantity decreased",
+                              {
+                                location: "cart",
+                                quantity_before: quantity,
+                                quantity_after: Math.max(0, quantity - 1),
+                                ...productAnalyticsProperties(product),
+                                ...cartTotalsAnalyticsProperties(cart.totals),
+                              },
+                            );
+                          }}
                           aria-label={`Decrease ${product.name} quantity`}
                         >
                           -
@@ -156,7 +207,16 @@ export function CartPage() {
                           type="button"
                           variant="secondary"
                           size="compact"
-                          onClick={() => cart.incrementItem(product.id)}
+                          onClick={() => {
+                            cart.incrementItem(product.id);
+                            trackEvent("product quantity increased", {
+                              location: "cart",
+                              quantity_before: quantity,
+                              quantity_after: quantity + 1,
+                              ...productAnalyticsProperties(product),
+                              ...cartTotalsAnalyticsProperties(cart.totals),
+                            });
+                          }}
                           aria-label={`Increase ${product.name} quantity`}
                         >
                           +
@@ -166,7 +226,16 @@ export function CartPage() {
                         type="button"
                         variant="ghost"
                         size="compact"
-                        onClick={() => cart.removeItem(product.id)}
+                        onClick={() => {
+                          cart.removeItem(product.id);
+                          trackEvent("product removed", {
+                            location: "cart",
+                            quantity_before: quantity,
+                            quantity_after: 0,
+                            ...productAnalyticsProperties(product),
+                            ...cartTotalsAnalyticsProperties(cart.totals),
+                          });
+                        }}
                         aria-label={`Remove ${product.name} from cart`}
                       >
                         Remove
@@ -228,7 +297,13 @@ export function CartPage() {
               <input
                 type="checkbox"
                 checked={settings.showCalories}
-                onChange={(event) => settings.setShowCalories(event.target.checked)}
+                onChange={(event) => {
+                  settings.setShowCalories(event.target.checked);
+                  trackEvent("calorie visibility changed", {
+                    location: "cart",
+                    show_calories: event.target.checked,
+                  });
+                }}
               />
             </label>
           </section>
@@ -254,7 +329,13 @@ export function CartPage() {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => setShowHungryGuidance(true)}
+                onClick={() => {
+                  setShowHungryGuidance(true);
+                  trackEvent("hunger guidance opened", {
+                    location: "cart",
+                    ...cartTotalsAnalyticsProperties(cart.totals),
+                  });
+                }}
               >
                 I'm Actually Hungry
               </Button>
