@@ -19,6 +19,11 @@ export interface Category {
   accent: "coral" | "teal" | "lilac" | "sunny" | "ink";
 }
 
+export interface ProductDetailCopy {
+  headline: string;
+  description: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -29,6 +34,7 @@ export interface Product {
   price: number;
   calories: number;
   regretScore: number;
+  detailCopy: ProductDetailCopy;
   subtitle: string;
   searchKeywords: string[];
   originalCategory: string;
@@ -126,6 +132,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 385,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Potato Chips craving, officially escalated. Arrives when just checking becomes cart research. Because your thumb tried to approve the Potato Chips purchase order.",
+      headline: "Craving report: Potato Chips"
+    },
     fullName: "BhookBoss 3AM Decision Making Chips",
     id: "NC001",
     imageSrc: "/product-images/NC001.jpg",
@@ -149,6 +159,10 @@ export const products: Product[] = [
     brandName: "Namkeen Nonsense",
     calories: 434,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Bhujia, but make it a tiny procurement decision. Built for living-room diplomacy and side-eye. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Bhujia"
+    },
     fullName: "Namkeen Nonsense Family Argument Survival Bhujia",
     id: "NC002",
     imageSrc: "/product-images/NC002.jpg",
@@ -171,6 +185,10 @@ export const products: Product[] = [
     brandName: "Crunch Committee",
     calories: 472,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Corn Puffs confidence at 12:07 AM. Teams-meeting energy, snack-sized consequences.",
+      headline: "Craving report: Corn Puffs"
+    },
     fullName: "Crunch Committee Office Pantry Cheese Puffs",
     id: "NC003",
     imageSrc: "/product-images/NC003.jpg",
@@ -193,6 +211,10 @@ export const products: Product[] = [
     brandName: "Desi Dynamics",
     calories: 510,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Masala Mix craving, officially escalated. Pairs with one more reel. Dangerous phrase. Because masala, mix and reels were already trending in your head.",
+      headline: "Craving report: Masala Mix"
+    },
     fullName: "Desi Dynamics Doomscroll Masala Mix",
     id: "NC004",
     imageSrc: "/product-images/NC004.jpg",
@@ -215,6 +237,10 @@ export const products: Product[] = [
     brandName: "Midnight Mandali",
     calories: 560,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Nachos pretending to be a reasonable idea. Built for pantry politics, group chat courage and one very crunchy deadline. Future you approves the fictional version only.",
+      headline: "Craving report: Nachos"
+    },
     fullName: "Midnight Mandali Group Chat Screenshot Nachos",
     id: "NC005",
     imageSrc: "/product-images/NC005.jpg",
@@ -237,6 +263,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 598,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Peanuts confidence at 12:07 AM. Built for pantry politics, group chat courage and one very crunchy deadline.",
+      headline: "Craving report: Peanuts"
+    },
     fullName: "BhookBoss Auto Ride Peanut Masala",
     id: "NC006",
     imageSrc: "/product-images/NC006.jpg",
@@ -259,6 +289,10 @@ export const products: Product[] = [
     brandName: "Namkeen Nonsense",
     calories: 643,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Sev with full group-chat approval energy. Built for living-room diplomacy and side-eye. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Sev"
+    },
     fullName: "Namkeen Nonsense Aunty Visit Emergency Sev",
     id: "NC007",
     imageSrc: "/product-images/NC007.jpg",
@@ -281,6 +315,10 @@ export const products: Product[] = [
     brandName: "Crunch Committee",
     calories: 695,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Banana Chips, but make it a tiny procurement decision. Built for pantry politics, group chat courage and one very crunchy deadline. Because banana, chips and travel were already trending in your head.",
+      headline: "Craving report: Banana Chips"
+    },
     fullName: "Crunch Committee Kerala Trip Cancelled Banana Chips",
     id: "NC008",
     imageSrc: "/product-images/NC008.jpg",
@@ -303,6 +341,10 @@ export const products: Product[] = [
     brandName: "Desi Dynamics",
     calories: 723,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Mixture confidence at 12:07 AM. Salary-week confidence, month-end consequences.",
+      headline: "Craving report: Mixture"
+    },
     fullName: "Desi Dynamics Salary Over Mixture",
     id: "NC009",
     imageSrc: "/product-images/NC009.jpg",
@@ -325,6 +367,10 @@ export const products: Product[] = [
     brandName: "Midnight Mandali",
     calories: 777,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Makhana craving, officially escalated. Built for pantry politics, group chat courage and one very crunchy deadline. Because the cart saw makhana, healthy and spicy and called it research.",
+      headline: "Craving report: Makhana"
+    },
     fullName: "Midnight Mandali Wellness Pretence Peri Makhana",
     id: "NC010",
     imageSrc: "/product-images/NC010.jpg",
@@ -347,6 +393,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 394,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Papdi with full group-chat approval energy. Built for pantry politics, group chat courage and one very crunchy deadline. Future you says: drink water before this becomes a full committee decision.",
+      headline: "Craving report: Papdi"
+    },
     fullName: "BhookBoss Shaadi Buffet Papdi Bites",
     id: "NC011",
     imageSrc: "/product-images/NC011.jpg",
@@ -368,6 +418,10 @@ export const products: Product[] = [
     brandName: "Namkeen Nonsense",
     calories: 434,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Chakli, but make it a tiny procurement decision. Teams-meeting energy, snack-sized consequences. Because your thumb tried to approve the Chakli purchase order.",
+      headline: "Craving report: Chakli"
+    },
     fullName: "Namkeen Nonsense Deadline Spiral Chakli",
     id: "NC012",
     imageSrc: "/product-images/NC012.jpg",
@@ -389,6 +443,10 @@ export const products: Product[] = [
     brandName: "Crunch Committee",
     calories: 477,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Khurma pretending to be a reasonable idea. Hostel-room morale in one tiny decision. Future you asks why Khurma needed governance.",
+      headline: "Craving report: Khurma"
+    },
     fullName: "Crunch Committee Hostel Cupboard Khurma",
     id: "NC013",
     imageSrc: "/product-images/NC013.jpg",
@@ -410,6 +468,10 @@ export const products: Product[] = [
     brandName: "Desi Dynamics",
     calories: 524,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Chana with full group-chat approval energy. Built for pantry politics, group chat courage and one very crunchy deadline. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Chana"
+    },
     fullName: "Desi Dynamics Protein Drama Masala Chana",
     id: "NC014",
     imageSrc: "/product-images/NC014.jpg",
@@ -431,6 +493,10 @@ export const products: Product[] = [
     brandName: "Midnight Mandali",
     calories: 566,
     categoryId: "chips-namkeen",
+    detailCopy: {
+      description: "Wafer Chips confidence at 12:07 AM. Teams-meeting energy, snack-sized consequences.",
+      headline: "Craving report: Wafer Chips"
+    },
     fullName: "Midnight Mandali Soft Launch Salted Wafers",
     id: "NC015",
     imageSrc: "/product-images/NC015.jpg",
@@ -453,6 +519,10 @@ export const products: Product[] = [
     brandName: "MoodFuel",
     calories: 27,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Cola pretending to be a reasonable idea. Arrives when just checking becomes cart research. Future you approves the fictional version only.",
+      headline: "Craving report: Cola"
+    },
     fullName: "MoodFuel Energy Cola Zero Sleep",
     id: "NC016",
     imageSrc: "/product-images/NC016.jpg",
@@ -474,6 +544,10 @@ export const products: Product[] = [
     brandName: "Fizz Logic",
     calories: 59,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Lemon Soda craving, officially escalated. Built for camera-off calls, assignment extensions and fridge-door confidence. Because lemon, soda and anxiety were already trending in your head.",
+      headline: "Craving report: Lemon Soda"
+    },
     fullName: "Fizz Logic Panic Lemon Soda",
     id: "NC017",
     imageSrc: "/product-images/NC017.jpg",
@@ -496,6 +570,10 @@ export const products: Product[] = [
     brandName: "Chill Pending",
     calories: 114,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Iced Tea, but make it a tiny procurement decision. Teams-meeting energy, snack-sized consequences. Because the cart saw iced, tea and peach and called it research.",
+      headline: "Craving report: Iced Tea"
+    },
     fullName: "Chill Pending Passive Aggressive Peach Tea",
     id: "NC018",
     imageSrc: "/product-images/NC018.jpg",
@@ -518,6 +596,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 160,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Energy Drink pretending to be a reasonable idea. Teams-meeting energy, snack-sized consequences. Future you says: the cold drink can stay in the cart; your sleep schedule has already filed HR feedback.",
+      headline: "Craving report: Energy Drink"
+    },
     fullName: "Office Escape Deadline Extension Energy Drink",
     id: "NC019",
     imageSrc: "/product-images/NC019.jpg",
@@ -540,6 +622,10 @@ export const products: Product[] = [
     brandName: "Sleep Later Co",
     calories: 196,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Cold Coffee with full group-chat approval energy. Teams-meeting energy, snack-sized consequences. Future you says: the cold drink can stay in the cart; your sleep schedule has already filed HR feedback.",
+      headline: "Craving report: Cold Coffee"
+    },
     fullName: "Sleep Later Co Standup Call Cold Coffee",
     id: "NC020",
     imageSrc: "/product-images/NC020.jpg",
@@ -562,6 +648,10 @@ export const products: Product[] = [
     brandName: "MoodFuel",
     calories: 244,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Mango Drink craving, officially escalated. Hostel-room morale in one tiny decision. Because the cart saw mango, drink and internship and called it research.",
+      headline: "Craving report: Mango Drink"
+    },
     fullName: "MoodFuel Summer Internship Mango Drink",
     id: "NC021",
     imageSrc: "/product-images/NC021.jpg",
@@ -583,6 +673,10 @@ export const products: Product[] = [
     brandName: "Fizz Logic",
     calories: 16,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Jeera Soda pretending to be a reasonable idea. Built for camera-off calls, assignment extensions and fridge-door confidence. Future you asks why Jeera Soda needed governance.",
+      headline: "Craving report: Jeera Soda"
+    },
     fullName: "Fizz Logic Gaslight Jeera Soda",
     id: "NC022",
     imageSrc: "/product-images/NC022.jpg",
@@ -605,6 +699,10 @@ export const products: Product[] = [
     brandName: "Chill Pending",
     calories: 63,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Tonic Water, but make it a tiny procurement decision. Salary-week confidence, month-end consequences. Because your thumb tried to approve the Tonic Water purchase order.",
+      headline: "Craving report: Tonic Water"
+    },
     fullName: "Chill Pending Salary Day Luxury Water",
     id: "NC023",
     imageSrc: "/product-images/NC023.jpg",
@@ -627,6 +725,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 108,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Orange Drink confidence at 12:07 AM. Built for camera-off calls, assignment extensions and fridge-door confidence.",
+      headline: "Craving report: Orange Drink"
+    },
     fullName: "Office Escape Gym Tomorrow Orange Drink",
     id: "NC024",
     imageSrc: "/product-images/NC024.jpg",
@@ -649,6 +751,10 @@ export const products: Product[] = [
     brandName: "Sleep Later Co",
     calories: 157,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Mocktail with full group-chat approval energy. Built for camera-off calls, assignment extensions and fridge-door confidence. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Mocktail"
+    },
     fullName: "Sleep Later Co Rooftop Plan Cancelled Mocktail",
     id: "NC025",
     imageSrc: "/product-images/NC025.jpg",
@@ -670,6 +776,10 @@ export const products: Product[] = [
     brandName: "MoodFuel",
     calories: 203,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Coconut Water craving, officially escalated. Built for camera-off calls, assignment extensions and fridge-door confidence. Because coconut, water and hangover were already trending in your head.",
+      headline: "Craving report: Coconut Water"
+    },
     fullName: "MoodFuel Hangover Negotiation Coconut Water",
     id: "NC026",
     imageSrc: "/product-images/NC026.jpg",
@@ -691,6 +801,10 @@ export const products: Product[] = [
     brandName: "Fizz Logic",
     calories: 236,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Masala Soda pretending to be a reasonable idea. Hostel-room morale in one tiny decision. Future you approves the fictional version only.",
+      headline: "Craving report: Masala Soda"
+    },
     fullName: "Fizz Logic College Fest Masala Soda",
     id: "NC027",
     imageSrc: "/product-images/NC027.jpg",
@@ -713,6 +827,10 @@ export const products: Product[] = [
     brandName: "Chill Pending",
     calories: 13,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Rose Milk, but make it a tiny procurement decision. Built for camera-off calls, assignment extensions and fridge-door confidence. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Rose Milk"
+    },
     fullName: "Chill Pending Nostalgia Rose Milk",
     id: "NC028",
     imageSrc: "/product-images/NC028.jpg",
@@ -734,6 +852,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 61,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Lassi confidence at 12:07 AM. Arrives when just checking becomes cart research.",
+      headline: "Craving report: Lassi"
+    },
     fullName: "Office Escape Nap Required Sweet Lassi",
     id: "NC029",
     imageSrc: "/product-images/NC029.jpg",
@@ -755,6 +877,10 @@ export const products: Product[] = [
     brandName: "Sleep Later Co",
     calories: 106,
     categoryId: "cold-drinks",
+    detailCopy: {
+      description: "Sparkling Water craving, officially escalated. Built for camera-off calls, assignment extensions and fridge-door confidence. Because your thumb tried to approve the Sparkling Water purchase order.",
+      headline: "Craving report: Sparkling Water"
+    },
     fullName: "Sleep Later Co Influencer Sparkling Water",
     id: "NC030",
     imageSrc: "/product-images/NC030.jpg",
@@ -776,6 +902,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 206,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Chocolate Bar with full group-chat approval energy. Looks like adulting. Behaves like impulse. Future you asks why Chocolate Bar needed governance.",
+      headline: "Craving report: Chocolate Bar"
+    },
     fullName: "Emotional Damage Adulting Failure Chocolate",
     id: "NC031",
     imageSrc: "/product-images/NC031.jpg",
@@ -798,6 +928,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 243,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Wafer Bar confidence at 12:07 AM. Built for soft launches, soft feelings and a calendar invite named quick break.",
+      headline: "Craving report: Wafer Bar"
+    },
     fullName: "Snack Therapy Crispy Closure Wafer",
     id: "NC032",
     imageSrc: "/product-images/NC032.jpg",
@@ -819,6 +953,10 @@ export const products: Product[] = [
     brandName: "Sugar Syllabus",
     calories: 289,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Truffle, but make it a tiny procurement decision. Built for soft launches, soft feelings and a calendar invite named quick break. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Truffle"
+    },
     fullName: "Sugar Syllabus Unread Message Truffles",
     id: "NC033",
     imageSrc: "/product-images/NC033.jpg",
@@ -840,6 +978,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 338,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Dark Chocolate with full group-chat approval energy. Built for soft launches, soft feelings and a calendar invite named quick break. Future you approves the fictional version only.",
+      headline: "Craving report: Dark Chocolate"
+    },
     fullName: "Regret Foods Serious Person Dark Chocolate",
     id: "NC034",
     imageSrc: "/product-images/NC034.jpg",
@@ -862,6 +1004,10 @@ export const products: Product[] = [
     brandName: "Guilt Free-ish",
     calories: 372,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Caramel Bar confidence at 12:07 AM. Salary-week confidence, month-end consequences.",
+      headline: "Craving report: Caramel Bar"
+    },
     fullName: "Guilt Free-ish Rent Due Caramel Bar",
     id: "NC035",
     imageSrc: "/product-images/NC035.jpg",
@@ -884,6 +1030,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 422,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Chocolate Bites, but make it a tiny procurement decision. Hostel-room morale in one tiny decision. Because the cart saw chocolate, exam and stress and called it research.",
+      headline: "Craving report: Chocolate Bites"
+    },
     fullName: "Emotional Damage Exam Result Chocolate Bites",
     id: "NC036",
     imageSrc: "/product-images/NC036.jpg",
@@ -905,6 +1055,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 461,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Fudge pretending to be a reasonable idea. Built for soft launches, soft feelings and a calendar invite named quick break. Future you says: save the main character energy for tomorrow morning.",
+      headline: "Craving report: Fudge"
+    },
     fullName: "Snack Therapy Therapy Slot Full Fudge",
     id: "NC037",
     imageSrc: "/product-images/NC037.jpg",
@@ -926,6 +1080,10 @@ export const products: Product[] = [
     brandName: "Sugar Syllabus",
     calories: 502,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Choco Pie confidence at 12:07 AM. Teams-meeting energy, snack-sized consequences.",
+      headline: "Craving report: Choco Pie"
+    },
     fullName: "Sugar Syllabus Soft Launch Choco Pie",
     id: "NC038",
     imageSrc: "/product-images/NC038.jpg",
@@ -947,6 +1105,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 552,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Hazelnut Bar, but make it a tiny procurement decision. Teams-meeting energy, snack-sized consequences. Because hazelnut, corporate and cringe were already trending in your head.",
+      headline: "Craving report: Hazelnut Bar"
+    },
     fullName: "Regret Foods LinkedIn Update Hazelnut Bar",
     id: "NC039",
     imageSrc: "/product-images/NC039.jpg",
@@ -968,6 +1130,10 @@ export const products: Product[] = [
     brandName: "Guilt Free-ish",
     calories: 591,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Brownie Bar craving, officially escalated. Built for soft launches, soft feelings and a calendar invite named quick break. Because brownie, quarter and life were already trending in your head.",
+      headline: "Craving report: Brownie Bar"
+    },
     fullName: "Guilt Free-ish Quarter Life Brownie Bar",
     id: "NC040",
     imageSrc: "/product-images/NC040.jpg",
@@ -989,6 +1155,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 639,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Chocolate Cubes pretending to be a reasonable idea. Built for soft launches, soft feelings and a calendar invite named quick break. Future you approves the fictional version only.",
+      headline: "Craving report: Chocolate Cubes"
+    },
     fullName: "Emotional Damage Crush Replied Chocolate Cubes",
     id: "NC041",
     imageSrc: "/product-images/NC041.jpg",
@@ -1010,6 +1180,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 677,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Protein Chocolate confidence at 12:07 AM. Built for soft launches, soft feelings and a calendar invite named quick break.",
+      headline: "Craving report: Protein Chocolate"
+    },
     fullName: "Snack Therapy Gym Membership Chocolate",
     id: "NC042",
     imageSrc: "/product-images/NC042.jpg",
@@ -1031,6 +1205,10 @@ export const products: Product[] = [
     brandName: "Sugar Syllabus",
     calories: 719,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Cocoa Bomb with full group-chat approval energy. Built for living-room diplomacy and side-eye. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Cocoa Bomb"
+    },
     fullName: "Sugar Syllabus Family Group Cocoa Bomb",
     id: "NC043",
     imageSrc: "/product-images/NC043.jpg",
@@ -1052,6 +1230,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 184,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Chocolate Stick with full group-chat approval energy. Built for soft launches, soft feelings and a calendar invite named quick break. Future you asks why Chocolate Stick needed governance.",
+      headline: "Craving report: Chocolate Stick"
+    },
     fullName: "Regret Foods Metro Rush Chocolate Stick",
     id: "NC044",
     imageSrc: "/product-images/NC044.jpg",
@@ -1073,6 +1255,10 @@ export const products: Product[] = [
     brandName: "Guilt Free-ish",
     calories: 223,
     categoryId: "chocolate",
+    detailCopy: {
+      description: "Praline craving, officially escalated. Salary-week confidence, month-end consequences. Because your thumb tried to approve the Praline purchase order.",
+      headline: "Craving report: Praline"
+    },
     fullName: "Guilt Free-ish Bonus Expected Praline",
     id: "NC045",
     imageSrc: "/product-images/NC045.jpg",
@@ -1094,6 +1280,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 250,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Tub, but make it a tiny procurement decision. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Tub"
+    },
     fullName: "Emotional Damage Breakup Recovery Ice Cream Tub",
     id: "NC046",
     imageSrc: "/product-images/NC046.jpg",
@@ -1116,6 +1306,10 @@ export const products: Product[] = [
     brandName: "Chill Pending",
     calories: 284,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Stick confidence at 12:07 AM. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy.",
+      headline: "Craving report: Stick"
+    },
     fullName: "Chill Pending Power Cut Kulfi Stick",
     id: "NC047",
     imageSrc: "/product-images/NC047.jpg",
@@ -1138,6 +1332,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 325,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Cone confidence at 12:07 AM. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy.",
+      headline: "Craving report: Cone"
+    },
     fullName: "Weekend Unlimited Main Character Cone",
     id: "NC048",
     imageSrc: "/product-images/NC048.jpg",
@@ -1160,6 +1358,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 375,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Sandwich with full group-chat approval energy. Hostel-room morale in one tiny decision. Future you approves the fictional version only.",
+      headline: "Craving report: Sandwich"
+    },
     fullName: "Snack Therapy Roommate Ate Mine Sandwich",
     id: "NC049",
     imageSrc: "/product-images/NC049.jpg",
@@ -1182,6 +1384,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 413,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Sundae pretending to be a reasonable idea. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Sundae"
+    },
     fullName: "Regret Foods Sunday Scaries Sundae",
     id: "NC050",
     imageSrc: "/product-images/NC050.jpg",
@@ -1203,6 +1409,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 459,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Mini Tub craving, officially escalated. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Mini Tub"
+    },
     fullName: "Emotional Damage Single But Fine Mini Tub",
     id: "NC051",
     imageSrc: "/product-images/NC051.jpg",
@@ -1225,6 +1435,10 @@ export const products: Product[] = [
     brandName: "Chill Pending",
     calories: 501,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Cassata confidence at 12:07 AM. Built for living-room diplomacy and side-eye.",
+      headline: "Craving report: Cassata"
+    },
     fullName: "Chill Pending Family Function Cassata",
     id: "NC052",
     imageSrc: "/product-images/NC052.jpg",
@@ -1246,6 +1460,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 543,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Sorbet, but make it a tiny procurement decision. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Because sorbet, mango and diet were already trending in your head.",
+      headline: "Craving report: Sorbet"
+    },
     fullName: "Weekend Unlimited Detox Lie Mango Sorbet",
     id: "NC053",
     imageSrc: "/product-images/NC053.jpg",
@@ -1267,6 +1485,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 584,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Choco Bar, but make it a tiny procurement decision. Salary-week confidence, month-end consequences. Because the cart saw choco, bar and salary and called it research.",
+      headline: "Craving report: Choco Bar"
+    },
     fullName: "Snack Therapy Salary Day Choco Bar",
     id: "NC054",
     imageSrc: "/product-images/NC054.jpg",
@@ -1289,6 +1511,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 629,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Cup pretending to be a reasonable idea. Arrives when just checking becomes cart research. Future you says: close the freezer tab and let the craving lose network.",
+      headline: "Craving report: Cup"
+    },
     fullName: "Regret Foods Exam Night Vanilla Cup",
     id: "NC055",
     imageSrc: "/product-images/NC055.jpg",
@@ -1311,6 +1537,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 668,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Gelato with full group-chat approval energy. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Future you approves the fictional version only.",
+      headline: "Craving report: Gelato"
+    },
     fullName: "Emotional Damage Bandra Mood Gelato",
     id: "NC056",
     imageSrc: "/product-images/NC056.jpg",
@@ -1332,6 +1562,10 @@ export const products: Product[] = [
     brandName: "Chill Pending",
     calories: 717,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Falooda confidence at 12:07 AM. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy.",
+      headline: "Craving report: Falooda"
+    },
     fullName: "Chill Pending Shaadi Cancelled Falooda",
     id: "NC057",
     imageSrc: "/product-images/NC057.jpg",
@@ -1353,6 +1587,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 758,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Ice Pop with full group-chat approval energy. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Ice Pop"
+    },
     fullName: "Weekend Unlimited Traffic Signal Ice Pop",
     id: "NC058",
     imageSrc: "/product-images/NC058.jpg",
@@ -1375,6 +1613,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 804,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Cookie Tub confidence at 12:07 AM. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy.",
+      headline: "Craving report: Cookie Tub"
+    },
     fullName: "Snack Therapy Crumbs Of Hope Cookie Tub",
     id: "NC059",
     imageSrc: "/product-images/NC059.jpg",
@@ -1397,6 +1639,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 847,
     categoryId: "ice-cream",
+    detailCopy: {
+      description: "Matka Kulfi pretending to be a reasonable idea. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Future you says: close the freezer tab and let the craving lose network.",
+      headline: "Craving report: Matka Kulfi"
+    },
     fullName: "Regret Foods Nani Approved Matka Kulfi",
     id: "NC060",
     imageSrc: "/product-images/NC060.jpg",
@@ -1418,6 +1664,10 @@ export const products: Product[] = [
     brandName: "Hostel Heroes",
     calories: 308,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Noodles, but make it a tiny procurement decision. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Because the cart saw instant, noodles and sunday and called it research.",
+      headline: "Craving report: Noodles"
+    },
     fullName: "Hostel Heroes Sunday Evening Panic Noodles",
     id: "NC061",
     imageSrc: "/product-images/NC061.jpg",
@@ -1440,6 +1690,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 357,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Cup Noodles confidence at 12:07 AM. Hostel-room morale in one tiny decision.",
+      headline: "Craving report: Cup Noodles"
+    },
     fullName: "Panic Pantry Hostel Borrowed Kettle Cup Noodles",
     id: "NC062",
     imageSrc: "/product-images/NC062.jpg",
@@ -1461,6 +1715,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 392,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Pasta Cup with full group-chat approval energy. Teams-meeting energy, snack-sized consequences. Future you approves the fictional version only.",
+      headline: "Craving report: Pasta Cup"
+    },
     fullName: "Regret Foods Deadline Alfredo Pasta Cup",
     id: "NC063",
     imageSrc: "/product-images/NC063.jpg",
@@ -1482,6 +1740,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 429,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Poha Cup, but make it a tiny procurement decision. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Poha Cup"
+    },
     fullName: "BhookBoss 9AM Standup Poha Cup",
     id: "NC064",
     imageSrc: "/product-images/NC064.jpg",
@@ -1503,6 +1765,10 @@ export const products: Product[] = [
     brandName: "Sleep Later Co",
     calories: 478,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Upma Cup confidence at 12:07 AM. Looks like adulting. Behaves like impulse.",
+      headline: "Craving report: Upma Cup"
+    },
     fullName: "Sleep Later Co Responsible Adult Upma Cup",
     id: "NC065",
     imageSrc: "/product-images/NC065.jpg",
@@ -1524,6 +1790,10 @@ export const products: Product[] = [
     brandName: "Hostel Heroes",
     calories: 515,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Soup with full group-chat approval energy. Teams-meeting energy, snack-sized consequences. Future you asks why Soup needed governance.",
+      headline: "Craving report: Soup"
+    },
     fullName: "Hostel Heroes Sad Desk Tomato Soup",
     id: "NC066",
     imageSrc: "/product-images/NC066.jpg",
@@ -1545,6 +1815,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 560,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Rice Bowl craving, officially escalated. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Because your thumb tried to approve the Rice Bowl purchase order.",
+      headline: "Craving report: Rice Bowl"
+    },
     fullName: "Panic Pantry No Groceries Rice Bowl",
     id: "NC067",
     imageSrc: "/product-images/NC067.jpg",
@@ -1567,6 +1841,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 608,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Khichdi Cup confidence at 12:07 AM. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner.",
+      headline: "Craving report: Khichdi Cup"
+    },
     fullName: "Regret Foods Stomach Apology Khichdi Cup",
     id: "NC068",
     imageSrc: "/product-images/NC068.jpg",
@@ -1587,6 +1865,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 644,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Mac Cup with full group-chat approval energy. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Mac Cup"
+    },
     fullName: "BhookBoss Gourmet Mac Cup",
     id: "NC069",
     imageSrc: "/product-images/NC069.jpg",
@@ -1608,6 +1890,10 @@ export const products: Product[] = [
     brandName: "Sleep Later Co",
     calories: 693,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Oats Cup, but make it a tiny procurement decision. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Because your thumb tried to approve the Oats Cup purchase order.",
+      headline: "Craving report: Oats Cup"
+    },
     fullName: "Sleep Later Co Fitness Reboot Masala Oats",
     id: "NC070",
     imageSrc: "/product-images/NC070.jpg",
@@ -1629,6 +1915,10 @@ export const products: Product[] = [
     brandName: "Hostel Heroes",
     calories: 729,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Momo Soup pretending to be a reasonable idea. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Future you asks why Momo Soup needed governance.",
+      headline: "Craving report: Momo Soup"
+    },
     fullName: "Hostel Heroes Rainy Day Momo Soup",
     id: "NC071",
     imageSrc: "/product-images/NC071.jpg",
@@ -1650,6 +1940,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 770,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Dosa Mix craving, officially escalated. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Because the cart saw dosa, mix and breakfast and called it research.",
+      headline: "Craving report: Dosa Mix"
+    },
     fullName: "Panic Pantry Ambition Dosa Mix",
     id: "NC072",
     imageSrc: "/product-images/NC072.jpg",
@@ -1671,6 +1965,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 824,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Paratha Mix with full group-chat approval energy. Hostel-room morale in one tiny decision. Future you says: make real food if you are hungry; this one is for the ritual.",
+      headline: "Craving report: Paratha Mix"
+    },
     fullName: "Regret Foods Last Clean Plate Paratha Mix",
     id: "NC073",
     imageSrc: "/product-images/NC073.jpg",
@@ -1692,6 +1990,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 864,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Ramen Bowl confidence at 12:07 AM. Arrives when just checking becomes cart research.",
+      headline: "Craving report: Ramen Bowl"
+    },
     fullName: "BhookBoss Main Character Ramen Bowl",
     id: "NC074",
     imageSrc: "/product-images/NC074.jpg",
@@ -1713,6 +2015,10 @@ export const products: Product[] = [
     brandName: "Sleep Later Co",
     calories: 905,
     categoryId: "instant-food",
+    detailCopy: {
+      description: "Biryani Cup, but make it a tiny procurement decision. Salary-week confidence, month-end consequences. Because biryani, cup and month were already trending in your head.",
+      headline: "Craving report: Biryani Cup"
+    },
     fullName: "Sleep Later Co Salary Over Biryani Cup",
     id: "NC075",
     imageSrc: "/product-images/NC075.jpg",
@@ -1735,6 +2041,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 186,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Brownie pretending to be a reasonable idea. Built for butter logic, college canteen nostalgia and one unread performance review. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Brownie"
+    },
     fullName: "Snack Therapy Last Chapter Brownie Bites",
     id: "NC076",
     imageSrc: "/product-images/NC076.jpg",
@@ -1756,6 +2066,10 @@ export const products: Product[] = [
     brandName: "Sugar Syllabus",
     calories: 223,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Croissant craving, officially escalated. Built for butter logic, college canteen nostalgia and one unread performance review. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Croissant"
+    },
     fullName: "Sugar Syllabus Paris Croissant",
     id: "NC077",
     imageSrc: "/product-images/NC077.jpg",
@@ -1777,6 +2091,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 273,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Garlic Bread with full group-chat approval energy. Built for butter logic, college canteen nostalgia and one unread performance review. Future you approves the fictional version only.",
+      headline: "Craving report: Garlic Bread"
+    },
     fullName: "Office Escape Date Cancelled Garlic Bread",
     id: "NC078",
     imageSrc: "/product-images/NC078.jpg",
@@ -1799,6 +2117,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 312,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Muffin confidence at 12:07 AM. Teams-meeting energy, snack-sized consequences.",
+      headline: "Craving report: Muffin"
+    },
     fullName: "Weekend Unlimited Meeting Could Be Muffin",
     id: "NC079",
     imageSrc: "/product-images/NC079.jpg",
@@ -1820,6 +2142,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 353,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Donut, but make it a tiny procurement decision. Salary-week confidence, month-end consequences. Because donut, salary and day were already trending in your head.",
+      headline: "Craving report: Donut"
+    },
     fullName: "Adulting Dept Salary Credited Donut",
     id: "NC080",
     imageSrc: "/product-images/NC080.jpg",
@@ -1841,6 +2167,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 397,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Cupcake confidence at 12:07 AM. Built for butter logic, college canteen nostalgia and one unread performance review.",
+      headline: "Craving report: Cupcake"
+    },
     fullName: "Snack Therapy People Pleaser Cupcake",
     id: "NC081",
     imageSrc: "/product-images/NC081.jpg",
@@ -1862,6 +2192,10 @@ export const products: Product[] = [
     brandName: "Sugar Syllabus",
     calories: 445,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Banana Bread craving, officially escalated. Built for butter logic, college canteen nostalgia and one unread performance review. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Banana Bread"
+    },
     fullName: "Sugar Syllabus Overripe Plans Banana Bread",
     id: "NC082",
     imageSrc: "/product-images/NC082.jpg",
@@ -1883,6 +2217,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 483,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Cookie pretending to be a reasonable idea. Built for butter logic, college canteen nostalgia and one unread performance review. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Cookie"
+    },
     fullName: "Office Escape Browser History Cookie",
     id: "NC083",
     imageSrc: "/product-images/NC083.jpg",
@@ -1903,6 +2241,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 525,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Pav confidence at 12:07 AM. Built for butter logic, college canteen nostalgia and one unread performance review.",
+      headline: "Craving report: Pav"
+    },
     fullName: "Weekend Unlimited Mumbai Local Pav Pack",
     id: "NC084",
     imageSrc: "/product-images/NC084.jpg",
@@ -1924,6 +2266,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 575,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Cake Slice with full group-chat approval energy. Teams-meeting energy, snack-sized consequences. Future you approves the fictional version only.",
+      headline: "Craving report: Cake Slice"
+    },
     fullName: "Adulting Dept Promotion Pending Cake Slice",
     id: "NC085",
     imageSrc: "/product-images/NC085.jpg",
@@ -1945,6 +2291,10 @@ export const products: Product[] = [
     brandName: "Snack Therapy",
     calories: 612,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Cheese Bun pretending to be a reasonable idea. Built for butter logic, college canteen nostalgia and one unread performance review. Future you says: future you requests a softer landing than a midnight pastry subplot.",
+      headline: "Craving report: Cheese Bun"
+    },
     fullName: "Snack Therapy Traffic Jam Cheese Bun",
     id: "NC086",
     imageSrc: "/product-images/NC086.jpg",
@@ -1966,6 +2316,10 @@ export const products: Product[] = [
     brandName: "Sugar Syllabus",
     calories: 650,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Rusk, but make it a tiny procurement decision. Built for butter logic, college canteen nostalgia and one unread performance review. Because the cart saw rusk, tea and nostalgia and called it research.",
+      headline: "Craving report: Rusk"
+    },
     fullName: "Sugar Syllabus Nani Biscuit Rusk",
     id: "NC087",
     imageSrc: "/product-images/NC087.jpg",
@@ -1987,6 +2341,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 700,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Waffle with full group-chat approval energy. Built for butter logic, college canteen nostalgia and one unread performance review. Future you asks why Waffle needed governance.",
+      headline: "Craving report: Waffle"
+    },
     fullName: "Office Escape Influencer Brunch Waffle",
     id: "NC088",
     imageSrc: "/product-images/NC088.jpg",
@@ -2008,6 +2366,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 743,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Puff craving, officially escalated. Hostel-room morale in one tiny decision. Because your thumb tried to approve the Puff purchase order.",
+      headline: "Craving report: Puff"
+    },
     fullName: "Weekend Unlimited College Canteen Veg Puff",
     id: "NC089",
     imageSrc: "/product-images/NC089.jpg",
@@ -2029,6 +2391,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 785,
     categoryId: "bakery",
+    detailCopy: {
+      description: "Cinnamon Roll pretending to be a reasonable idea. Built for butter logic, college canteen nostalgia and one unread performance review. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Cinnamon Roll"
+    },
     fullName: "Adulting Dept Soft Life Cinnamon Roll",
     id: "NC090",
     imageSrc: "/product-images/NC090.jpg",
@@ -2050,6 +2416,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 266,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Momos craving, officially escalated. Hostel-room morale in one tiny decision. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Momos"
+    },
     fullName: "Regret Foods Frozen Group Project Momos",
     id: "NC091",
     imageSrc: "/product-images/NC091.jpg",
@@ -2071,6 +2441,10 @@ export const products: Product[] = [
     brandName: "Hostel Heroes",
     calories: 308,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Fries confidence at 12:07 AM. Built for freezer raids, IPL overs and group project survivors.",
+      headline: "Craving report: Fries"
+    },
     fullName: "Hostel Heroes Quarter Life Crisis Fries",
     id: "NC092",
     imageSrc: "/product-images/NC092.jpg",
@@ -2092,6 +2466,10 @@ export const products: Product[] = [
     brandName: "Midnight Mandali",
     calories: 346,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Nuggets, but make it a tiny procurement decision. Built for freezer raids, IPL overs and group project survivors. Because nuggets, frozen and gym were already trending in your head.",
+      headline: "Craving report: Nuggets"
+    },
     fullName: "Midnight Mandali Protein Nuggets",
     id: "NC093",
     imageSrc: "/product-images/NC093.jpg",
@@ -2113,6 +2491,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 393,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Spring Rolls craving, officially escalated. Built for freezer raids, IPL overs and group project survivors. Because the cart saw spring, rolls and party and called it research.",
+      headline: "Craving report: Spring Rolls"
+    },
     fullName: "BhookBoss House Party Spring Rolls",
     id: "NC094",
     imageSrc: "/product-images/NC094.jpg",
@@ -2135,6 +2517,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 435,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Pizza Pockets with full group-chat approval energy. Built for freezer raids, IPL overs and group project survivors. Future you says: the freezer can wait; your future self has bandwidth constraints.",
+      headline: "Craving report: Pizza Pockets"
+    },
     fullName: "Panic Pantry Rent Week Pizza Pockets",
     id: "NC095",
     imageSrc: "/product-images/NC095.jpg",
@@ -2156,6 +2542,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 480,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Cheese Balls, but make it a tiny procurement decision. Teams-meeting energy, snack-sized consequences. Because your thumb tried to approve the Cheese Balls purchase order.",
+      headline: "Craving report: Cheese Balls"
+    },
     fullName: "Regret Foods Unread Email Cheese Balls",
     id: "NC096",
     imageSrc: "/product-images/NC096.jpg",
@@ -2177,6 +2567,10 @@ export const products: Product[] = [
     brandName: "Hostel Heroes",
     calories: 519,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Kebab pretending to be a reasonable idea. Built for freezer raids, IPL overs and group project survivors. Future you asks why Kebab needed governance.",
+      headline: "Craving report: Kebab"
+    },
     fullName: "Hostel Heroes Balcony Kebab Skewers",
     id: "NC097",
     imageSrc: "/product-images/NC097.jpg",
@@ -2198,6 +2592,10 @@ export const products: Product[] = [
     brandName: "Midnight Mandali",
     calories: 564,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Samosa with full group-chat approval energy. Built for freezer raids, IPL overs and group project survivors. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Samosa"
+    },
     fullName: "Midnight Mandali Emergency Guest Samosas",
     id: "NC098",
     imageSrc: "/product-images/NC098.jpg",
@@ -2219,6 +2617,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 613,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Garlic Pops confidence at 12:07 AM. Built for freezer raids, IPL overs and group project survivors.",
+      headline: "Craving report: Garlic Pops"
+    },
     fullName: "BhookBoss Vampire Cancelled Garlic Pops",
     id: "NC099",
     imageSrc: "/product-images/NC099.jpg",
@@ -2240,6 +2642,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 653,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Paneer Tikka confidence at 12:07 AM. Built for freezer raids, IPL overs and group project survivors.",
+      headline: "Craving report: Paneer Tikka"
+    },
     fullName: "Panic Pantry Barbecue Paneer Tikka",
     id: "NC100",
     imageSrc: "/product-images/NC100.jpg",
@@ -2261,6 +2667,10 @@ export const products: Product[] = [
     brandName: "Regret Foods",
     calories: 691,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Cutlets, but make it a tiny procurement decision. Built for freezer raids, IPL overs and group project survivors. Because cutlet and nostalgia were already trending in your head.",
+      headline: "Craving report: Cutlets"
+    },
     fullName: "Regret Foods Tiffin Memory Cutlets",
     id: "NC101",
     imageSrc: "/product-images/NC101.jpg",
@@ -2281,6 +2691,10 @@ export const products: Product[] = [
     brandName: "Hostel Heroes",
     calories: 731,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Corn Bites pretending to be a reasonable idea. Built for freezer raids, IPL overs and group project survivors. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Corn Bites"
+    },
     fullName: "Hostel Heroes Monsoon Corn Bites",
     id: "NC102",
     imageSrc: "/product-images/NC102.jpg",
@@ -2302,6 +2716,10 @@ export const products: Product[] = [
     brandName: "Midnight Mandali",
     calories: 774,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Hash Browns craving, officially escalated. Built for freezer raids, IPL overs and group project survivors. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Hash Browns"
+    },
     fullName: "Midnight Mandali Monday Hash Browns",
     id: "NC103",
     imageSrc: "/product-images/NC103.jpg",
@@ -2323,6 +2741,10 @@ export const products: Product[] = [
     brandName: "BhookBoss",
     calories: 826,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Nacho Bites with full group-chat approval energy. Built for freezer raids, IPL overs and group project survivors. Future you approves the fictional version only.",
+      headline: "Craving report: Nacho Bites"
+    },
     fullName: "BhookBoss Movie Buffering Nacho Bites",
     id: "NC104",
     imageSrc: "/product-images/NC104.jpg",
@@ -2344,6 +2766,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 869,
     categoryId: "frozen-snacks",
+    detailCopy: {
+      description: "Stuffed Kulcha confidence at 12:07 AM. Built for freezer raids, IPL overs and group project survivors.",
+      headline: "Craving report: Stuffed Kulcha"
+    },
     fullName: "Panic Pantry North Indian Freezer Kulcha",
     id: "NC105",
     imageSrc: "/product-images/NC105.jpg",
@@ -2365,6 +2791,10 @@ export const products: Product[] = [
     brandName: "Guilt Free-ish",
     calories: 201,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Cereal, but make it a tiny procurement decision. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Because the cart saw cereal, healthy and monday and called it research.",
+      headline: "Craving report: Cereal"
+    },
     fullName: "Guilt Free-ish Healthy Monday Cereal",
     id: "NC106",
     imageSrc: "/product-images/NC106.jpg",
@@ -2386,6 +2816,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 248,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Granola pretending to be a reasonable idea. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Future you says: tomorrow you deserves breakfast, not a plot twist.",
+      headline: "Craving report: Granola"
+    },
     fullName: "Adulting Dept Influencer Granola Crunch",
     id: "NC107",
     imageSrc: "/product-images/NC107.jpg",
@@ -2407,6 +2841,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 295,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Protein Bar craving, officially escalated. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Because your thumb tried to approve the Protein Bar purchase order.",
+      headline: "Craving report: Protein Bar"
+    },
     fullName: "Panic Pantry Gym Bag Forgotten Protein Bar",
     id: "NC108",
     imageSrc: "/product-images/NC108.jpg",
@@ -2429,6 +2867,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 327,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Oats with full group-chat approval energy. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Future you asks why Oats needed governance.",
+      headline: "Craving report: Oats"
+    },
     fullName: "Office Escape Plain Sadness Oats",
     id: "NC109",
     imageSrc: "/product-images/NC109.jpg",
@@ -2450,6 +2892,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 378,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Cornflakes confidence at 12:07 AM. Built for morning optimism, alarm snoozes and wellness plans with weak governance.",
+      headline: "Craving report: Cornflakes"
+    },
     fullName: "Sasta Luxury Bachelor Dinner Cornflakes",
     id: "NC110",
     imageSrc: "/product-images/NC110.jpg",
@@ -2471,6 +2917,10 @@ export const products: Product[] = [
     brandName: "Guilt Free-ish",
     calories: 419,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Muesli with full group-chat approval energy. Salary-week confidence, month-end consequences. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Muesli"
+    },
     fullName: "Guilt Free-ish Salary Day Muesli Deluxe",
     id: "NC111",
     imageSrc: "/product-images/NC111.jpg",
@@ -2492,6 +2942,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 467,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Peanut Butter craving, officially escalated. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Because peanut, butter and spoon were already trending in your head.",
+      headline: "Craving report: Peanut Butter"
+    },
     fullName: "Adulting Dept Spoonful Regret Peanut Butter",
     id: "NC112",
     imageSrc: "/product-images/NC112.jpg",
@@ -2514,6 +2968,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 502,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Bread pretending to be a reasonable idea. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Future you approves the fictional version only.",
+      headline: "Craving report: Bread"
+    },
     fullName: "Panic Pantry Last Two Slices Bread",
     id: "NC113",
     imageSrc: "/product-images/NC113.jpg",
@@ -2536,6 +2994,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 544,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Jam with full group-chat approval energy. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Future you says: tomorrow you deserves breakfast, not a plot twist.",
+      headline: "Craving report: Jam"
+    },
     fullName: "Office Escape Childhood Excuse Jam",
     id: "NC114",
     imageSrc: "/product-images/NC114.jpg",
@@ -2557,6 +3019,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 595,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Pancake Mix craving, officially escalated. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Because the cart saw pancake, mix and weekend and called it research.",
+      headline: "Craving report: Pancake Mix"
+    },
     fullName: "Sasta Luxury Weekend Ambition Pancake Mix",
     id: "NC115",
     imageSrc: "/product-images/NC115.jpg",
@@ -2578,6 +3044,10 @@ export const products: Product[] = [
     brandName: "Guilt Free-ish",
     calories: 641,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Idli Batter pretending to be a reasonable idea. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Future you asks why Idli Batter needed governance.",
+      headline: "Craving report: Idli Batter"
+    },
     fullName: "Guilt Free-ish Responsible Citizen Idli Batter",
     id: "NC116",
     imageSrc: "/product-images/NC116.jpg",
@@ -2599,6 +3069,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 676,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Dhokla, but make it a tiny procurement decision. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Because your thumb tried to approve the Dhokla purchase order.",
+      headline: "Craving report: Dhokla"
+    },
     fullName: "Adulting Dept Diet Starts Dhokla Pack",
     id: "NC117",
     imageSrc: "/product-images/NC117.jpg",
@@ -2620,6 +3094,10 @@ export const products: Product[] = [
     brandName: "Panic Pantry",
     calories: 722,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Chai Biscuit craving, officially escalated. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Chai Biscuit"
+    },
     fullName: "Panic Pantry Meeting Delay Chai Biscuit",
     id: "NC118",
     imageSrc: "/product-images/NC118.jpg",
@@ -2641,6 +3119,10 @@ export const products: Product[] = [
     brandName: "Office Escape",
     calories: 767,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Smoothie Pack pretending to be a reasonable idea. Built for morning optimism, alarm snoozes and wellness plans with weak governance. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Smoothie Pack"
+    },
     fullName: "Office Escape Detox Tomorrow Smoothie Pack",
     id: "NC119",
     imageSrc: "/product-images/NC119.jpg",
@@ -2662,6 +3144,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 801,
     categoryId: "breakfast-regrets",
+    detailCopy: {
+      description: "Egg Bites confidence at 12:07 AM. Built for morning optimism, alarm snoozes and wellness plans with weak governance.",
+      headline: "Craving report: Egg Bites"
+    },
     fullName: "Sasta Luxury Meal Prep Egg Bites",
     id: "NC120",
     imageSrc: "/product-images/NC120.jpg",
@@ -2683,6 +3169,10 @@ export const products: Product[] = [
     brandName: "Laziness Labs",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Earbuds, but make it a tiny procurement decision. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Earbuds"
+    },
     fullName: "Laziness Labs Meeting Escape Earbuds Do Nothing Edition",
     id: "NC121",
     imageSrc: "/product-images/NC121.jpg",
@@ -2704,6 +3194,10 @@ export const products: Product[] = [
     brandName: "Dopamine Dukaan",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Cable craving, officially escalated. Built for adulting tabs, salary-week confidence and things your drawer did not request. Because your thumb tried to approve the Cable purchase order.",
+      headline: "Craving report: Cable"
+    },
     fullName: "Dopamine Dukaan Mystery Drawer Charging Cable",
     id: "NC122",
     imageSrc: "/product-images/NC122.jpg",
@@ -2725,6 +3219,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Notebook with full group-chat approval energy. Looks like adulting. Behaves like impulse. Future you asks why Notebook needed governance.",
+      headline: "Craving report: Notebook"
+    },
     fullName: "Adulting Dept Fresh Start Notebook",
     id: "NC123",
     imageSrc: "/product-images/NC123.jpg",
@@ -2745,6 +3243,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Scented Candle with full group-chat approval energy. Built for adulting tabs, salary-week confidence and things your drawer did not request. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Scented Candle"
+    },
     fullName: "Weekend Unlimited Rent Friendly Luxury Candle",
     id: "NC124",
     imageSrc: "/product-images/NC124.jpg",
@@ -2766,6 +3268,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Face Wash confidence at 12:07 AM. Arrives when just checking becomes cart research.",
+      headline: "Craving report: Face Wash"
+    },
     fullName: "Sasta Luxury Tomorrow Glow Face Wash",
     id: "NC125",
     imageSrc: "/product-images/NC125.jpg",
@@ -2789,6 +3295,10 @@ export const products: Product[] = [
     brandName: "Laziness Labs",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Batteries pretending to be a reasonable idea. Built for living-room diplomacy and side-eye. Future you approves the fictional version only.",
+      headline: "Craving report: Batteries"
+    },
     fullName: "Laziness Labs Remote Fight Batteries",
     id: "NC126",
     imageSrc: "/product-images/NC126.jpg",
@@ -2810,6 +3320,10 @@ export const products: Product[] = [
     brandName: "Dopamine Dukaan",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Laundry Bag craving, officially escalated. Looks like adulting. Behaves like impulse. Because laundry, bag and adulting were already trending in your head.",
+      headline: "Craving report: Laundry Bag"
+    },
     fullName: "Dopamine Dukaan Laundry Mountain Storage Bag",
     id: "NC127",
     imageSrc: "/product-images/NC127.jpg",
@@ -2831,6 +3345,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Sticky Notes pretending to be a reasonable idea. Looks like adulting. Behaves like impulse. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Sticky Notes"
+    },
     fullName: "Adulting Dept Productivity Sticky Notes",
     id: "NC128",
     imageSrc: "/product-images/NC128.jpg",
@@ -2852,6 +3370,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Room Freshener craving, officially escalated. Hostel-room morale in one tiny decision. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Room Freshener"
+    },
     fullName: "Weekend Unlimited Hostel Room Apology Spray",
     id: "NC129",
     imageSrc: "/product-images/NC129.jpg",
@@ -2873,6 +3395,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Keychain, but make it a tiny procurement decision. Built for adulting tabs, salary-week confidence and things your drawer did not request. Because keychain, impulse and buy were already trending in your head.",
+      headline: "Craving report: Keychain"
+    },
     fullName: "Sasta Luxury Personality Keychain",
     id: "NC130",
     imageSrc: "/product-images/NC130.jpg",
@@ -2894,6 +3420,10 @@ export const products: Product[] = [
     brandName: "Laziness Labs",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Sleep Mask confidence at 12:07 AM. Arrives when just checking becomes cart research.",
+      headline: "Craving report: Sleep Mask"
+    },
     fullName: "Laziness Labs Optimistic Sleep Mask",
     id: "NC131",
     imageSrc: "/product-images/NC131.jpg",
@@ -2915,6 +3445,10 @@ export const products: Product[] = [
     brandName: "Dopamine Dukaan",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Water Bottle craving, officially escalated. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Water Bottle"
+    },
     fullName: "Dopamine Dukaan Hydration Personality Bottle",
     id: "NC132",
     imageSrc: "/product-images/NC132.jpg",
@@ -2936,6 +3470,10 @@ export const products: Product[] = [
     brandName: "Adulting Dept",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Phone Stand pretending to be a reasonable idea. Pairs with one more reel. Dangerous phrase. Dopamine acknowledged. Delivery can stand down.",
+      headline: "Craving report: Phone Stand"
+    },
     fullName: "Adulting Dept Reels Research Phone Stand",
     id: "NC133",
     imageSrc: "/product-images/NC133.jpg",
@@ -2957,6 +3495,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Planner pretending to be a reasonable idea. Looks like adulting. Behaves like impulse. Future you asks why Planner needed governance.",
+      headline: "Craving report: Planner"
+    },
     fullName: "Weekend Unlimited Life Sorted Planner",
     id: "NC134",
     imageSrc: "/product-images/NC134.jpg",
@@ -2977,6 +3519,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 0,
     categoryId: "random-non-food-items",
+    detailCopy: {
+      description: "Tote Bag, but make it a tiny procurement decision. Built for adulting tabs, salary-week confidence and things your drawer did not request. Because your thumb tried to approve the Tote Bag purchase order.",
+      headline: "Craving report: Tote Bag"
+    },
     fullName: "Sasta Luxury Main Character Tote Bag",
     id: "NC135",
     imageSrc: "/product-images/NC135.jpg",
@@ -2998,6 +3544,10 @@ export const products: Product[] = [
     brandName: "Dopamine Dukaan",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Gift Box with full group-chat approval energy. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Future you says: the emotion is valid; the checkout can remain fictional.",
+      headline: "Craving report: Gift Box"
+    },
     fullName: "Dopamine Dukaan Apology To Myself Gift Box",
     id: "NC136",
     imageSrc: "/product-images/NC136.jpg",
@@ -3020,6 +3570,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Sticker Pack craving, officially escalated. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Because the cart saw stickers, laptop and therapy and called it research.",
+      headline: "Craving report: Sticker Pack"
+    },
     fullName: "Weekend Unlimited Therapy Pending Sticker Pack",
     id: "NC137",
     imageSrc: "/product-images/NC137.jpg",
@@ -3041,6 +3595,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Mini Plant craving, officially escalated. Looks like adulting. Behaves like impulse. Because mini, plant and adulting were already trending in your head.",
+      headline: "Craving report: Mini Plant"
+    },
     fullName: "Sasta Luxury Responsibility Practice Mini Plant",
     id: "NC138",
     imageSrc: "/product-images/NC138.jpg",
@@ -3062,6 +3620,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Mug pretending to be a reasonable idea. Teams-meeting energy, snack-sized consequences. Future you approves the fictional version only.",
+      headline: "Craving report: Mug"
+    },
     fullName: "Emotional Damage Corporate Personality Mug",
     id: "NC139",
     imageSrc: "/product-images/NC139.jpg",
@@ -3083,6 +3645,10 @@ export const products: Product[] = [
     brandName: "Laziness Labs",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Bookmark craving, officially escalated. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Because your thumb tried to approve the Bookmark purchase order.",
+      headline: "Craving report: Bookmark"
+    },
     fullName: "Laziness Labs Reading Habit Bookmark",
     id: "NC140",
     imageSrc: "/product-images/NC140.jpg",
@@ -3104,6 +3670,10 @@ export const products: Product[] = [
     brandName: "Dopamine Dukaan",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Fairy Lights with full group-chat approval energy. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Future you asks why Fairy Lights needed governance.",
+      headline: "Craving report: Fairy Lights"
+    },
     fullName: "Dopamine Dukaan Mood Repair Fairy Lights",
     id: "NC141",
     imageSrc: "/product-images/NC141.jpg",
@@ -3126,6 +3696,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Poster confidence at 12:07 AM. Built for self-care decks, mood boards and retail therapy with no minutes of meeting.",
+      headline: "Craving report: Poster"
+    },
     fullName: "Weekend Unlimited Motivation Poster For Tired People",
     id: "NC142",
     imageSrc: "/product-images/NC142.jpg",
@@ -3147,6 +3721,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Lip Balm, but make it a tiny procurement decision. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      headline: "Craving report: Lip Balm"
+    },
     fullName: "Sasta Luxury Where Did It Go Lip Balm",
     id: "NC143",
     imageSrc: "/product-images/NC143.jpg",
@@ -3168,6 +3746,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Desk Toy with full group-chat approval energy. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Future you approves the fictional version only.",
+      headline: "Craving report: Desk Toy"
+    },
     fullName: "Emotional Damage Deadline Panic Desk Toy",
     id: "NC144",
     imageSrc: "/product-images/NC144.jpg",
@@ -3189,6 +3771,10 @@ export const products: Product[] = [
     brandName: "Laziness Labs",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Journal confidence at 12:07 AM. Built for self-care decks, mood boards and retail therapy with no minutes of meeting.",
+      headline: "Craving report: Journal"
+    },
     fullName: "Laziness Labs Overthinking Export Journal",
     id: "NC145",
     imageSrc: "/product-images/NC145.jpg",
@@ -3209,6 +3795,10 @@ export const products: Product[] = [
     brandName: "Dopamine Dukaan",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Bath Bomb, but make it a tiny procurement decision. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Because the cart saw bath, bomb and self and called it research.",
+      headline: "Craving report: Bath Bomb"
+    },
     fullName: "Dopamine Dukaan Main Character Bath Bomb",
     id: "NC146",
     imageSrc: "/product-images/NC146.jpg",
@@ -3231,6 +3821,10 @@ export const products: Product[] = [
     brandName: "Weekend Unlimited",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Fridge Magnet pretending to be a reasonable idea. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Future you says: the emotion is valid; the checkout can remain fictional.",
+      headline: "Craving report: Fridge Magnet"
+    },
     fullName: "Weekend Unlimited Goa Plan Fridge Magnet",
     id: "NC147",
     imageSrc: "/product-images/NC147.jpg",
@@ -3253,6 +3847,10 @@ export const products: Product[] = [
     brandName: "Sasta Luxury",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Tiny Perfume confidence at 12:07 AM. Built for self-care decks, mood boards and retail therapy with no minutes of meeting.",
+      headline: "Craving report: Tiny Perfume"
+    },
     fullName: "Sasta Luxury Situationship Perfume Mini",
     id: "NC148",
     imageSrc: "/product-images/NC148.jpg",
@@ -3274,6 +3872,10 @@ export const products: Product[] = [
     brandName: "Emotional Damage",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Key Bowl, but make it a tiny procurement decision. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Because key, bowl and home were already trending in your head.",
+      headline: "Craving report: Key Bowl"
+    },
     fullName: "Emotional Damage Life Together Key Bowl",
     id: "NC149",
     imageSrc: "/product-images/NC149.jpg",
@@ -3296,6 +3898,10 @@ export const products: Product[] = [
     brandName: "Laziness Labs",
     calories: 0,
     categoryId: "emotional-purchases",
+    detailCopy: {
+      description: "Mystery Item pretending to be a reasonable idea. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Future you says: the emotion is valid; the checkout can remain fictional.",
+      headline: "Craving report: Mystery Item"
+    },
     fullName: "Laziness Labs Why Did I Add This Mystery Item",
     id: "NC150",
     imageSrc: "/product-images/NC150.jpg",
