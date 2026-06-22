@@ -1,5 +1,6 @@
 import { Button } from "./Button";
 import type { Product } from "../data/catalog";
+import type { KeyboardEvent, MouseEvent } from "react";
 
 export interface ProductCartCardProps {
   product: Product;
@@ -8,6 +9,7 @@ export interface ProductCartCardProps {
   onAdd: () => void;
   onIncrement: () => void;
   onDecrement: () => void;
+  onOpenDetails?: () => void;
   showCalories?: boolean;
 }
 
@@ -18,13 +20,40 @@ export function ProductCartCard({
   onAdd,
   onIncrement,
   onDecrement,
+  onOpenDetails,
   showCalories = true,
 }: ProductCartCardProps) {
   const inCart = quantity > 0;
   const imageAlt = product.fullName || `${product.brandName} ${product.name}`;
 
+  function handleCardClick() {
+    onOpenDetails?.();
+  }
+
+  function handleCardKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (!onOpenDetails || event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onOpenDetails();
+    }
+  }
+
+  function stopCardOpen(event: MouseEvent) {
+    event.stopPropagation();
+  }
+
   return (
-    <article className={["product-card", inCart ? "product-card--in-cart" : ""].filter(Boolean).join(" ")}>
+    <article
+      aria-label={`View details for ${product.name}`}
+      className={["product-card", onOpenDetails ? "product-card--clickable" : "", inCart ? "product-card--in-cart" : ""].filter(Boolean).join(" ")}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      role={onOpenDetails ? "button" : undefined}
+      tabIndex={onOpenDetails ? 0 : undefined}
+    >
       <div className="product-card__top">
         <div className="product-card__media">
           <img src={product.imageSrc} alt={imageAlt} loading="lazy" />
@@ -56,7 +85,11 @@ export function ProductCartCard({
       </div>
 
       {inCart ? (
-        <div className="cart-controls" aria-label={`${product.name} quantity controls`}>
+        <div
+          className="cart-controls"
+          aria-label={`${product.name} quantity controls`}
+          onClick={stopCardOpen}
+        >
           <Button
             type="button"
             analyticsName="product_decrement"
@@ -87,7 +120,10 @@ export function ProductCartCard({
           analyticsName="product_add"
           variant="primary"
           size="compact"
-          onClick={onAdd}
+          onClick={(event) => {
+            event.stopPropagation();
+            onAdd();
+          }}
           aria-label={`Add ${product.name} to cart`}
         >
           Add

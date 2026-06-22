@@ -6,10 +6,11 @@ import { CategoryChip } from "../components/CategoryChip";
 import { CategoryTile } from "../components/CategoryTile";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
+import { ProductDetailModal } from "../components/ProductDetailModal";
 import { ProductCartCard } from "../components/ProductCartCard";
 import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
-import { categories, products, type CategoryId } from "../data/catalog";
+import { categories, products, type CategoryId, type Product } from "../data/catalog";
 import {
   cartTotalsAnalyticsProperties,
   productAnalyticsProperties,
@@ -33,6 +34,7 @@ export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState("Shelf open. The cravings are rehearsing.");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const cart = useCart();
   const settings = useSettings();
 
@@ -123,6 +125,33 @@ export function ProductsPage() {
     navigate("/cart");
   }
 
+  function handleProductDetailsOpen(product: Product) {
+    setSelectedProduct(product);
+    trackEvent("product details opened", {
+      location: "products",
+      quantity_in_cart: cart.getQuantity(product.id),
+      selected_category_id: selectedCategoryId,
+      search_active: Boolean(normalizedQuery),
+      show_calories: settings.showCalories,
+      ...productAnalyticsProperties(product),
+    });
+  }
+
+  function handleProductDetailsClose() {
+    if (selectedProduct) {
+      trackEvent("product details closed", {
+        location: "products",
+        quantity_in_cart: cart.getQuantity(selectedProduct.id),
+        selected_category_id: selectedCategoryId,
+        search_active: Boolean(normalizedQuery),
+        show_calories: settings.showCalories,
+        ...productAnalyticsProperties(selectedProduct),
+      });
+    }
+
+    setSelectedProduct(null);
+  }
+
   return (
     <div className={["products-page", cart.totals.totalQuantity > 0 ? "page-with-bottom-cart" : ""].filter(Boolean).join(" ")}>
       <PageHeader
@@ -187,6 +216,7 @@ export function ProductsPage() {
                   categoryName={categoryNames.get(product.categoryId) ?? "Shelf"}
                   quantity={quantity}
                   showCalories={settings.showCalories}
+                  onOpenDetails={() => handleProductDetailsOpen(product)}
                   onAdd={() => {
                     const nextCart = getCartUpdatePreview(
                       cart.items,
@@ -277,6 +307,74 @@ export function ProductsPage() {
       ) : null}
 
       <Toast message={toastMessage} visible={Boolean(toastMessage)} />
+      {selectedProduct ? (
+        <ProductDetailModal
+          product={selectedProduct}
+          categoryName={categoryNames.get(selectedProduct.categoryId) ?? "Shelf"}
+          quantity={cart.getQuantity(selectedProduct.id)}
+          showCalories={settings.showCalories}
+          onClose={handleProductDetailsClose}
+          onAdd={() => {
+            const nextCart = getCartUpdatePreview(
+              cart.items,
+              selectedProduct.id,
+              (currentQuantity) => currentQuantity + 1,
+            );
+            cart.addItem(selectedProduct.id);
+            showCartToast(`${selectedProduct.name} joined the cart.`);
+            trackEvent("product added", {
+              location: "products_detail_modal",
+              quantity_after: nextCart.quantity,
+              selected_category_id: selectedCategoryId,
+              search_active: Boolean(normalizedQuery),
+              ...productAnalyticsProperties(selectedProduct),
+              ...cartTotalsAnalyticsProperties(nextCart.totals),
+            });
+          }}
+          onIncrement={() => {
+            const quantity = cart.getQuantity(selectedProduct.id);
+            const nextCart = getCartUpdatePreview(
+              cart.items,
+              selectedProduct.id,
+              (currentQuantity) => currentQuantity + 1,
+            );
+            cart.incrementItem(selectedProduct.id);
+            showCartToast(`${selectedProduct.name} quantity increased.`);
+            trackEvent("product quantity increased", {
+              location: "products_detail_modal",
+              quantity_before: quantity,
+              quantity_after: nextCart.quantity,
+              selected_category_id: selectedCategoryId,
+              search_active: Boolean(normalizedQuery),
+              ...productAnalyticsProperties(selectedProduct),
+              ...cartTotalsAnalyticsProperties(nextCart.totals),
+            });
+          }}
+          onDecrement={() => {
+            const quantity = cart.getQuantity(selectedProduct.id);
+            const nextCart = getCartUpdatePreview(
+              cart.items,
+              selectedProduct.id,
+              (currentQuantity) => currentQuantity - 1,
+            );
+            cart.decrementItem(selectedProduct.id);
+            showCartToast(
+              quantity === 1
+                ? `${selectedProduct.name} removed from the cart.`
+                : `${selectedProduct.name} quantity decreased.`,
+            );
+            trackEvent(quantity === 1 ? "product removed" : "product quantity decreased", {
+              location: "products_detail_modal",
+              quantity_before: quantity,
+              quantity_after: nextCart.quantity,
+              selected_category_id: selectedCategoryId,
+              search_active: Boolean(normalizedQuery),
+              ...productAnalyticsProperties(selectedProduct),
+              ...cartTotalsAnalyticsProperties(nextCart.totals),
+            });
+          }}
+        />
+      ) : null}
       <BottomCartBar
         totalQuantity={cart.totals.totalQuantity}
         totalPrice={cart.totals.totalPrice}

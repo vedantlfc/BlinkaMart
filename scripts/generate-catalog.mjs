@@ -229,6 +229,183 @@ function getSearchKeywords(value) {
   );
 }
 
+function hashString(value) {
+  let hash = 2166136261;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function pickStable(values, seed, offset = 0) {
+  return values[(seed + offset) % values.length];
+}
+
+function toFriendlyList(values) {
+  const cleanValues = values.filter(Boolean);
+
+  if (cleanValues.length <= 1) {
+    return cleanValues[0] ?? "";
+  }
+
+  return `${cleanValues.slice(0, -1).join(", ")} and ${cleanValues[cleanValues.length - 1]}`;
+}
+
+const categoryDetailMoods = {
+  "chips-namkeen": {
+    scene: "pantry politics, group chat courage and one very crunchy deadline",
+    meeting: "all-hands crunch review",
+    future: "drink water before this becomes a full committee decision",
+  },
+  "cold-drinks": {
+    scene: "camera-off calls, assignment extensions and fridge-door confidence",
+    meeting: "fizz-led standup",
+    future: "the cold drink can stay in the cart; your sleep schedule has already filed HR feedback",
+  },
+  chocolate: {
+    scene: "soft launches, soft feelings and a calendar invite named quick break",
+    meeting: "cocoa townhall",
+    future: "save the main character energy for tomorrow morning",
+  },
+  "ice-cream": {
+    scene: "hostel freezer diplomacy, post-meeting silence and spoon-based strategy",
+    meeting: "freezer retrospective",
+    future: "close the freezer tab and let the craving lose network",
+  },
+  "instant-food": {
+    scene: "two-minute ambition, exam season bargaining and dinner that forgot to become dinner",
+    meeting: "noodle sprint planning",
+    future: "make real food if you are hungry; this one is for the ritual",
+  },
+  bakery: {
+    scene: "butter logic, college canteen nostalgia and one unread performance review",
+    meeting: "carb alignment call",
+    future: "future you requests a softer landing than a midnight pastry subplot",
+  },
+  "frozen-snacks": {
+    scene: "freezer raids, IPL overs and group project survivors",
+    meeting: "air-fryer escalation",
+    future: "the freezer can wait; your future self has bandwidth constraints",
+  },
+  "breakfast-regrets": {
+    scene: "morning optimism, alarm snoozes and wellness plans with weak governance",
+    meeting: "breakfast OKR review",
+    future: "tomorrow you deserves breakfast, not a plot twist",
+  },
+  "random-non-food-items": {
+    scene: "adulting tabs, salary-week confidence and things your drawer did not request",
+    meeting: "impulse procurement sync",
+    future: "check the drawer before your cart becomes an inventory system",
+  },
+  "emotional-purchases": {
+    scene: "self-care decks, mood boards and retail therapy with no minutes of meeting",
+    meeting: "feelings finance review",
+    future: "the emotion is valid; the checkout can remain fictional",
+  },
+};
+
+const keywordScenes = [
+  {
+    keywords: ["office", "meeting", "corporate", "deadline", "work", "startup"],
+    line: "Teams-meeting energy, snack-sized consequences.",
+  },
+  {
+    keywords: ["hostel", "college", "exam", "fest", "internship"],
+    line: "Hostel-room morale in one tiny decision.",
+  },
+  {
+    keywords: ["salary", "month", "premium"],
+    line: "Salary-week confidence, month-end consequences.",
+  },
+  {
+    keywords: ["midnight", "3am", "sleep", "insomnia", "late", "night"],
+    line: "Arrives when just checking becomes cart research.",
+  },
+  {
+    keywords: ["family", "argument", "guest", "remote"],
+    line: "Built for living-room diplomacy and side-eye.",
+  },
+  {
+    keywords: ["reels", "doom", "scrolling", "phone"],
+    line: "Pairs with one more reel. Dangerous phrase.",
+  },
+  {
+    keywords: ["adulting", "productivity", "planner", "notebook"],
+    line: "Looks like adulting. Behaves like impulse.",
+  },
+];
+
+const detailOpeners = [
+  "{subcategory} craving, officially escalated.",
+  "{subcategory} with full group-chat approval energy.",
+  "{subcategory} confidence at 12:07 AM.",
+  "{subcategory}, but make it a tiny procurement decision.",
+  "{subcategory} pretending to be a reasonable idea.",
+];
+
+const whyTemplates = [
+  "Because {keywords} were already trending in your head.",
+  "Because the cart saw {keywords} and called it research.",
+  "Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+  "Because your thumb tried to approve the {subcategory} purchase order.",
+];
+
+const futureTemplates = [
+  "Future you says: {future}.",
+  "Future you approves the fictional version only.",
+  "Future you asks why {subcategory} needed governance.",
+  "Dopamine acknowledged. Delivery can stand down.",
+];
+
+function getKeywordScene(searchKeywords) {
+  const keywordSet = new Set(searchKeywords.map((keyword) => keyword.toLowerCase()));
+  return keywordScenes.find((scene) =>
+    scene.keywords.some((keyword) => keywordSet.has(keyword)),
+  )?.line;
+}
+
+function getOptionalDetailLine(seed, mood, subcategory, keywords) {
+  const detailMode = seed % 5;
+
+  if (detailMode === 0 || detailMode === 3) {
+    return pickStable(whyTemplates, seed, 2)
+      .replaceAll("{keywords}", keywords || subcategory.toLowerCase())
+      .replaceAll("{subcategory}", subcategory);
+  }
+
+  if (detailMode === 1 || detailMode === 4) {
+    return pickStable(futureTemplates, seed, 4)
+      .replaceAll("{future}", mood.future)
+      .replaceAll("{subcategory}", subcategory);
+  }
+
+  return "";
+}
+
+function buildDetailCopy(record, categoryId, price, calories, regretScore) {
+  const seed = hashString(record.product_id);
+  const mood = categoryDetailMoods[categoryId];
+  const subcategory = record.subcategory;
+  const searchKeywords = getSearchKeywords(record.search_keywords);
+  const keywords = toFriendlyList(searchKeywords.slice(0, 3));
+  const keywordScene = getKeywordScene(searchKeywords);
+  const opener = pickStable(detailOpeners, seed)
+    .replaceAll("{subcategory}", subcategory);
+  const description = [
+    opener,
+    keywordScene ?? `Built for ${mood.scene}.`,
+    getOptionalDetailLine(seed, mood, subcategory, keywords),
+  ].filter(Boolean).join(" ");
+
+  return {
+    headline: `Craving report: ${subcategory}`,
+    description,
+  };
+}
+
 function cleanUserFacingText(value) {
   return value
     .replace(/\b[fF]ake\s+/g, "")
@@ -338,6 +515,13 @@ const products = rows.map((row, rowIndex) => {
     price,
     calories,
     regretScore: deriveRegretScore(record),
+    detailCopy: buildDetailCopy(
+      record,
+      categoryId,
+      price,
+      calories,
+      deriveRegretScore(record),
+    ),
     subtitle: record.one_line_description,
     searchKeywords: getSearchKeywords(record.search_keywords),
     originalCategory: record.original_category,
@@ -361,7 +545,7 @@ for (const category of categoryDefinitions) {
 const categoryIds = categoryDefinitions.map((category) => category.id);
 const catalogSource = `export type CategoryId =\n${categoryIds
   .map((categoryId, index) => `  | "${categoryId}"${index === categoryIds.length - 1 ? ";" : ""}`)
-  .join("\n")}\n\nexport interface Category {\n  id: CategoryId;\n  name: string;\n  description: string;\n  mark: string;\n  vibe: string;\n  accent: \"coral\" | \"teal\" | \"lilac\" | \"sunny\" | \"ink\";\n}\n\nexport interface Product {\n  id: string;\n  name: string;\n  fullName: string;\n  categoryId: CategoryId;\n  subcategory: string;\n  brandName: string;\n  price: number;\n  calories: number;\n  regretScore: number;\n  subtitle: string;\n  searchKeywords: string[];\n  originalCategory: string;\n  availabilityStatus: string;\n  imageSrc: string;\n  tag?: string;\n}\n\nexport const categories: Category[] = ${formatTs(categoryDefinitions)};\n\nexport const products: Product[] = ${formatTs(products)};\n`;
+  .join("\n")}\n\nexport interface Category {\n  id: CategoryId;\n  name: string;\n  description: string;\n  mark: string;\n  vibe: string;\n  accent: \"coral\" | \"teal\" | \"lilac\" | \"sunny\" | \"ink\";\n}\n\nexport interface ProductDetailCopy {\n  headline: string;\n  description: string;\n}\n\nexport interface Product {\n  id: string;\n  name: string;\n  fullName: string;\n  categoryId: CategoryId;\n  subcategory: string;\n  brandName: string;\n  price: number;\n  calories: number;\n  regretScore: number;\n  detailCopy: ProductDetailCopy;\n  subtitle: string;\n  searchKeywords: string[];\n  originalCategory: string;\n  availabilityStatus: string;\n  imageSrc: string;\n  tag?: string;\n}\n\nexport const categories: Category[] = ${formatTs(categoryDefinitions)};\n\nexport const products: Product[] = ${formatTs(products)};\n`;
 
 await writeFile(catalogPath, catalogSource);
 

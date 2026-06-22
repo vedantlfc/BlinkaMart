@@ -6,10 +6,11 @@ import { Card } from "../components/Card";
 import { CategoryTile } from "../components/CategoryTile";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
+import { ProductDetailModal } from "../components/ProductDetailModal";
 import { ProductCartCard } from "../components/ProductCartCard";
 import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
-import { categories, products, type CategoryId } from "../data/catalog";
+import { categories, products, type CategoryId, type Product } from "../data/catalog";
 import {
   cartTotalsAnalyticsProperties,
   productAnalyticsProperties,
@@ -53,6 +54,7 @@ export function HomePage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<CategoryId>(categories[0].id);
   const [searchQuery, setSearchQuery] = useState("");
   const [toastMessage, setToastMessage] = useState("Shelf stocked. The ritual may begin.");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
   const cart = useCart();
   const settings = useSettings();
@@ -109,6 +111,29 @@ export function HomePage() {
       category_id: categoryId,
       location: "home",
     });
+  }
+
+  function handleProductDetailsOpen(product: Product) {
+    setSelectedProduct(product);
+    trackEvent("product details opened", {
+      location: "home",
+      quantity_in_cart: cart.getQuantity(product.id),
+      show_calories: settings.showCalories,
+      ...productAnalyticsProperties(product),
+    });
+  }
+
+  function handleProductDetailsClose() {
+    if (selectedProduct) {
+      trackEvent("product details closed", {
+        location: "home",
+        quantity_in_cart: cart.getQuantity(selectedProduct.id),
+        show_calories: settings.showCalories,
+        ...productAnalyticsProperties(selectedProduct),
+      });
+    }
+
+    setSelectedProduct(null);
   }
 
   return (
@@ -212,6 +237,7 @@ export function HomePage() {
                 categoryName={categoryNames.get(product.categoryId) ?? "Shelf"}
                 quantity={cart.getQuantity(product.id)}
                 showCalories={settings.showCalories}
+                onOpenDetails={() => handleProductDetailsOpen(product)}
                 onAdd={() => {
                   const nextCart = getCartUpdatePreview(
                     cart.items,
@@ -290,6 +316,68 @@ export function HomePage() {
       </section>
 
       <Toast message={toastMessage} visible={Boolean(toastMessage)} />
+      {selectedProduct ? (
+        <ProductDetailModal
+          product={selectedProduct}
+          categoryName={categoryNames.get(selectedProduct.categoryId) ?? "Shelf"}
+          quantity={cart.getQuantity(selectedProduct.id)}
+          showCalories={settings.showCalories}
+          onClose={handleProductDetailsClose}
+          onAdd={() => {
+            const nextCart = getCartUpdatePreview(
+              cart.items,
+              selectedProduct.id,
+              (currentQuantity) => currentQuantity + 1,
+            );
+            cart.addItem(selectedProduct.id);
+            setToastMessage(`${selectedProduct.name} joined the cart.`);
+            trackEvent("product added", {
+              location: "home_detail_modal",
+              quantity_after: nextCart.quantity,
+              ...productAnalyticsProperties(selectedProduct),
+              ...cartTotalsAnalyticsProperties(nextCart.totals),
+            });
+          }}
+          onIncrement={() => {
+            const quantity = cart.getQuantity(selectedProduct.id);
+            const nextCart = getCartUpdatePreview(
+              cart.items,
+              selectedProduct.id,
+              (currentQuantity) => currentQuantity + 1,
+            );
+            cart.incrementItem(selectedProduct.id);
+            setToastMessage(`${selectedProduct.name} quantity increased.`);
+            trackEvent("product quantity increased", {
+              location: "home_detail_modal",
+              quantity_before: quantity,
+              quantity_after: nextCart.quantity,
+              ...productAnalyticsProperties(selectedProduct),
+              ...cartTotalsAnalyticsProperties(nextCart.totals),
+            });
+          }}
+          onDecrement={() => {
+            const quantity = cart.getQuantity(selectedProduct.id);
+            const nextCart = getCartUpdatePreview(
+              cart.items,
+              selectedProduct.id,
+              (currentQuantity) => currentQuantity - 1,
+            );
+            cart.decrementItem(selectedProduct.id);
+            setToastMessage(
+              quantity === 1
+                ? `${selectedProduct.name} removed from the cart.`
+                : `${selectedProduct.name} quantity decreased.`,
+            );
+            trackEvent(quantity === 1 ? "product removed" : "product quantity decreased", {
+              location: "home_detail_modal",
+              quantity_before: quantity,
+              quantity_after: nextCart.quantity,
+              ...productAnalyticsProperties(selectedProduct),
+              ...cartTotalsAnalyticsProperties(nextCart.totals),
+            });
+          }}
+        />
+      ) : null}
       <BottomCartBar
         totalQuantity={cart.totals.totalQuantity}
         totalPrice={cart.totals.totalPrice}
