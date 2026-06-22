@@ -915,7 +915,8 @@ p {
   display: grid;
   width: min(100%, 38rem);
   max-height: calc(100dvh - (var(--space-3) * 2));
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   gap: var(--space-3);
   padding: var(--space-3);
   border: var(--border-standard);
@@ -925,6 +926,7 @@ p {
     linear-gradient(140deg, rgb(255 209 102 / 0.18), transparent 42%),
     linear-gradient(220deg, rgb(223 242 238 / 0.52), transparent 48%),
     var(--color-surface);
+  overscroll-behavior: contain;
   box-shadow: 0 1.5rem 4rem rgb(var(--color-shadow) / 0.32);
 }
 

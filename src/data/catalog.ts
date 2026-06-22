@@ -160,7 +160,7 @@ export const products: Product[] = [
     calories: 434,
     categoryId: "chips-namkeen",
     detailCopy: {
-      description: "Bhujia, but make it a tiny procurement decision. Built for living-room diplomacy and side-eye. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Bhujia, but make it a tiny procurement decision. Built for living-room diplomacy and side-eye. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Bhujia"
     },
     fullName: "Namkeen Nonsense Family Argument Survival Bhujia",
@@ -828,7 +828,7 @@ export const products: Product[] = [
     calories: 13,
     categoryId: "cold-drinks",
     detailCopy: {
-      description: "Rose Milk, but make it a tiny procurement decision. Built for camera-off calls, assignment extensions and fridge-door confidence. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Rose Milk, but make it a tiny procurement decision. Built for camera-off calls, assignment extensions and fridge-door confidence. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Rose Milk"
     },
     fullName: "Chill Pending Nostalgia Rose Milk",
@@ -954,7 +954,7 @@ export const products: Product[] = [
     calories: 289,
     categoryId: "chocolate",
     detailCopy: {
-      description: "Truffle, but make it a tiny procurement decision. Built for soft launches, soft feelings and a calendar invite named quick break. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Truffle, but make it a tiny procurement decision. Built for soft launches, soft feelings and a calendar invite named quick break. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Truffle"
     },
     fullName: "Sugar Syllabus Unread Message Truffles",
@@ -1281,7 +1281,7 @@ export const products: Product[] = [
     calories: 250,
     categoryId: "ice-cream",
     detailCopy: {
-      description: "Tub, but make it a tiny procurement decision. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Tub, but make it a tiny procurement decision. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Tub"
     },
     fullName: "Emotional Damage Breakup Recovery Ice Cream Tub",
@@ -1410,7 +1410,7 @@ export const products: Product[] = [
     calories: 459,
     categoryId: "ice-cream",
     detailCopy: {
-      description: "Mini Tub craving, officially escalated. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Mini Tub craving, officially escalated. Built for hostel freezer diplomacy, post-meeting silence and spoon-based strategy. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Mini Tub"
     },
     fullName: "Emotional Damage Single But Fine Mini Tub",
@@ -1741,7 +1741,7 @@ export const products: Product[] = [
     calories: 429,
     categoryId: "instant-food",
     detailCopy: {
-      description: "Poha Cup, but make it a tiny procurement decision. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Poha Cup, but make it a tiny procurement decision. Built for two-minute ambition, exam season bargaining and dinner that forgot to become dinner. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Poha Cup"
     },
     fullName: "BhookBoss 9AM Standup Poha Cup",
@@ -2067,7 +2067,7 @@ export const products: Product[] = [
     calories: 223,
     categoryId: "bakery",
     detailCopy: {
-      description: "Croissant craving, officially escalated. Built for butter logic, college canteen nostalgia and one unread performance review. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Croissant craving, officially escalated. Built for butter logic, college canteen nostalgia and one unread performance review. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Croissant"
     },
     fullName: "Sugar Syllabus Paris Croissant",
@@ -2193,7 +2193,7 @@ export const products: Product[] = [
     calories: 445,
     categoryId: "bakery",
     detailCopy: {
-      description: "Banana Bread craving, officially escalated. Built for butter logic, college canteen nostalgia and one unread performance review. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Banana Bread craving, officially escalated. Built for butter logic, college canteen nostalgia and one unread performance review. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Banana Bread"
     },
     fullName: "Sugar Syllabus Overripe Plans Banana Bread",
@@ -2417,7 +2417,7 @@ export const products: Product[] = [
     calories: 266,
     categoryId: "frozen-snacks",
     detailCopy: {
-      description: "Momos craving, officially escalated. Hostel-room morale in one tiny decision. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Momos craving, officially escalated. Hostel-room morale in one tiny decision. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Momos"
     },
     fullName: "Regret Foods Frozen Group Project Momos",
@@ -2717,7 +2717,7 @@ export const products: Product[] = [
     calories: 774,
     categoryId: "frozen-snacks",
     detailCopy: {
-      description: "Hash Browns craving, officially escalated. Built for freezer raids, IPL overs and group project survivors. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Hash Browns craving, officially escalated. Built for freezer raids, IPL overs and group project survivors. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Hash Browns"
     },
     fullName: "Midnight Mandali Monday Hash Browns",
@@ -3095,7 +3095,7 @@ export const products: Product[] = [
     calories: 722,
     categoryId: "breakfast-regrets",
     detailCopy: {
-      description: "Chai Biscuit craving, officially escalated. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Chai Biscuit craving, officially escalated. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Chai Biscuit"
     },
     fullName: "Panic Pantry Meeting Delay Chai Biscuit",
@@ -3170,7 +3170,7 @@ export const products: Product[] = [
     calories: 0,
     categoryId: "random-non-food-items",
     detailCopy: {
-      description: "Earbuds, but make it a tiny procurement decision. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Earbuds, but make it a tiny procurement decision. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Earbuds"
     },
     fullName: "Laziness Labs Meeting Escape Earbuds Do Nothing Edition",
@@ -3371,7 +3371,7 @@ export const products: Product[] = [
     calories: 0,
     categoryId: "random-non-food-items",
     detailCopy: {
-      description: "Room Freshener craving, officially escalated. Hostel-room morale in one tiny decision. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Room Freshener craving, officially escalated. Hostel-room morale in one tiny decision. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Room Freshener"
     },
     fullName: "Weekend Unlimited Hostel Room Apology Spray",
@@ -3446,7 +3446,7 @@ export const products: Product[] = [
     calories: 0,
     categoryId: "random-non-food-items",
     detailCopy: {
-      description: "Water Bottle craving, officially escalated. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Water Bottle craving, officially escalated. Teams-meeting energy, snack-sized consequences. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Water Bottle"
     },
     fullName: "Dopamine Dukaan Hydration Personality Bottle",
@@ -3722,7 +3722,7 @@ export const products: Product[] = [
     calories: 0,
     categoryId: "emotional-purchases",
     detailCopy: {
-      description: "Lip Balm, but make it a tiny procurement decision. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+      description: "Lip Balm, but make it a tiny procurement decision. Built for self-care decks, mood boards and retail therapy with no minutes of meeting. Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
       headline: "Craving report: Lip Balm"
     },
     fullName: "Sasta Luxury Where Did It Go Lip Balm",

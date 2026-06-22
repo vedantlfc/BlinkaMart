@@ -349,7 +349,7 @@ const detailOpeners = [
 const whyTemplates = [
   "Because {keywords} were already trending in your head.",
   "Because the cart saw {keywords} and called it research.",
-  "Because the brief was simple: small dopamine, big theatre, zero real checkout.",
+  "Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
   "Because your thumb tried to approve the {subcategory} purchase order.",
 ];
 

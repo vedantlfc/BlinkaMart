@@ -1,4 +1,4 @@
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { Button } from "./Button";
 import type { Product } from "../data/catalog";
 
@@ -31,6 +31,20 @@ function getVisibleKeywords(product: Product) {
     .slice(0, 5);
 }
 
+function getFocusableElements(container: HTMLElement) {
+  const selectors = [
+    "a[href]",
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "[tabindex]:not([tabindex='-1'])",
+  ].join(",");
+
+  return Array.from(container.querySelectorAll<HTMLElement>(selectors))
+    .filter((element) => element.offsetParent !== null);
+}
+
 export function ProductDetailModal({
   product,
   categoryName,
@@ -43,17 +57,53 @@ export function ProductDetailModal({
 }: ProductDetailModalProps) {
   const titleId = useId();
   const descriptionId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
   const inCart = quantity > 0;
   const imageAlt = product.fullName || `${product.brandName} ${product.name}`;
   const visibleKeywords = getVisibleKeywords(product);
 
   useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
     const previousOverflow = document.body.style.overflow;
+    const previouslyFocusedElement =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
     document.body.style.overflow = "hidden";
+    dialogRef.current
+      ?.querySelector<HTMLButtonElement>(".product-detail-modal__close")
+      ?.focus({ preventScroll: true });
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        onClose();
+        onCloseRef.current();
+        return;
+      }
+
+      if (event.key !== "Tab" || !dialogRef.current) {
+        return;
+      }
+
+      const focusableElements = getFocusableElements(dialogRef.current);
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        dialogRef.current.focus({ preventScroll: true });
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus({ preventScroll: true });
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus({ preventScroll: true });
       }
     }
 
@@ -62,8 +112,11 @@ export function ProductDetailModal({
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
+      if (previouslyFocusedElement?.isConnected) {
+        previouslyFocusedElement.focus({ preventScroll: true });
+      }
     };
-  }, [onClose]);
+  }, []);
 
   return (
     <div className="product-detail-modal" onClick={onClose}>
@@ -73,7 +126,9 @@ export function ProductDetailModal({
         aria-modal="true"
         className="product-detail-modal__dialog"
         onClick={(event) => event.stopPropagation()}
+        ref={dialogRef}
         role="dialog"
+        tabIndex={-1}
       >
         <div className="product-detail-modal__header">
           <div>
