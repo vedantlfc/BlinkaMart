@@ -28,8 +28,48 @@ function formatAvailability(value: string) {
 
 function getVisibleKeywords(product: Product) {
   return product.searchKeywords
-    .filter((keyword) => keyword.length > 2)
-    .slice(0, 3);
+    .filter((keyword) => keyword.length > 2);
+}
+
+const MAX_METADATA_CHIPS = 5;
+
+interface MetadataChip {
+  label: string;
+  hiddenText?: string;
+}
+
+function getMetadataChips(product: Product, showCalories: boolean) {
+  const coreChips: MetadataChip[] = [
+    ...(showCalories ? [{ label: `${product.calories} cal` }] : []),
+    { label: formatAvailability(product.availabilityStatus) },
+    { label: `Shelf: ${product.tag ?? product.subcategory}` },
+  ];
+  const keywordChips: MetadataChip[] = getVisibleKeywords(product).map((keyword) => ({
+    label: `#${keyword}`,
+  }));
+  const availableKeywordSlots = MAX_METADATA_CHIPS - coreChips.length;
+
+  if (availableKeywordSlots <= 0) {
+    return coreChips.slice(0, MAX_METADATA_CHIPS);
+  }
+
+  if (keywordChips.length <= availableKeywordSlots) {
+    return [...coreChips, ...keywordChips];
+  }
+
+  const visibleKeywordSlots = Math.max(0, availableKeywordSlots - 1);
+  const visibleKeywords = keywordChips.slice(0, visibleKeywordSlots);
+  const hiddenKeywords = keywordChips.slice(visibleKeywordSlots);
+  const hiddenLabels = hiddenKeywords.map((chip) => chip.label);
+
+  return [
+    ...coreChips,
+    ...visibleKeywords,
+    {
+      label: `+${hiddenKeywords.length}`,
+      hiddenText: `Additional tags: ${hiddenLabels.join(", ")}`,
+    },
+  ];
 }
 
 function getFocusableElements(container: HTMLElement) {
@@ -62,13 +102,7 @@ export function ProductDetailModal({
   const onCloseRef = useRef(onClose);
   const inCart = quantity > 0;
   const imageAlt = product.fullName || `${product.brandName} ${product.name}`;
-  const visibleKeywords = getVisibleKeywords(product);
-  const metadataChips = [
-    showCalories ? `${product.calories} cal` : null,
-    formatAvailability(product.availabilityStatus),
-    `Shelf: ${product.tag ?? product.subcategory}`,
-    ...visibleKeywords.map((keyword) => `#${keyword}`),
-  ].filter((chip): chip is string => Boolean(chip));
+  const metadataChips = getMetadataChips(product, showCalories);
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -85,15 +119,18 @@ export function ProductDetailModal({
     const previousRootAriaHidden = rootElement?.getAttribute("aria-hidden") ?? null;
 
     document.body.style.overflow = "hidden";
+    dialogRef.current
+      ?.querySelector<HTMLButtonElement>(".product-detail-modal__close")
+      ?.focus({ preventScroll: true });
+    if (!dialogRef.current?.contains(document.activeElement)) {
+      dialogRef.current?.focus({ preventScroll: true });
+    }
+
     if (rootElement) {
       rootElement.inert = true;
       rootElement.setAttribute("inert", "");
       rootElement.setAttribute("aria-hidden", "true");
     }
-
-    dialogRef.current
-      ?.querySelector<HTMLButtonElement>(".product-detail-modal__close")
-      ?.focus({ preventScroll: true });
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -208,7 +245,15 @@ export function ProductDetailModal({
         {metadataChips.length > 0 ? (
           <div className="product-detail-modal__metadata" aria-label="Product metadata">
             {metadataChips.map((chip) => (
-              <span className="product-detail-modal__chip" key={chip}>{chip}</span>
+              <span
+                className="product-detail-modal__chip"
+                key={chip.label}
+              >
+                {chip.label}
+                {chip.hiddenText ? (
+                  <span className="visually-hidden"> {chip.hiddenText}</span>
+                ) : null}
+              </span>
             ))}
           </div>
         ) : null}

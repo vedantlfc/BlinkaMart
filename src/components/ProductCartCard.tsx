@@ -26,9 +26,7 @@ export function ProductCartCard({
   const imageAlt = product.fullName || `${product.brandName} ${product.name}`;
 
   return (
-    <article
-      className={["product-card", onOpenDetails ? "product-card--clickable" : "", inCart ? "product-card--in-cart" : ""].filter(Boolean).join(" ")}
-    >
+    <article className={["product-card", inCart ? "product-card--in-cart" : ""].filter(Boolean).join(" ")}>
       <div className="product-card__details">
         {onOpenDetails ? (
           <button
