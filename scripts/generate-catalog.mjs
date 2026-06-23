@@ -278,7 +278,7 @@ const categoryDetailMoods = {
   "instant-food": {
     scene: "two-minute ambition, exam season bargaining and dinner that forgot to become dinner",
     meeting: "noodle sprint planning",
-    future: "make real food if you are hungry; this one is for the ritual",
+    future: "future you requests a meal plan with fewer plot twists",
   },
   bakery: {
     scene: "butter logic, college canteen nostalgia and one unread performance review",
@@ -303,7 +303,7 @@ const categoryDetailMoods = {
   "emotional-purchases": {
     scene: "self-care decks, mood boards and retail therapy with no minutes of meeting",
     meeting: "feelings finance review",
-    future: "the emotion is valid; the checkout can remain fictional",
+    future: "the emotion is valid; the cart can take a breath",
   },
 };
 
@@ -338,26 +338,26 @@ const keywordScenes = [
   },
 ];
 
-const detailOpeners = [
-  "{subcategory} craving, officially escalated.",
-  "{subcategory} with full group-chat approval energy.",
-  "{subcategory} confidence at 12:07 AM.",
-  "{subcategory}, but make it a tiny procurement decision.",
-  "{subcategory} pretending to be a reasonable idea.",
+const detailHeadlines = [
+  "{subcategory} urge logged",
+  "{subcategory} cart case opened",
+  "{subcategory} craving filed",
+  "{subcategory} impulse brief",
+  "{subcategory} temptation memo",
 ];
 
-const whyTemplates = [
-  "Because {keywords} were already trending in your head.",
-  "Because the cart saw {keywords} and called it research.",
-  "Because the brief was simple: small dopamine, big theatre, excellent cart choreography.",
-  "Because your thumb tried to approve the {subcategory} purchase order.",
+const detailNudges = [
+  "Regret risk: {regretScore}/100; Self Control is observing.",
+  "Price pressure: Rs {price}; the thumb committee gets one breath.",
+  "Tagged under {keywords}; proceed with comedy, not autopilot.",
+  "{subcategory} has made its case; future you requested a pause.",
 ];
 
 const futureTemplates = [
   "Future you says: {future}.",
-  "Future you approves the fictional version only.",
+  "Self Control has opened a ticket.",
   "Future you asks why {subcategory} needed governance.",
-  "Dopamine acknowledged. Delivery can stand down.",
+  "Craving heard; cart drama can take a breath.",
 ];
 
 function getKeywordScene(searchKeywords) {
@@ -367,13 +367,15 @@ function getKeywordScene(searchKeywords) {
   )?.line;
 }
 
-function getOptionalDetailLine(seed, mood, subcategory, keywords) {
+function getDetailNudge(seed, mood, subcategory, keywords, price, regretScore) {
   const detailMode = seed % 5;
 
   if (detailMode === 0 || detailMode === 3) {
-    return pickStable(whyTemplates, seed, 2)
+    return pickStable(detailNudges, seed, 2)
       .replaceAll("{keywords}", keywords || subcategory.toLowerCase())
-      .replaceAll("{subcategory}", subcategory);
+      .replaceAll("{subcategory}", subcategory)
+      .replaceAll("{price}", String(price))
+      .replaceAll("{regretScore}", String(regretScore));
   }
 
   if (detailMode === 1 || detailMode === 4) {
@@ -392,16 +394,15 @@ function buildDetailCopy(record, categoryId, price, calories, regretScore) {
   const searchKeywords = getSearchKeywords(record.search_keywords);
   const keywords = toFriendlyList(searchKeywords.slice(0, 3));
   const keywordScene = getKeywordScene(searchKeywords);
-  const opener = pickStable(detailOpeners, seed)
+  const headline = pickStable(detailHeadlines, seed)
     .replaceAll("{subcategory}", subcategory);
   const description = [
-    opener,
     keywordScene ?? `Built for ${mood.scene}.`,
-    getOptionalDetailLine(seed, mood, subcategory, keywords),
+    getDetailNudge(seed, mood, subcategory, keywords, price, regretScore),
   ].filter(Boolean).join(" ");
 
   return {
-    headline: `Craving report: ${subcategory}`,
+    headline,
     description,
   };
 }

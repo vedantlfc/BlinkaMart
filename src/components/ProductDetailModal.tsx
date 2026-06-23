@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "./Button";
 import type { Product } from "../data/catalog";
 
@@ -28,7 +29,7 @@ function formatAvailability(value: string) {
 function getVisibleKeywords(product: Product) {
   return product.searchKeywords
     .filter((keyword) => keyword.length > 2)
-    .slice(0, 5);
+    .slice(0, 3);
 }
 
 function getFocusableElements(container: HTMLElement) {
@@ -62,6 +63,12 @@ export function ProductDetailModal({
   const inCart = quantity > 0;
   const imageAlt = product.fullName || `${product.brandName} ${product.name}`;
   const visibleKeywords = getVisibleKeywords(product);
+  const metadataChips = [
+    showCalories ? `${product.calories} cal` : null,
+    formatAvailability(product.availabilityStatus),
+    `Shelf: ${product.tag ?? product.subcategory}`,
+    ...visibleKeywords.map((keyword) => `#${keyword}`),
+  ].filter((chip): chip is string => Boolean(chip));
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -71,8 +78,19 @@ export function ProductDetailModal({
     const previousOverflow = document.body.style.overflow;
     const previouslyFocusedElement =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const rootElement = document.getElementById("root");
+    const previousRootInert = rootElement?.inert ?? false;
+    const rootHadInertAttribute = rootElement?.hasAttribute("inert") ?? false;
+    const rootHadAriaHidden = rootElement?.hasAttribute("aria-hidden") ?? false;
+    const previousRootAriaHidden = rootElement?.getAttribute("aria-hidden") ?? null;
 
     document.body.style.overflow = "hidden";
+    if (rootElement) {
+      rootElement.inert = true;
+      rootElement.setAttribute("inert", "");
+      rootElement.setAttribute("aria-hidden", "true");
+    }
+
     dialogRef.current
       ?.querySelector<HTMLButtonElement>(".product-detail-modal__close")
       ?.focus({ preventScroll: true });
@@ -111,6 +129,20 @@ export function ProductDetailModal({
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      if (rootElement) {
+        rootElement.inert = previousRootInert;
+        if (rootHadInertAttribute) {
+          rootElement.setAttribute("inert", "");
+        } else {
+          rootElement.removeAttribute("inert");
+        }
+
+        if (rootHadAriaHidden && previousRootAriaHidden !== null) {
+          rootElement.setAttribute("aria-hidden", previousRootAriaHidden);
+        } else {
+          rootElement.removeAttribute("aria-hidden");
+        }
+      }
       window.removeEventListener("keydown", handleKeyDown);
       if (previouslyFocusedElement?.isConnected) {
         previouslyFocusedElement.focus({ preventScroll: true });
@@ -118,7 +150,7 @@ export function ProductDetailModal({
     };
   }, []);
 
-  return (
+  const modal = (
     <div className="product-detail-modal" onClick={onClose}>
       <div
         aria-describedby={descriptionId}
@@ -130,7 +162,7 @@ export function ProductDetailModal({
         role="dialog"
         tabIndex={-1}
       >
-        <div className="product-detail-modal__header">
+        <header className="product-detail-modal__header">
           <div>
             <span className="section-kicker">{categoryName}</span>
             <h2 id={titleId}>{product.name}</h2>
@@ -145,23 +177,24 @@ export function ProductDetailModal({
             onClick={onClose}
             aria-label={`Close details for ${product.name}`}
           >
-            Close
+            <span aria-hidden="true">&times;</span>
           </Button>
-        </div>
+        </header>
 
-        <div className="product-detail-modal__hero">
+        <section className="product-detail-modal__surface" aria-label={`${product.name} craving report`}>
           <div className="product-detail-modal__media">
             <img src={product.imageSrc} alt={imageAlt} />
           </div>
           <div className="product-detail-modal__copy">
+            <span className="product-detail-modal__eyebrow">Craving report</span>
             <span className="product-detail-modal__headline">
               {product.detailCopy.headline}
             </span>
             <p id={descriptionId}>{product.detailCopy.description}</p>
           </div>
-        </div>
+        </section>
 
-        <dl className="product-detail-modal__attributes" aria-label={`${product.name} attributes`}>
+        <dl className="product-detail-modal__stats" aria-label={`${product.name} key stats`}>
           <div>
             <dt>Price</dt>
             <dd>Rs {product.price}</dd>
@@ -170,26 +203,12 @@ export function ProductDetailModal({
             <dt>Regret</dt>
             <dd>{product.regretScore}/100</dd>
           </div>
-          {showCalories ? (
-            <div>
-              <dt>Calories</dt>
-              <dd>{product.calories}</dd>
-            </div>
-          ) : null}
-          <div>
-            <dt>Status</dt>
-            <dd>{formatAvailability(product.availabilityStatus)}</dd>
-          </div>
-          <div>
-            <dt>Shelf</dt>
-            <dd>{product.tag ?? product.subcategory}</dd>
-          </div>
         </dl>
 
-        {visibleKeywords.length > 0 ? (
-          <div className="product-detail-modal__tags" aria-label="Craving tags">
-            {visibleKeywords.map((keyword) => (
-              <span key={keyword}>#{keyword}</span>
+        {metadataChips.length > 0 ? (
+          <div className="product-detail-modal__metadata" aria-label="Product metadata">
+            {metadataChips.map((chip) => (
+              <span className="product-detail-modal__chip" key={chip}>{chip}</span>
             ))}
           </div>
         ) : null}
@@ -231,11 +250,13 @@ export function ProductDetailModal({
               onClick={onAdd}
               aria-label={`Add ${product.name} to cart`}
             >
-              Add to Cart
+              Add to Cart - Rs {product.price}
             </Button>
           )}
         </div>
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 }
