@@ -584,7 +584,13 @@ export function ReceiptPage() {
             <span className="receipt-progress-mark">{displayedProgress.currentStreak}</span>
           </section>
 
-          <section className="receipt-share-panel" aria-labelledby="receipt-share-title">
+          <section
+            className={["receipt-share-panel", isPosterBusy ? "receipt-share-panel--busy" : ""]
+              .filter(Boolean)
+              .join(" ")}
+            aria-busy={isPosterBusy}
+            aria-labelledby="receipt-share-title"
+          >
             <div className="section-heading">
               <span className="section-kicker">Share</span>
               <h2 id="receipt-share-title">Share the poster</h2>

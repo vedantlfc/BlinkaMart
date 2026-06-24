@@ -58,6 +58,115 @@ p {
   min-height: 100vh;
 }
 
+:root {
+  --motion-fast: 140ms;
+  --motion-standard: 220ms;
+  --motion-slow: 360ms;
+  --motion-payoff: 560ms;
+  --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-pop: cubic-bezier(0.2, 0.9, 0.25, 1.25);
+}
+
+@keyframes motion-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.45rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motion-section-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.55rem) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes motion-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.07);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes motion-card-ring {
+  0% {
+    box-shadow:
+      var(--shadow-sm),
+      inset 0 0 0 0 rgb(47 111 115 / 0);
+  }
+  55% {
+    box-shadow:
+      0 0.7rem 1.4rem rgb(var(--color-shadow) / 0.12),
+      0 0 0 0.24rem rgb(47 111 115 / 0.12),
+      inset 0 0 0 2px rgb(223 242 238 / 0.82);
+  }
+  100% {
+    box-shadow:
+      var(--shadow-sm),
+      inset 0 0 0 2px rgb(223 242 238 / 0.72);
+  }
+}
+
+@keyframes motion-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes motion-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes motion-route-dash {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+@keyframes motion-soft-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.045);
+    opacity: 0.84;
+  }
+}
+
+@keyframes motion-busy-shimmer {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(120%);
+  }
+}
+
 .app-shell {
   min-height: 100vh;
   padding: calc(var(--safe-area-top) + var(--space-3)) var(--space-3)
@@ -201,6 +310,72 @@ p {
   gap: var(--space-4);
 }
 
+.home-page,
+.products-page,
+.cart-page,
+.checkout-page,
+.tracking-page,
+.receipt-page,
+.progress-page {
+  animation: motion-page-in var(--motion-slow) var(--motion-ease-out) both;
+}
+
+:is(.home-page, .products-page, .cart-page, .checkout-page, .tracking-page, .receipt-page, .progress-page)
+  > :where(
+    .page-header,
+    .hero-panel,
+    .home-progress-panel,
+    .category-section,
+    .filter-panel,
+    .product-shelf,
+    .proof-grid,
+    .cart-empty-panel,
+    .cart-selection-row,
+    .cart-items,
+    .cart-impact-card,
+    .cart-settings-card,
+    .cart-hungry-card,
+    .cart-checkout-bar,
+    .checkout-empty-section,
+    .checkout-note,
+    .checkout-summary,
+    .checkout-items,
+    .cart-cta-row,
+    .tracking-empty-section,
+    .eta-arrival-card,
+    .tracking-hero-card,
+    .packing-preview,
+    .delivery-partner-card,
+    .delivery-route-map,
+    .lost-order-panel,
+    .receipt-empty-section,
+    .receipt-card,
+    .receipt-handoff,
+    .receipt-items-section,
+    .receipt-progress-panel,
+    .receipt-share-panel,
+    .receipt-parody-note,
+    .progress-empty-section,
+    .progress-hero,
+    .progress-stats-section,
+    .progress-badges-section,
+    .progress-history-section
+  ) {
+  animation: motion-section-in var(--motion-slow) var(--motion-ease-out) both;
+}
+
+:is(.home-page, .products-page, .cart-page, .checkout-page, .tracking-page, .receipt-page, .progress-page) > :nth-child(2) {
+  animation-delay: 45ms;
+}
+
+:is(.home-page, .products-page, .cart-page, .checkout-page, .tracking-page, .receipt-page, .progress-page) > :nth-child(3) {
+  animation-delay: 90ms;
+}
+
+:is(.home-page, .products-page, .cart-page, .checkout-page, .tracking-page, .receipt-page, .progress-page) > :nth-child(n + 4) {
+  animation-delay: 130ms;
+}
+
 .page-with-bottom-cart {
   --bottom-cart-dock-height: 8.75rem;
   padding-bottom: calc(var(--bottom-cart-dock-height) + var(--space-6));
@@ -319,9 +494,9 @@ p {
   line-height: 1.2;
   text-align: center;
   transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    background-color 160ms ease;
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    background-color var(--motion-fast) ease;
 }
 
 .button:hover:not(:disabled) {
@@ -330,6 +505,7 @@ p {
 
 .button:active:not(:disabled) {
   transform: translateY(0);
+  animation: motion-pop 190ms var(--motion-ease-pop);
 }
 
 .button:focus-visible {
@@ -651,6 +827,18 @@ p {
   gap: var(--space-3);
 }
 
+.product-list .product-card:not(.product-card--in-cart) {
+  animation: motion-section-in var(--motion-slow) var(--motion-ease-out) both;
+}
+
+.product-list .product-card:not(.product-card--in-cart):nth-child(2n) {
+  animation-delay: 45ms;
+}
+
+.product-list .product-card:not(.product-card--in-cart):nth-child(3n) {
+  animation-delay: 80ms;
+}
+
 .product-card {
   display: grid;
   min-width: 0;
@@ -663,6 +851,10 @@ p {
     linear-gradient(140deg, rgb(255 209 102 / 0.18), transparent 44%),
     var(--color-surface);
   box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--motion-standard) ease,
+    box-shadow var(--motion-standard) ease,
+    transform var(--motion-standard) var(--motion-ease-out);
 }
 
 .product-card__details {
@@ -697,6 +889,12 @@ p {
   box-shadow: inset 0 0 0 1px rgb(255 92 122 / 0.12);
 }
 
+.product-card:has(.product-card__details-trigger:hover),
+.product-card:has(.product-card__details-trigger:focus-visible) {
+  transform: translateY(-0.12rem);
+  box-shadow: 0 0.55rem 1rem rgb(var(--color-shadow) / 0.12);
+}
+
 .product-card__details:has(.product-card__details-trigger:hover) h3,
 .product-card__details:has(.product-card__details-trigger:focus-visible) h3 {
   color: var(--color-secondary);
@@ -707,6 +905,11 @@ p {
   box-shadow:
     var(--shadow-sm),
     inset 0 0 0 2px rgb(223 242 238 / 0.72);
+  animation: motion-card-ring 420ms var(--motion-ease-out);
+}
+
+.product-list .product-card.product-card--in-cart {
+  animation: motion-card-ring 420ms var(--motion-ease-out);
 }
 
 .product-card__top {
@@ -729,8 +932,8 @@ p {
     linear-gradient(135deg, rgb(255 209 102 / 0.2), rgb(223 242 238 / 0.38)),
     var(--color-surface);
   transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease;
+    border-color var(--motion-standard) ease,
+    box-shadow var(--motion-standard) ease;
 }
 
 .product-card__body {
@@ -744,6 +947,12 @@ p {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transition: transform var(--motion-standard) var(--motion-ease-out);
+}
+
+.product-card__details:has(.product-card__details-trigger:hover) .product-card__media img,
+.product-card__details:has(.product-card__details-trigger:focus-visible) .product-card__media img {
+  transform: scale(1.025);
 }
 
 .product-card__header {
@@ -903,6 +1112,11 @@ p {
   min-width: 2.5rem;
 }
 
+.cart-controls .button:active:not(:disabled),
+.cart-stepper .button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
 .product-card .cart-controls {
   gap: var(--space-1);
   min-height: 2.5rem;
@@ -928,6 +1142,15 @@ p {
   border-radius: var(--radius-md);
   background: var(--color-surface);
   font-weight: var(--font-weight-bold);
+  transition:
+    border-color var(--motion-fast) ease,
+    transform var(--motion-fast) ease;
+}
+
+.cart-controls:has(.button:active:not(:disabled)) .cart-controls__quantity,
+.cart-stepper:has(.button:active:not(:disabled)) .cart-controls__quantity {
+  border-color: rgb(255 92 122 / 0.32);
+  transform: scale(1.04);
 }
 
 .product-detail-modal {
@@ -940,6 +1163,7 @@ p {
     max(var(--space-3), var(--safe-area-bottom));
   background: rgb(36 28 53 / 0.56);
   backdrop-filter: blur(7px);
+  animation: motion-backdrop-in var(--motion-standard) ease both;
 }
 
 .product-detail-modal__dialog {
@@ -960,6 +1184,7 @@ p {
     var(--color-surface);
   overscroll-behavior: contain;
   box-shadow: 0 1.5rem 4rem rgb(var(--color-shadow) / 0.32);
+  animation: motion-dialog-in var(--motion-slow) var(--motion-ease-out) both;
 }
 
 .product-detail-modal__header {
@@ -1666,6 +1891,10 @@ p {
   transform: none;
 }
 
+.cart-stepper .button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
 .cart-item-row__controls > .button {
   min-height: 2.5rem;
   flex: 0 0 auto;
@@ -1796,6 +2025,7 @@ p {
   border-radius: var(--radius-md);
   background: rgb(255 253 247 / 0.96);
   box-shadow: 0 0.75rem 1.75rem rgb(var(--color-shadow) / 0.18);
+  animation: motion-section-in var(--motion-slow) var(--motion-ease-out) both;
 }
 
 .cart-checkout-bar__art {
@@ -1809,6 +2039,7 @@ p {
   width: 2.75rem;
   height: 2.75rem;
   object-fit: contain;
+  animation: motion-pop 420ms var(--motion-ease-pop) 120ms both;
 }
 
 .cart-checkout-bar__summary {
@@ -1876,6 +2107,14 @@ p {
 .progress-history-section p {
   color: var(--color-muted);
   font-size: var(--font-size-sm);
+}
+
+.eta-arrival-card,
+.tracking-hero-card,
+.packing-preview,
+.delivery-partner-card,
+.delivery-route-map {
+  animation: motion-section-in var(--motion-slow) var(--motion-ease-out) both;
 }
 
 .mini-item-list {
@@ -1953,7 +2192,7 @@ p {
   max-width: 100%;
   border-radius: inherit;
   background: var(--color-secondary);
-  transition: width 260ms ease;
+  transition: width var(--motion-slow) var(--motion-ease-out);
 }
 
 .tracking-hero-card {
@@ -2036,6 +2275,15 @@ p {
   border: 1px solid rgb(36 28 53 / 0.12);
   border-radius: var(--radius-sm);
   background: rgb(255 253 247 / 0.78);
+  animation: motion-section-in var(--motion-standard) var(--motion-ease-out) both;
+}
+
+.packing-preview__item:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.packing-preview__item:nth-child(3) {
+  animation-delay: 120ms;
 }
 
 .packing-preview__item img {
@@ -2142,6 +2390,7 @@ p {
   stroke: var(--color-secondary);
   stroke-dasharray: 8 8;
   stroke-width: 5;
+  animation: motion-route-dash 1.2s linear infinite;
 }
 
 .delivery-route-map__label rect {
@@ -2180,7 +2429,7 @@ p {
 }
 
 .delivery-route-map__marker {
-  transition: transform 260ms ease;
+  transition: transform var(--motion-slow) var(--motion-ease-out);
 }
 
 .delivery-route-map__marker circle {
@@ -2197,6 +2446,7 @@ p {
 
 .delivery-route-map__marker--lost circle {
   fill: var(--color-accent);
+  animation: motion-soft-pulse 900ms ease 2;
 }
 
 .lost-order-panel {
@@ -2205,6 +2455,9 @@ p {
     linear-gradient(135deg, rgb(255 92 122 / 0.16), transparent 48%),
     var(--color-accent-soft);
   box-shadow: 0.18rem 0.18rem 0 var(--color-text);
+  animation:
+    motion-section-in var(--motion-payoff) var(--motion-ease-out) both,
+    motion-soft-pulse 900ms ease 180ms 1;
 }
 
 .rider-grid {
@@ -2239,6 +2492,7 @@ p {
   background:
     linear-gradient(135deg, rgb(223 242 238 / 0.6), transparent 52%),
     var(--color-surface);
+  animation: motion-section-in var(--motion-slow) var(--motion-ease-out) both;
 }
 
 .receipt-card--poster {
@@ -2249,6 +2503,7 @@ p {
     linear-gradient(220deg, rgb(255 209 102 / 0.28), transparent 54%),
     var(--color-surface);
   box-shadow: 0.22rem 0.22rem 0 var(--color-text);
+  animation: motion-section-in var(--motion-payoff) var(--motion-ease-out) both;
 }
 
 .receipt-status-band {
@@ -2275,6 +2530,7 @@ p {
   font-weight: var(--font-weight-bold);
   line-height: 1.2;
   overflow-wrap: anywhere;
+  animation: motion-pop 520ms var(--motion-ease-pop) 120ms both;
 }
 
 .receipt-poster-items {
@@ -2380,6 +2636,15 @@ p {
   border: 1px solid rgb(36 28 53 / 0.12);
   border-radius: var(--radius-sm);
   background: rgb(255 248 234 / 0.64);
+  animation: motion-section-in var(--motion-standard) var(--motion-ease-out) both;
+}
+
+.receipt-item-row:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.receipt-item-row:nth-child(n + 3) {
+  animation-delay: 120ms;
 }
 
 .receipt-item-row div {
@@ -2446,6 +2711,30 @@ p {
   background:
     linear-gradient(140deg, rgb(222 212 255 / 0.5), transparent 50%),
     var(--color-surface);
+}
+
+.receipt-share-panel--busy .receipt-share-preview {
+  position: relative;
+  overflow: hidden;
+}
+
+.receipt-share-panel--busy .receipt-share-preview::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(
+    100deg,
+    transparent 8%,
+    rgb(255 255 255 / 0.24) 42%,
+    transparent 72%
+  );
+  animation: motion-busy-shimmer 900ms ease-in-out infinite;
+}
+
+.receipt-share-panel--busy .button {
+  position: relative;
+  overflow: hidden;
 }
 
 .receipt-share-fallback {
@@ -2716,6 +3005,7 @@ p {
     linear-gradient(220deg, rgb(222 212 255 / 0.52), transparent 56%),
     var(--color-surface);
   box-shadow: 0.22rem 0.22rem 0 var(--color-text);
+  animation: motion-section-in var(--motion-payoff) var(--motion-ease-out) both;
 }
 
 .progress-next-goal {
@@ -2739,6 +3029,7 @@ p {
   box-shadow: 0.16rem 0.16rem 0 var(--color-text);
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
+  animation: motion-pop 520ms var(--motion-ease-pop) 140ms both;
 }
 
 .progress-stat-grid {
@@ -2785,6 +3076,15 @@ p {
   border: 1px solid rgb(36 28 53 / 0.12);
   border-radius: var(--radius-sm);
   background: rgb(255 253 247 / 0.76);
+  animation: motion-section-in var(--motion-standard) var(--motion-ease-out) both;
+}
+
+.progress-badge-card:nth-child(2n) {
+  animation-delay: 70ms;
+}
+
+.progress-badge-card:nth-child(3n) {
+  animation-delay: 120ms;
 }
 
 .progress-badge-card__top {
@@ -2798,6 +3098,9 @@ p {
   border-color: rgb(47 111 115 / 0.3);
   background: var(--color-secondary-soft);
   box-shadow: inset 0 0 0 2px rgb(255 253 247 / 0.6);
+  animation-name: motion-pop;
+  animation-duration: 460ms;
+  animation-timing-function: var(--motion-ease-pop);
 }
 
 .progress-badge-card--locked {
@@ -2847,6 +3150,15 @@ p {
   border: 1px solid rgb(36 28 53 / 0.12);
   border-radius: var(--radius-sm);
   background: rgb(255 253 247 / 0.76);
+  animation: motion-section-in var(--motion-standard) var(--motion-ease-out) both;
+}
+
+.progress-history-item:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.progress-history-item:nth-child(n + 3) {
+  animation-delay: 120ms;
 }
 
 .progress-history-item > div {
@@ -2926,6 +3238,7 @@ p {
   color: white;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
+  animation: motion-section-in var(--motion-standard) var(--motion-ease-out) both;
 }
 
 .toast--success {
@@ -2942,6 +3255,9 @@ p {
   border-radius: var(--radius-md);
   background: rgb(255 253 247 / 0.95);
   box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow var(--motion-standard) ease,
+    transform var(--motion-standard) var(--motion-ease-out);
 }
 
 .bottom-cart-bar--idle {
@@ -2962,6 +3278,7 @@ p {
     linear-gradient(135deg, rgb(255 209 102 / 0.3), transparent 45%),
     rgb(255 253 247 / 0.98);
   box-shadow: 0 0.75rem 1.75rem rgb(var(--color-shadow) / 0.18);
+  animation: motion-section-in var(--motion-slow) var(--motion-ease-out) both;
 }
 
 .bottom-cart-bar--active .cart-label,
@@ -2997,11 +3314,17 @@ p {
   width: 2.2rem;
   height: 2.2rem;
   object-fit: contain;
+  transition: transform var(--motion-standard) var(--motion-ease-out);
 }
 
 .bottom-cart-bar--active .bottom-cart-bar__art img {
   width: 2.75rem;
   height: 2.75rem;
+}
+
+.bottom-cart-bar--quantity-pulse .bottom-cart-bar__art img,
+.bottom-cart-bar--quantity-pulse .bottom-cart-bar__art span {
+  animation: motion-pop 360ms var(--motion-ease-pop);
 }
 
 .cart-checkout-bar__art span,
@@ -3194,5 +3517,22 @@ p {
   .cart-checkout-bar__art img {
     width: 2.35rem;
     height: 2.35rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .delivery-route-map__route,
+  .receipt-share-panel--busy .receipt-share-preview::after {
+    animation: none !important;
   }
 }

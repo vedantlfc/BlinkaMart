@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 
 export interface BottomCartBarProps {
@@ -25,6 +26,8 @@ export function BottomCartBar({
   actionAnalyticsName,
   onAction,
 }: BottomCartBarProps) {
+  const [quantityPulse, setQuantityPulse] = useState(false);
+  const previousQuantityRef = useRef(totalQuantity);
   const isEmpty = totalQuantity === 0;
   const itemLabel = totalQuantity === 1 ? "item" : "items";
   const label = message ?? "Cart waiting";
@@ -37,9 +40,31 @@ export function BottomCartBar({
       }`;
   const hasAction = !isEmpty && Boolean(actionLabel) && Boolean(onAction);
 
+  useEffect(() => {
+    if (previousQuantityRef.current === totalQuantity) {
+      return;
+    }
+
+    previousQuantityRef.current = totalQuantity;
+
+    if (totalQuantity <= 0) {
+      setQuantityPulse(false);
+      return;
+    }
+
+    setQuantityPulse(false);
+    const frameId = window.requestAnimationFrame(() => setQuantityPulse(true));
+    const timeoutId = window.setTimeout(() => setQuantityPulse(false), 420);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [totalQuantity]);
+
   return (
     <aside
-      className={["bottom-cart-bar", hasAction ? "bottom-cart-bar--active" : "bottom-cart-bar--idle"]
+      className={["bottom-cart-bar", hasAction ? "bottom-cart-bar--active" : "bottom-cart-bar--idle", quantityPulse ? "bottom-cart-bar--quantity-pulse" : ""]
         .filter(Boolean)
         .join(" ")}
       aria-label="Cart status"

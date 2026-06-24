@@ -2,9 +2,16 @@
 
 ## Scope
 
-These instructions apply to the whole repository. There are no nested
-instruction files right now, so keep project guidance in this root file unless
-the repo grows into clearly separate packages.
+These instructions apply to the whole repository. Codex loads repository
+guidance from the project root downward, and there are no nested instruction
+files right now, so keep project guidance in this root file unless the repo
+grows into clearly separate packages.
+
+Keep this file operational: setup, commands, architecture, product rules, and
+validation expectations. Do not turn it into a changelog, long prompt, or
+feature spec. If a future subtree needs different commands or ownership rules,
+add a nested `AGENTS.md` or `AGENTS.override.md` close to that subtree and keep
+this root file focused on shared expectations.
 
 ## Project Shape
 
@@ -15,6 +22,9 @@ the repo grows into clearly separate packages.
   `/tracking`, `/receipt`, and `/progress`.
 - State is local and anonymous. Cart, settings, current order, and progress are
   persisted through `localStorage` providers under `src/state/`.
+- Optional anonymous analytics lives in `src/lib/analytics.ts`, route pageviews
+  are sent from `src/components/AnalyticsRouteTracker.tsx`, and detailed event
+  guidance lives in `ANALYTICS.md`.
 - The app should stay no-login and should never ask for address, phone, payment,
   UPI, card, or identity details.
 - The visible product stance is parody-first. Keep the top-right `Parody app`
@@ -126,6 +136,24 @@ the repo grows into clearly separate packages.
   HTTPS URL when possible. Localhost is useful for smoke tests, but Android/iOS
   install/share behavior can differ.
 
+## Analytics And Privacy
+
+- Analytics uses `posthog-js` and is disabled until a PostHog token is provided.
+  Environment examples live in `.env.example`; `.env` and `.env.*` are ignored
+  and must not be committed with real tokens.
+- Keep `capture_pageview: false` in the SDK config and send React Router
+  pageviews through `AnalyticsRouteTracker` to avoid duplicate route events.
+- Session replay is off by default through `VITE_POSTHOG_SESSION_REPLAY=false`.
+  If it is enabled for a test or deployment, preserve input masking and the
+  app's no-PII product direction.
+- Custom analytics should stay anonymous and product-flow focused: product ids,
+  categories, cart totals, order ids, route status, and share outcomes are okay;
+  personal data, identity fields, payment data, addresses, phone numbers, and
+  email addresses are not okay.
+- Stable button instrumentation flows through the shared `Button` component's
+  `analyticsName` prop, which renders as `data-attr`. If event names or
+  `data-attr` values change, update `ANALYTICS.md` in the same change.
+
 ## Validation Expectations
 
 For most UI or behavior changes, run:
@@ -156,6 +184,9 @@ around `390x844` and desktop width around `1280x900`:
 - Hidden calories stay hidden through the full flow, including the share poster
   and fallback share text.
 - Share Poster either opens native sharing or falls back with a clear toast.
+- Analytics changes should be verified with `VITE_ANALYTICS_DEBUG=true` locally
+  or PostHog Live Events on a deployed build; confirm route pageviews are not
+  duplicated and core button `data-attr` values still appear.
 - No horizontal overflow, console errors, JavaScript dialogs, broken product
   images, visible `fake/Fake`, old `BlinkaMart` branding, or repeated disclaimer
   copy.
