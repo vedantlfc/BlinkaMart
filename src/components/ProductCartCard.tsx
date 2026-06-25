@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Button } from "./Button";
 import type { Product } from "../data/catalog";
+import type { ProductDetailOpenTransitionSource } from "./ProductDetailModal";
 
 export interface ProductCartCardProps {
   product: Product;
@@ -9,8 +10,17 @@ export interface ProductCartCardProps {
   onAdd: () => void;
   onIncrement: () => void;
   onDecrement: () => void;
-  onOpenDetails?: () => void;
+  onOpenDetails?: (source: ProductDetailOpenTransitionSource) => void;
   showCalories?: boolean;
+}
+
+function getPlainRect(rect: DOMRect) {
+  return {
+    height: rect.height,
+    left: rect.left,
+    top: rect.top,
+    width: rect.width,
+  };
 }
 
 export function ProductCartCard({
@@ -25,6 +35,8 @@ export function ProductCartCard({
 }: ProductCartCardProps) {
   const [cartPulse, setCartPulse] = useState(false);
   const previousQuantityRef = useRef(quantity);
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
   const inCart = quantity > 0;
   const imageAlt = product.fullName || `${product.brandName} ${product.name}`;
 
@@ -50,6 +62,22 @@ export function ProductCartCard({
     };
   }, [quantity]);
 
+  function handleDetailsClick(event: MouseEvent<HTMLButtonElement>) {
+    if (!onOpenDetails) {
+      return;
+    }
+
+    const fallbackRect = getPlainRect(event.currentTarget.getBoundingClientRect());
+    onOpenDetails({
+      detailsRect: detailsRef.current
+        ? getPlainRect(detailsRef.current.getBoundingClientRect())
+        : fallbackRect,
+      mediaRect: mediaRef.current
+        ? getPlainRect(mediaRef.current.getBoundingClientRect())
+        : fallbackRect,
+    });
+  }
+
   return (
     <article
       className={[
@@ -60,18 +88,18 @@ export function ProductCartCard({
         .filter(Boolean)
         .join(" ")}
     >
-      <div className="product-card__details">
+      <div className="product-card__details" ref={detailsRef}>
         {onOpenDetails ? (
           <button
             type="button"
             className="product-card__details-trigger"
-            onClick={onOpenDetails}
+            onClick={handleDetailsClick}
             aria-label={`View details for ${product.name}`}
           />
         ) : null}
 
         <div className="product-card__top">
-          <div className="product-card__media">
+          <div className="product-card__media" ref={mediaRef}>
             <img src={product.imageSrc} alt={imageAlt} loading="lazy" />
           </div>
 

@@ -8,6 +8,7 @@ import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { ProductDetailModal } from "../components/ProductDetailModal";
 import { ProductCartCard } from "../components/ProductCartCard";
+import type { ProductDetailOpenTransitionSource } from "../components/ProductDetailModal";
 import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
 import { categories, products, type CategoryId, type Product } from "../data/catalog";
@@ -55,6 +56,8 @@ export function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [toastMessage, setToastMessage] = useState("Shelf stocked. The ritual may begin.");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [detailTransitionSource, setDetailTransitionSource] =
+    useState<ProductDetailOpenTransitionSource | null>(null);
   const navigate = useNavigate();
   const cart = useCart();
   const settings = useSettings();
@@ -113,7 +116,11 @@ export function HomePage() {
     });
   }
 
-  function handleProductDetailsOpen(product: Product) {
+  function handleProductDetailsOpen(
+    product: Product,
+    transitionSource: ProductDetailOpenTransitionSource,
+  ) {
+    setDetailTransitionSource(transitionSource);
     setSelectedProduct(product);
     trackEvent("product details opened", {
       location: "home",
@@ -134,6 +141,7 @@ export function HomePage() {
     }
 
     setSelectedProduct(null);
+    setDetailTransitionSource(null);
   }
 
   return (
@@ -237,7 +245,9 @@ export function HomePage() {
                 categoryName={categoryNames.get(product.categoryId) ?? "Shelf"}
                 quantity={cart.getQuantity(product.id)}
                 showCalories={settings.showCalories}
-                onOpenDetails={() => handleProductDetailsOpen(product)}
+                onOpenDetails={(transitionSource) =>
+                  handleProductDetailsOpen(product, transitionSource)
+                }
                 onAdd={() => {
                   const nextCart = getCartUpdatePreview(
                     cart.items,
@@ -322,6 +332,7 @@ export function HomePage() {
           categoryName={categoryNames.get(selectedProduct.categoryId) ?? "Shelf"}
           quantity={cart.getQuantity(selectedProduct.id)}
           showCalories={settings.showCalories}
+          openTransitionSource={detailTransitionSource}
           onClose={handleProductDetailsClose}
           onAdd={() => {
             const nextCart = getCartUpdatePreview(
