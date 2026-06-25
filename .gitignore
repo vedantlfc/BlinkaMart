@@ -5,6 +5,8 @@ dist/
 .env.*
 !.env.example
 .qa-screenshots/
+test-results/
+playwright-report/
 DopeCart_Ad.mp4
 dopecart_full_logo.png
 dopecart_only_logo.png
