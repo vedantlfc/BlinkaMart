@@ -7,6 +7,9 @@ type CardMotionState = {
   bottomCartIsActive: boolean;
   bottomCartIsInViewport: boolean;
   cardAnimationName: string;
+  cardBackgroundImage: string;
+  cardBorderColor: string;
+  cardBoxShadow: string;
   cardClassName: string;
   quantityText: string | null;
 };
@@ -29,6 +32,7 @@ async function getProductCardMotionState(
     const actionState = card.querySelector(".product-card__action-state");
     const bottomCart = document.querySelector(".bottom-cart-bar");
     const bottomRect = bottomCart?.getBoundingClientRect();
+    const cardStyles = getComputedStyle(card);
     const quantity = card.querySelector(".cart-controls__quantity");
 
     return {
@@ -39,7 +43,10 @@ async function getProductCardMotionState(
       bottomCartIsInViewport: bottomRect
         ? bottomRect.bottom > 0 && bottomRect.top < window.innerHeight
         : false,
-      cardAnimationName: getComputedStyle(card).animationName,
+      cardAnimationName: cardStyles.animationName,
+      cardBackgroundImage: cardStyles.backgroundImage,
+      cardBorderColor: cardStyles.borderColor,
+      cardBoxShadow: cardStyles.boxShadow,
       cardClassName: card.className,
       quantityText: quantity?.textContent?.trim() ?? null,
     };
@@ -59,6 +66,9 @@ async function expectCartMotionContract(page: Page) {
   expect(afterAdd.cardClassName).toContain("product-card--in-cart");
   expect(afterAdd.cardClassName).toContain("product-card--cart-pulse");
   expect(afterAdd.cardAnimationName).toBe(initial.cardAnimationName);
+  expect(afterAdd.cardBackgroundImage).toBe(initial.cardBackgroundImage);
+  expect(afterAdd.cardBorderColor).toBe(initial.cardBorderColor);
+  expect(afterAdd.cardBoxShadow).toBe(initial.cardBoxShadow);
   expect(afterAdd.actionAnimationName).toBe("motion-cart-control-pulse");
   expect(afterAdd.actionStateAnimationName).toBe("motion-action-swap");
   expect(afterAdd.actionText).toBe("-1+");
