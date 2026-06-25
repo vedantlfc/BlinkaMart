@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import type { Product } from "../data/catalog";
 
@@ -22,11 +23,43 @@ export function ProductCartCard({
   onOpenDetails,
   showCalories = true,
 }: ProductCartCardProps) {
+  const [cartPulse, setCartPulse] = useState(false);
+  const previousQuantityRef = useRef(quantity);
   const inCart = quantity > 0;
   const imageAlt = product.fullName || `${product.brandName} ${product.name}`;
 
+  useEffect(() => {
+    if (previousQuantityRef.current === quantity) {
+      return;
+    }
+
+    previousQuantityRef.current = quantity;
+
+    if (quantity <= 0) {
+      setCartPulse(false);
+      return;
+    }
+
+    setCartPulse(false);
+    const frameId = window.requestAnimationFrame(() => setCartPulse(true));
+    const timeoutId = window.setTimeout(() => setCartPulse(false), 340);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [quantity]);
+
   return (
-    <article className={["product-card", inCart ? "product-card--in-cart" : ""].filter(Boolean).join(" ")}>
+    <article
+      className={[
+        "product-card",
+        inCart ? "product-card--in-cart" : "",
+        cartPulse ? "product-card--cart-pulse" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <div className="product-card__details">
         {onOpenDetails ? (
           <button
@@ -68,49 +101,55 @@ export function ProductCartCard({
         </div>
       </div>
 
-      {inCart ? (
-        <div
-          className="cart-controls"
-          aria-label={`${product.name} quantity controls`}
-        >
-          <Button
-            type="button"
-            analyticsName="product_decrement"
-            variant="secondary"
-            size="compact"
-            onClick={onDecrement}
-            aria-label={`Decrease ${product.name} quantity`}
-          >
-            -
-          </Button>
-          <span className="cart-controls__quantity" aria-label={`${quantity} in cart`}>
-            {quantity}
-          </span>
-          <Button
-            type="button"
-            analyticsName="product_increment"
-            variant="secondary"
-            size="compact"
-            onClick={onIncrement}
-            aria-label={`Increase ${product.name} quantity`}
-          >
-            +
-          </Button>
-        </div>
-      ) : (
-        <Button
-          type="button"
-          analyticsName="product_add"
-          variant="primary"
-          size="compact"
-          onClick={() => {
-            onAdd();
-          }}
-          aria-label={`Add ${product.name} to cart`}
-        >
-          Add
-        </Button>
-      )}
+      <div className="product-card__actions">
+        {inCart ? (
+          <div className="product-card__action-state" key="quantity">
+            <div
+              className="cart-controls"
+              aria-label={`${product.name} quantity controls`}
+            >
+              <Button
+                type="button"
+                analyticsName="product_decrement"
+                variant="secondary"
+                size="compact"
+                onClick={onDecrement}
+                aria-label={`Decrease ${product.name} quantity`}
+              >
+                -
+              </Button>
+              <span className="cart-controls__quantity" aria-label={`${quantity} in cart`}>
+                {quantity}
+              </span>
+              <Button
+                type="button"
+                analyticsName="product_increment"
+                variant="secondary"
+                size="compact"
+                onClick={onIncrement}
+                aria-label={`Increase ${product.name} quantity`}
+              >
+                +
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="product-card__action-state" key="add">
+            <Button
+              type="button"
+              analyticsName="product_add"
+              variant="primary"
+              size="compact"
+              onClick={() => {
+                onAdd();
+              }}
+              aria-label={`Add ${product.name} to cart`}
+            >
+              Add
+            </Button>
+          </div>
+        )}
+      </div>
     </article>
   );
 }
