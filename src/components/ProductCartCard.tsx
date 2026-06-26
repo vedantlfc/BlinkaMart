@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Button } from "./Button";
 import type { Product } from "../data/catalog";
 import type { ProductDetailOpenTransitionSource } from "./ProductDetailModal";
+import { playProductDetailPopSound } from "../utils/productDetailSound";
 
 export interface ProductCartCardProps {
   product: Product;
@@ -68,6 +69,7 @@ export function ProductCartCard({
     }
 
     const fallbackRect = getPlainRect(event.currentTarget.getBoundingClientRect());
+    playProductDetailPopSound();
     onOpenDetails({
       detailsRect: detailsRef.current
         ? getPlainRect(detailsRef.current.getBoundingClientRect())
