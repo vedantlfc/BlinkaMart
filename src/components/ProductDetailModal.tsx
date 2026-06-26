@@ -9,6 +9,7 @@ import {
 import { createPortal } from "react-dom";
 import { Button } from "./Button";
 import type { Product } from "../data/catalog";
+import { playProductDetailPopSound } from "../utils/productDetailSound";
 
 export interface ProductDetailTransitionRect {
   height: number;
@@ -273,6 +274,7 @@ export function ProductDetailModal({
         settleTimeout = window.setTimeout(() => {
           setSharedTransition(null);
           setSharedTransitionSettled(true);
+          playProductDetailPopSound();
         }, 340);
       });
     });

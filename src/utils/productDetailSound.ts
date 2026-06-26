@@ -32,8 +32,8 @@ function shouldSkipSound() {
   );
 }
 
-function schedulePopSound(context: AudioContext) {
-  const startAt = context.currentTime;
+function schedulePopSound(context: AudioContext, delayMs = 0) {
+  const startAt = context.currentTime + delayMs / 1000;
   const endAt = startAt + POP_DURATION_SECONDS;
   const filter = context.createBiquadFilter();
   const body = context.createOscillator();
@@ -83,28 +83,42 @@ function schedulePopSound(context: AudioContext) {
   };
 }
 
-export function playProductDetailPopSound() {
+export function prepareProductDetailPopSound() {
   if (shouldSkipSound()) {
     return;
   }
 
-  const now = window.performance.now();
-  if (now - lastPopAt < POP_THROTTLE_MS) {
+  const context = getAudioContext();
+  if (!context || context.state !== "suspended") {
     return;
   }
 
-  lastPopAt = now;
+  void context.resume().catch(() => undefined);
+}
+
+export function playProductDetailPopSound(delayMs = 0) {
+  if (shouldSkipSound()) {
+    return;
+  }
+
   const context = getAudioContext();
   if (!context) {
     return;
   }
 
+  const scheduledAt = window.performance.now() + delayMs;
+  if (scheduledAt - lastPopAt < POP_THROTTLE_MS) {
+    return;
+  }
+
+  lastPopAt = scheduledAt;
+
   if (context.state === "suspended") {
     void context.resume()
-      .then(() => schedulePopSound(context))
+      .then(() => schedulePopSound(context, delayMs))
       .catch(() => undefined);
     return;
   }
 
-  schedulePopSound(context);
+  schedulePopSound(context, delayMs);
 }
