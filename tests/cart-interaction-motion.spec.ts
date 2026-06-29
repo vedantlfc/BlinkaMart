@@ -11,6 +11,7 @@ type CardMotionState = {
   cardBorderColor: string;
   cardBoxShadow: string;
   cardClassName: string;
+  cartFlyLightCount: number;
   quantityText: string | null;
 };
 
@@ -48,6 +49,7 @@ async function getProductCardMotionState(
       cardBorderColor: cardStyles.borderColor,
       cardBoxShadow: cardStyles.boxShadow,
       cardClassName: card.className,
+      cartFlyLightCount: document.querySelectorAll(".cart-fly-light").length,
       quantityText: quantity?.textContent?.trim() ?? null,
     };
   });
@@ -61,6 +63,7 @@ async function expectCartMotionContract(page: Page) {
   expect(initial.actionStateAnimationName).toBe("motion-action-swap");
 
   await page.getByRole("button", { name: `Add ${productName} to cart` }).click();
+  await expect(page.locator(".cart-fly-light")).toBeVisible();
 
   const afterAdd = await getProductCardMotionState(page, productName);
   expect(afterAdd.cardClassName).toContain("product-card--in-cart");
@@ -72,6 +75,7 @@ async function expectCartMotionContract(page: Page) {
   expect(afterAdd.actionAnimationName).toBe("motion-cart-control-pulse");
   expect(afterAdd.actionStateAnimationName).toBe("motion-action-swap");
   expect(afterAdd.actionText).toBe("-1+");
+  expect(afterAdd.cartFlyLightCount).toBe(1);
   expect(afterAdd.quantityText).toBe("1");
   expect(afterAdd.bottomCartIsActive).toBe(true);
   expect(afterAdd.bottomCartIsInViewport).toBe(true);
@@ -109,5 +113,15 @@ test.describe("cart interaction motion", () => {
     await page.goto("/products");
 
     await expectCartMotionContract(page);
+  });
+
+  test("skips the fly-to-cart light in reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/products");
+
+    await page.getByRole("button", { name: `Add ${productName} to cart` }).click();
+
+    await expect(page.locator(".cart-fly-light")).toHaveCount(0);
+    await expect(page.locator(".bottom-cart-bar--active")).toBeVisible();
   });
 });

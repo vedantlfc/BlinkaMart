@@ -8,11 +8,15 @@ export interface ProductCartCardProps {
   product: Product;
   categoryName: string;
   quantity: number;
-  onAdd: () => void;
+  onAdd: (source: ProductCartAddSource) => void;
   onIncrement: () => void;
   onDecrement: () => void;
   onOpenDetails?: (source: ProductDetailOpenTransitionSource) => void;
   showCalories?: boolean;
+}
+
+export interface ProductCartAddSource {
+  mediaRect: ProductDetailOpenTransitionSource["mediaRect"];
 }
 
 function getPlainRect(rect: DOMRect) {
@@ -74,6 +78,16 @@ export function ProductCartCard({
       detailsRect: detailsRef.current
         ? getPlainRect(detailsRef.current.getBoundingClientRect())
         : fallbackRect,
+      mediaRect: mediaRef.current
+        ? getPlainRect(mediaRef.current.getBoundingClientRect())
+        : fallbackRect,
+    });
+  }
+
+  function handleAddClick(event: MouseEvent<HTMLButtonElement>) {
+    const fallbackRect = getPlainRect(event.currentTarget.getBoundingClientRect());
+
+    onAdd({
       mediaRect: mediaRef.current
         ? getPlainRect(mediaRef.current.getBoundingClientRect())
         : fallbackRect,
@@ -170,9 +184,7 @@ export function ProductCartCard({
               analyticsName="product_add"
               variant="primary"
               size="compact"
-              onClick={() => {
-                onAdd();
-              }}
+              onClick={handleAddClick}
               aria-label={`Add ${product.name} to cart`}
             >
               Add

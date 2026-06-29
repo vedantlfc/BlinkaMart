@@ -55,6 +55,7 @@ test.describe("product detail shared transition", () => {
       await expect(
         page.getByRole("button", { name: `Decrease ${productName} quantity` }),
       ).toBeVisible();
+      await expect(page.locator(".cart-fly-light")).toHaveCount(0);
       await expect(page.locator(".bottom-cart-bar--active")).toBeVisible();
 
       await page.keyboard.press("Escape");

@@ -1,13 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BottomCartBar } from "../components/BottomCartBar";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
+import { CartFlyLight, type CartFlyLightRequest } from "../components/CartFlyLight";
 import { CategoryTile } from "../components/CategoryTile";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { ProductDetailModal } from "../components/ProductDetailModal";
 import { ProductCartCard } from "../components/ProductCartCard";
+import type { ProductCartAddSource } from "../components/ProductCartCard";
 import type { ProductDetailOpenTransitionSource } from "../components/ProductDetailModal";
 import { SearchInput } from "../components/SearchInput";
 import { Toast } from "../components/Toast";
@@ -58,6 +60,9 @@ export function HomePage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [detailTransitionSource, setDetailTransitionSource] =
     useState<ProductDetailOpenTransitionSource | null>(null);
+  const [cartFlyLightRequest, setCartFlyLightRequest] =
+    useState<CartFlyLightRequest | null>(null);
+  const cartFlyLightIdRef = useRef(0);
   const navigate = useNavigate();
   const cart = useCart();
   const settings = useSettings();
@@ -142,6 +147,20 @@ export function HomePage() {
 
     setSelectedProduct(null);
     setDetailTransitionSource(null);
+  }
+
+  function queueCartFlyLight(source: ProductCartAddSource) {
+    cartFlyLightIdRef.current += 1;
+    setCartFlyLightRequest({
+      id: cartFlyLightIdRef.current,
+      sourceRect: source.mediaRect,
+    });
+  }
+
+  function handleCartFlyLightComplete(id: number) {
+    setCartFlyLightRequest((currentRequest) =>
+      currentRequest?.id === id ? null : currentRequest,
+    );
   }
 
   return (
@@ -248,7 +267,8 @@ export function HomePage() {
                 onOpenDetails={(transitionSource) =>
                   handleProductDetailsOpen(product, transitionSource)
                 }
-                onAdd={() => {
+                onAdd={(addSource) => {
+                  queueCartFlyLight(addSource);
                   const nextCart = getCartUpdatePreview(
                     cart.items,
                     product.id,
@@ -389,6 +409,10 @@ export function HomePage() {
           }}
         />
       ) : null}
+      <CartFlyLight
+        request={cartFlyLightRequest}
+        onComplete={handleCartFlyLightComplete}
+      />
       <BottomCartBar
         totalQuantity={cart.totals.totalQuantity}
         totalPrice={cart.totals.totalPrice}
